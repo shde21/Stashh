@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: startup-investment-platform-api
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/startup_investment}
+    username: ${DB_USERNAME:startup_app}
+    password: ${DB_PASSWORD:change-me-local-only}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      minimum-idle: ${DB_POOL_MINIMUM_IDLE:2}
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: ${SESSION_COOKIE_SECURE:false}
+        same-site: ${SESSION_COOKIE_SAME_SITE:lax}
+
+app:
+  frontend-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
+  auth:
+    demo-admin:
+      enabled: ${DEMO_ADMIN_ENABLED:false}
+      email: ${DEMO_ADMIN_EMAIL:admin@ventureline.local}
+      password: ${DEMO_ADMIN_PASSWORD:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: ${spring.application.name}
+    stage: authentication-and-layout
