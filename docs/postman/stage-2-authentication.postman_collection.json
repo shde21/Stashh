@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "Startup Investment Platform - Stage 1 Foundation",
-    "description": "Smoke checks for the Stage 1 Spring Boot API.",
+    "name": "Startup Investment Platform - Stage 2 Authentication and Role Smoke Checks",
+    "description": "Smoke checks for Stage 2 authentication and role-based access control.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [

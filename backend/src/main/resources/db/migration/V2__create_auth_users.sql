@@ -4,8 +4,8 @@ CREATE TABLE app_users (
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(16) NOT NULL,
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT app_users_email_unique UNIQUE (email),
     CONSTRAINT app_users_role_check CHECK (role IN ('STARTUP', 'INVESTOR', 'ADMIN')),
     CONSTRAINT app_users_email_nonblank CHECK (length(trim(email)) > 3)
