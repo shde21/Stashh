@@ -13,6 +13,7 @@ export type AuthContextValue = {
   login: (credentials: LoginCredentials) => Promise<AuthUser>
   register: (input: RegistrationInput) => Promise<AuthUser>
   logout: () => Promise<void>
+  withCsrf: <T>(action: (token: string) => Promise<T>) => Promise<T>
   refreshSession: () => Promise<void>
 }
 

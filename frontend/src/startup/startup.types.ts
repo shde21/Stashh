@@ -1,0 +1,57 @@
+export type StartupStage = 'PRE_REVENUE' | 'EARLY_REVENUE' | 'GROWTH'
+export type ReviewStatus = 'DRAFT' | 'SUBMITTED' | 'CHANGES_REQUESTED' | 'APPROVED' | 'REJECTED'
+export type StartupVisibility = 'PRIVATE' | 'PUBLIC'
+export type DocumentKind = 'PITCH_DECK' | 'FINANCIALS' | 'OTHER'
+
+export type StartupDocument = {
+  id: number
+  kind: DocumentKind
+  title: string
+  resourceUrl: string
+  createdAt: string
+}
+
+export type StartupProfile = {
+  id: number
+  userId: number
+  companyName: string
+  tagline: string | null
+  description: string | null
+  website: string | null
+  sector: string | null
+  headquarters: string | null
+  foundedYear: number | null
+  stage: StartupStage
+  teamSize: number | null
+  pitchUrl: string | null
+  reviewStatus: ReviewStatus
+  visibility: StartupVisibility
+  reviewNote: string | null
+  submittedAt: string | null
+  reviewedAt: string | null
+  updatedAt: string
+  metrics: Record<string, number>
+  documents: StartupDocument[]
+}
+
+export type StartupProfileInput = {
+  companyName: string
+  tagline: string
+  description: string
+  website: string
+  sector: string
+  headquarters: string
+  foundedYear: number | null
+  stage: StartupStage
+  teamSize: number | null
+  pitchUrl: string
+  metrics: Record<string, number>
+}
+
+export type DocumentInput = {
+  kind: DocumentKind
+  title: string
+  resourceUrl: string
+}
+
+export type ReviewAction = 'CHANGES_REQUESTED' | 'APPROVED' | 'REJECTED'

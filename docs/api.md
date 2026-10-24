@@ -1,8 +1,8 @@
-# Stage 2 API
+# Stage 3 API
 
 The Stage 1 API is intentionally small. It proves that the browser, REST service, migration layer, and PostgreSQL are connected before product workflows are added.
 
-Stage 2 adds session-based authentication and role boundaries while keeping the public platform status endpoint.
+Stage 3 adds startup profiles, stage-aware metrics, linked documents, submission/review workflow, and approval-gated visibility while keeping the Stage 2 session-based authentication contract.
 
 ## `GET /actuator/health`
 
@@ -32,7 +32,7 @@ Example:
   "service": "startup-investment-platform-api",
   "stage": "foundation",
   "database": "connected",
-  "migrationVersion": "1",
+  "migrationVersion": "3",
   "checkedAt": "2026-10-22T17:00:00Z"
 }
 ```
@@ -95,9 +95,63 @@ Returns the authenticated session user. Without a session, returns `401`:
 }
 ```
 
-### Role boundary smoke endpoints
+## Startup profile endpoints
 
-These small endpoints make backend authorization testable before domain workflows arrive:
+All startup profile endpoints require an authenticated `STARTUP` session. Mutating requests require the session CSRF token.
+
+### `GET /api/v1/startup/profile`
+
+Returns the current startup profile, or `404` when the startup has not saved one yet.
+
+### `PUT /api/v1/startup/profile`
+
+Creates or replaces the authenticated startup's draft profile. The selected stage controls the required metrics:
+
+| Stage | Required metrics |
+| --- | --- |
+| `PRE_REVENUE` | `active_users`, `runway_months` |
+| `EARLY_REVENUE` | `monthly_revenue`, `monthly_growth_percent`, `active_users` |
+| `GROWTH` | `annual_revenue`, `monthly_growth_percent`, `active_users` |
+
+The request accepts company identity, description, website, location, team size, founded year, pitch URL, and a `metrics` object. Drafts remain private.
+
+### `POST /api/v1/startup/profile/submit`
+
+Submits the saved profile for admin review. A complete profile and pitch URL are required. The profile moves to `SUBMITTED` and remains private.
+
+### `POST /api/v1/startup/documents`
+
+Adds a linked supporting document. `kind` is one of `PITCH_DECK`, `FINANCIALS`, or `OTHER`; the resource URL must use `http` or `https`.
+
+### `DELETE /api/v1/startup/documents/{documentId}`
+
+Removes a linked document owned by the current startup.
+
+## Admin review and visibility endpoints
+
+All endpoints below require an authenticated `ADMIN` session.
+
+### `GET /api/v1/admin/startups`
+
+Returns the review queue, including submitted, changes-requested, approved, and rejected profiles.
+
+### `PATCH /api/v1/admin/startups/{profileId}/review`
+
+Accepts `{ "action": "CHANGES_REQUESTED" | "APPROVED" | "REJECTED", "note": "..." }`. Approval is only allowed for a submitted profile. Every action is recorded in the review action table.
+
+### `PATCH /api/v1/admin/startups/{profileId}/visibility`
+
+Accepts `{ "visibility": "PUBLIC" | "PRIVATE" }`. A profile must be `APPROVED` before it can be made public.
+
+## Investor discovery endpoint
+
+### `GET /api/v1/investor/startups`
+
+Requires an authenticated `INVESTOR` session and returns only profiles with `reviewStatus: "APPROVED"` and `visibility: "PUBLIC"`.
+
+## Role boundary smoke endpoints
+
+These small endpoints remain available as simple authorization smoke boundaries:
 
 ```text
 GET /api/v1/startup/access   STARTUP only
@@ -111,7 +165,7 @@ Malformed requests are returned as JSON with a stable `code`, `message`, and opt
 
 ## Compatibility and CORS
 
-The backend permits the configured `FRONTEND_ORIGIN` for local development and allows credentials for the HttpOnly session cookie. Authentication and authorization are enforced for the Stage 2 protected endpoints.
+The backend permits the configured `FRONTEND_ORIGIN` for local development and allows credentials for the HttpOnly session cookie. Authentication and authorization are enforced for the Stage 3 protected endpoints.
 
 ## Postman
 

@@ -83,8 +83,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     register,
     logout,
+    withCsrf: withCsrfRetry,
     refreshSession,
-  }), [login, logout, refreshSession, register, state])
+  }), [login, logout, refreshSession, register, state, withCsrfRetry])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

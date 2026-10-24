@@ -1,6 +1,6 @@
 # Startup Investment Platform
 
-Stage 2 establishes authentication and role-aware application layout on top of the connected Stage 1 foundation:
+Stage 3 adds the first connected product workflow on top of the Stage 2 authentication and role-aware application layout:
 
 - React + TypeScript + Vite frontend
 - Java + Spring Boot REST backend
@@ -9,10 +9,13 @@ Stage 2 establishes authentication and role-aware application layout on top of t
 - Session-based authentication with Startup, Investor, and Admin roles
 - CSRF protection for state-changing API requests
 - Role-protected dashboard shells and responsive navigation
+- Startup profiles with stage-aware metrics and linked pitch/documents
+- Startup submission and admin review workflows with review notes
+- Approval-gated public visibility and investor discovery
 - Backend and frontend tests
 - Windows-first local setup documentation
 
-Startup onboarding, fundraising, QUANTS, portfolios, and simulated marketplace features are intentionally deferred to later stages.
+Fundraising, QUANTS, portfolios, and simulated marketplace features are intentionally deferred to later stages.
 
 ## Architecture
 
@@ -148,14 +151,15 @@ The seeder is idempotent and does not overwrite an existing admin password.
 
 ## API documentation
 
-See [`docs/api.md`](docs/api.md) for the Stage 2 REST contract, authentication flow, role boundaries, and error behavior.
+See [`docs/api.md`](docs/api.md) for the Stage 3 REST contract, authentication flow, role boundaries, and error behavior.
 
 ## Current limitations
 
 - Maven and Docker Desktop must be installed and available on `PATH`; this repository does not silently install them.
-- Startup profiles, fundraising, QUANTS, portfolios, and marketplace domain tables are introduced with their later stages.
-- File storage, uploads, PostgreSQL backups, observability, and deployment automation are not part of Stage 2.
+- Fundraising, QUANTS, portfolios, and marketplace domain tables are introduced with their later stages.
+- Binary file storage and uploads are not part of Stage 3; documents are represented by validated HTTP/HTTPS links.
+- PostgreSQL backups, observability, and deployment automation are not part of Stage 3.
 
-## Next stage
+## Stage 3 result
 
-After approval, Stage 3 will add startup profiles, stage-aware metrics, document and pitch handling, submission workflow, admin review actions, and visibility management.
+Stage 3 is implemented. Stage 4 can add fundraising pools, commitments, and investor discovery filters on top of approved startup profiles.

@@ -96,7 +96,7 @@ export default function FoundationPage() {
       </section>
 
       <footer className="footer">
-        <span>Ventureline · stage 2 authentication</span>
+        <span>Ventureline · stage 3 startup workflows</span>
         <span>Designed for clarity before complexity.</span>
       </footer>
     </main>

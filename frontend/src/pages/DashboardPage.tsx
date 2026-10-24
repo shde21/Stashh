@@ -21,14 +21,14 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
     overview: {
       eyebrow: 'Startup workspace', title: 'Make your next milestone easy to understand.',
       description: 'Your company workspace will become the source of truth for the story you share with investors.',
-      cards: [{ label: 'Profile readiness', value: 'Not started', note: 'Stage 3 will bring onboarding here.' }, { label: 'Fundraising', value: 'Not open', note: 'Pools arrive in Stage 4.' }, { label: 'Review status', value: 'Draft', note: 'Nothing has been submitted yet.' }],
-      emptyTitle: 'Your company story starts here', emptyDescription: 'The onboarding flow will help you add the right context without forcing a pre-revenue company into the wrong metrics.', actionLabel: 'Preview onboarding', actionTo: '/app/startup/profile',
+      cards: [{ label: 'Profile readiness', value: 'Build your profile', note: 'Company story and metrics are live.' }, { label: 'Fundraising', value: 'Not open', note: 'Pools arrive in Stage 4.' }, { label: 'Review status', value: 'Ready when you are', note: 'Submit the profile for admin review.' }],
+      emptyTitle: 'Your company story starts here', emptyDescription: 'Build a stage-aware profile, add the supporting context, and submit it when the story is ready for review.', actionLabel: 'Build company profile', actionTo: '/app/startup/profile',
     },
     profile: {
       eyebrow: 'Company profile', title: 'Give the right people a clear first look.',
       description: 'A guided profile will collect the context investors need, with draft saving and stage-aware fields.',
-      cards: [{ label: 'Company details', value: 'Coming next', note: 'Identity, product, team.' }, { label: 'Metrics', value: 'Coming next', note: 'Relevant to your stage.' }, { label: 'Documents', value: 'Coming next', note: 'Secure uploads arrive in Stage 3.' }],
-      emptyTitle: 'Profile builder is ready for Stage 3', emptyDescription: 'This shell is intentionally honest: there is no fake company data here, only the path where your profile will live.',
+      cards: [{ label: 'Company details', value: 'Live', note: 'Identity, product, and team.' }, { label: 'Metrics', value: 'Stage-aware', note: 'Use the numbers that fit your stage.' }, { label: 'Documents', value: 'Link support', note: 'Pitch and supporting links are available.' }],
+      emptyTitle: 'Build the profile investors can understand', emptyDescription: 'Save your company story, add the metrics that fit your stage, and submit it for review when ready.',
     },
     fundraising: {
       eyebrow: 'Fundraising', title: 'Turn momentum into a transparent round.',
@@ -69,10 +69,10 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
     overview: {
       eyebrow: 'Admin workspace', title: 'Keep the platform worthy of trust.',
       description: 'Review, visibility, and audit workflows will gather here as the product adds real startup and investment data.',
-      cards: [{ label: 'Submissions', value: '0', note: 'Review workflow arrives in Stage 3.' }, { label: 'Fundraising pools', value: '0', note: 'Pool management arrives in Stage 4.' }, { label: 'Audit activity', value: 'Quiet', note: 'Important actions will be recorded.' }],
-      emptyTitle: 'The platform is ready for its first review queue', emptyDescription: 'This admin shell uses real session identity without inventing submissions or user activity.', actionLabel: 'Preview review queue', actionTo: '/app/admin/reviews',
+      cards: [{ label: 'Submissions', value: 'Live', note: 'Review profiles with context.' }, { label: 'Fundraising pools', value: '0', note: 'Pool management arrives in Stage 4.' }, { label: 'Audit activity', value: 'Tracked', note: 'Review actions are recorded.' }],
+      emptyTitle: 'The review queue is ready', emptyDescription: 'Submitted startup profiles arrive here with their metrics, links, and review history.', actionLabel: 'Open review queue', actionTo: '/app/admin/reviews',
     },
-    reviews: { eyebrow: 'Review queue', title: 'Review with context, not shortcuts.', description: 'Startup submissions, feedback, and status history will arrive in Stage 3.', cards: [{ label: 'Needs review', value: '0', note: 'No submissions yet.' }, { label: 'Changes requested', value: '0', note: 'No open loops yet.' }, { label: 'Approved listings', value: '0', note: 'Visibility controls arrive later.' }], emptyTitle: 'No submissions need attention', emptyDescription: 'The queue is empty because startup onboarding has not been implemented yet. That is better than showing pretend records.' },
+    reviews: { eyebrow: 'Review queue', title: 'Review with context, not shortcuts.', description: 'Startup submissions, feedback, status history, and visibility actions live in the review queue.', cards: [{ label: 'Needs review', value: 'Live', note: 'Submitted profiles appear here.' }, { label: 'Changes requested', value: 'Tracked', note: 'Keep the feedback loop clear.' }, { label: 'Approved listings', value: 'Controlled', note: 'Visibility is approval-gated.' }], emptyTitle: 'Open the live review queue', emptyDescription: 'The review page reads connected startup profiles and records each admin action.' },
     users: { eyebrow: 'Platform users', title: 'Understand who is in the room.', description: 'User search, account status, and role controls will arrive as admin workflows mature.', cards: [{ label: 'Startups', value: '—', note: 'No summary endpoint yet.' }, { label: 'Investors', value: '—', note: 'No summary endpoint yet.' }, { label: 'Admins', value: '—', note: 'No summary endpoint yet.' }], emptyTitle: 'User management is staged for a later pass', emptyDescription: 'The current role boundary is live and enforced; detailed admin controls arrive with the domain workflows.' },
     profile: { eyebrow: 'Admin workspace', title: 'Company profiles are managed by startups.', description: 'Switch to a startup account to build a company profile.', cards: [], emptyTitle: 'This area is not part of your workspace', emptyDescription: 'Your admin navigation contains review and platform controls.' },
     fundraising: { eyebrow: 'Admin workspace', title: 'Fundraising management arrives in Stage 4.', description: 'Pool controls will be available here after the core startup and discovery workflows are connected.', cards: [], emptyTitle: 'This area is not part of your workspace', emptyDescription: 'Use the admin review queue for now.' },
