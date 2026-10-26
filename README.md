@@ -1,6 +1,6 @@
 # Startup Investment Platform
 
-Stage 6 completes the simulated marketplace on top of the Stage 5 portfolio and valuation workflow:
+The final release delivers a complete simulated startup-investment journey from onboarding through marketplace interaction:
 
 - React + TypeScript + Vite frontend
 - Java + Spring Boot REST backend
@@ -139,7 +139,7 @@ Invoke-WebRequest http://localhost:8080/api/v1/platform
 
 Expected results include HTTP 200 responses, `"status":"UP"` from Actuator, and `"database":"connected"` from the platform endpoint.
 
-## Stage 2 authentication flow
+## Authentication flow
 
 The browser uses an HttpOnly server session cookie. It does not store passwords or bearer tokens in local storage.
 
@@ -167,9 +167,9 @@ See [`docs/api.md`](docs/api.md) for the final REST contract, authentication flo
 
 - Maven and Docker Desktop must be installed and available on `PATH`; this repository does not silently install them.
 - Real-money settlement, custody, and securities workflows are not implemented in this simulated platform.
-- Binary file storage and uploads are not part of Stage 3; documents are represented by validated HTTP/HTTPS links.
-- PostgreSQL backups, observability, and deployment automation are not part of Stage 3.
+- Binary file storage and uploads are not implemented; documents are represented by validated HTTP/HTTPS links.
+- PostgreSQL backups, observability, and deployment automation are not included in this local-first release.
 
-## Stage 6 result
+## Final project result
 
-Stage 6 is implemented and verified in [`docs/stage-6-verification.md`](docs/stage-6-verification.md). The platform covers startup onboarding, review, fundraising, commitments, QUANTS, valuation snapshots, portfolio analytics, marketplace watchlists with thesis notes, sent introductions with withdrawal capability, and the startup interest inbox.
+The final project is implemented and verified in [`docs/final-stage-verification.md`](docs/final-stage-verification.md). It covers startup onboarding, review, fundraising, commitments, QUANTS, valuation snapshots, portfolio analytics, marketplace watchlists with thesis notes, sent introductions with withdrawal capability, and the startup interest inbox.
