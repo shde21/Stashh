@@ -1,6 +1,6 @@
 # Startup Investment Platform
 
-Stage 3 adds the first connected product workflow on top of the Stage 2 authentication and role-aware application layout:
+Stage 6 completes the simulated marketplace on top of the Stage 5 portfolio and valuation workflow:
 
 - React + TypeScript + Vite frontend
 - Java + Spring Boot REST backend
@@ -12,10 +12,20 @@ Stage 3 adds the first connected product workflow on top of the Stage 2 authenti
 - Startup profiles with stage-aware metrics and linked pitch/documents
 - Startup submission and admin review workflows with review notes
 - Approval-gated public visibility and investor discovery
+- Fundraising pools with target, commitment limits, valuation cap, and close date
+- Approval-gated round opening and admin pool controls
+- Simulated investor commitments with capacity checks and cancellation history
+- Filterable investor discovery and commitment portfolio
+- Deterministic QUANTS allocation from simulated commitment amounts
+- Admin-managed valuation snapshots for approved public startups
+- Portfolio values and illustrative gains derived from the latest snapshot
+- Investor watchlists with thesis notes
+- Investor interest requests and startup-side interest inbox
+- Marketplace interactions guarded by approved/public visibility
 - Backend and frontend tests
 - Windows-first local setup documentation
 
-Fundraising, QUANTS, portfolios, and simulated marketplace features are intentionally deferred to later stages.
+Real-money settlement, custody, securities workflows, and investment advice remain intentionally out of scope.
 
 ## Architecture
 
@@ -151,15 +161,15 @@ The seeder is idempotent and does not overwrite an existing admin password.
 
 ## API documentation
 
-See [`docs/api.md`](docs/api.md) for the Stage 3 REST contract, authentication flow, role boundaries, and error behavior.
+See [`docs/api.md`](docs/api.md) for the final REST contract, authentication flow, role boundaries, and error behavior.
 
 ## Current limitations
 
 - Maven and Docker Desktop must be installed and available on `PATH`; this repository does not silently install them.
-- Fundraising, QUANTS, portfolios, and marketplace domain tables are introduced with their later stages.
+- Real-money settlement, custody, and securities workflows are not implemented in this simulated platform.
 - Binary file storage and uploads are not part of Stage 3; documents are represented by validated HTTP/HTTPS links.
 - PostgreSQL backups, observability, and deployment automation are not part of Stage 3.
 
-## Stage 3 result
+## Stage 6 result
 
-Stage 3 is implemented. Stage 4 can add fundraising pools, commitments, and investor discovery filters on top of approved startup profiles.
+Stage 6 is implemented and verified in [`docs/stage-6-verification.md`](docs/stage-6-verification.md). The platform covers startup onboarding, review, fundraising, commitments, QUANTS, valuation snapshots, portfolio analytics, marketplace watchlists with thesis notes, sent introductions with withdrawal capability, and the startup interest inbox.

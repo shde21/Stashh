@@ -11,6 +11,12 @@ import RegisterPage from './pages/RegisterPage'
 import StartupProfilePage from './pages/StartupProfilePage'
 import AdminReviewsPage from './pages/AdminReviewsPage'
 import InvestorDiscoverPage from './pages/InvestorDiscoverPage'
+import StartupFundraisingPage from './pages/StartupFundraisingPage'
+import InvestorPortfolioPage from './pages/InvestorPortfolioPage'
+import AdminFundraisingPage from './pages/AdminFundraisingPage'
+import AdminValuationsPage from './pages/AdminValuationsPage'
+import StartupInterestsPage from './pages/StartupInterestsPage'
+import InvestorWatchlistPage from './pages/InvestorWatchlistPage'
 
 function AppRoutes() {
   return (
@@ -27,16 +33,20 @@ function AppRoutes() {
           <Route path="startup" element={<RequireRole role="STARTUP" />}>
               <Route index element={<DashboardPage role="STARTUP" section="overview" />} />
               <Route path="profile" element={<StartupProfilePage />} />
-            <Route path="fundraising" element={<DashboardPage role="STARTUP" section="fundraising" />} />
+            <Route path="fundraising" element={<StartupFundraisingPage />} />
+            <Route path="interests" element={<StartupInterestsPage />} />
           </Route>
           <Route path="investor" element={<RequireRole role="INVESTOR" />}>
               <Route index element={<DashboardPage role="INVESTOR" section="overview" />} />
               <Route path="discover" element={<InvestorDiscoverPage />} />
-            <Route path="portfolio" element={<DashboardPage role="INVESTOR" section="portfolio" />} />
+            <Route path="watchlist" element={<InvestorWatchlistPage />} />
+            <Route path="portfolio" element={<InvestorPortfolioPage />} />
           </Route>
           <Route path="admin" element={<RequireRole role="ADMIN" />}>
               <Route index element={<DashboardPage role="ADMIN" section="overview" />} />
-              <Route path="reviews" element={<AdminReviewsPage />} />
+            <Route path="reviews" element={<AdminReviewsPage />} />
+            <Route path="fundraising" element={<AdminFundraisingPage />} />
+            <Route path="valuations" element={<AdminValuationsPage />} />
             <Route path="users" element={<DashboardPage role="ADMIN" section="users" />} />
           </Route>
         </Route>

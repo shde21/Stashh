@@ -14,15 +14,19 @@ const navigation: Record<'STARTUP' | 'INVESTOR' | 'ADMIN', NavItem[]> = {
     { label: 'Overview', to: '/app/startup', detail: 'Workspace pulse' },
     { label: 'Company profile', to: '/app/startup/profile', detail: 'Tell your story' },
     { label: 'Fundraising', to: '/app/startup/fundraising', detail: 'Round readiness' },
+    { label: 'Investor interest', to: '/app/startup/interests', detail: 'Continue the conversation' },
   ],
   INVESTOR: [
     { label: 'Overview', to: '/app/investor', detail: 'Portfolio pulse' },
     { label: 'Discover startups', to: '/app/investor/discover', detail: 'Find the signal' },
+    { label: 'Saved watchlist', to: '/app/investor/watchlist', detail: 'Theses & introductions' },
     { label: 'Portfolio', to: '/app/investor/portfolio', detail: 'Track positions' },
   ],
   ADMIN: [
     { label: 'Overview', to: '/app/admin', detail: 'Platform pulse' },
     { label: 'Review queue', to: '/app/admin/reviews', detail: 'Keep quality high' },
+    { label: 'Fundraising pools', to: '/app/admin/fundraising', detail: 'Control round access' },
+    { label: 'Valuation snapshots', to: '/app/admin/valuations', detail: 'Explain portfolio math' },
     { label: 'Platform users', to: '/app/admin/users', detail: 'People and roles' },
   ],
 }

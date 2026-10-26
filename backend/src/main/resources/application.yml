@@ -49,4 +49,4 @@ management:
 info:
   app:
     name: ${spring.application.name}
-    stage: authentication-and-layout
+    stage: marketplace-interactions

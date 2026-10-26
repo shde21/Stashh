@@ -1,0 +1,14 @@
+{
+  "name": "startup-investment-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Startup Investment Platform",
+  "scripts": {
+    "start": "powershell -ExecutionPolicy Bypass -File ./start.ps1",
+    "dev": "powershell -ExecutionPolicy Bypass -File ./start.ps1",
+    "dev:frontend": "npm --prefix frontend run dev -- --open",
+    "dev:backend": "mvn -f backend/pom.xml spring-boot:run",
+    "db:up": "docker compose up -d postgres",
+    "build": "npm --prefix frontend run build"
+  }
+}

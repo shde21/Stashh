@@ -1169,6 +1169,124 @@ h1 {
   justify-self: start;
 }
 
+.filter-bar {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 0.85fr auto;
+  align-items: end;
+  gap: 10px;
+  margin-bottom: 18px;
+  border: 1px solid #dde4f0;
+  border-radius: 14px;
+  padding: 18px;
+  background: #fff;
+}
+
+.filter-bar .button {
+  white-space: nowrap;
+}
+
+.progress-track {
+  height: 9px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #edf0f6;
+}
+
+.progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2e8c73, #79d6ae);
+  transition: width 220ms ease;
+}
+
+.pool-terms {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.pool-terms span {
+  display: grid;
+  gap: 4px;
+  color: #5e6b88;
+  font-size: 0.7rem;
+}
+
+.pool-terms strong {
+  color: #a0aabc;
+  font-size: 0.59rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fundraising-card {
+  gap: 15px;
+}
+
+.commit-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 10px;
+  border-top: 1px solid #edf0f6;
+  padding-top: 14px;
+}
+
+.commit-form .button {
+  margin-bottom: 1px;
+}
+
+.commitment-confirmation {
+  border: 1px solid #bfe8d4;
+  border-radius: 9px;
+  padding: 10px 12px;
+  color: #247b5d;
+  background: #ebf9f3;
+  font-size: 0.7rem;
+  line-height: 1.45;
+}
+
+.marketplace-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-top: 1px solid #edf0f6;
+  padding-top: 12px;
+}
+
+.portfolio-list {
+  border: 1px solid #dde4f0;
+  border-radius: 14px;
+  padding: 0 20px 20px;
+  background: #fff;
+}
+
+.portfolio-amount {
+  color: #2e8c73;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.portfolio-position > div {
+  display: grid;
+  gap: 5px;
+}
+
+.portfolio-position small,
+.portfolio-footnote {
+  color: #97a2b8;
+  font-size: 0.67rem;
+}
+
+.gain-positive { color: #2e8c73 !important; }
+.gain-negative { color: #a25048 !important; }
+
+.portfolio-footnote {
+  margin-top: 10px;
+  text-align: right;
+}
+
 .full-page-state,
 .simple-state-page {
   display: grid;
@@ -1336,7 +1454,18 @@ h1 {
 
   .role-options,
   .field-grid,
-  .metric-grid {
+  .metric-grid,
+  .filter-bar,
+  .pool-terms {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-bar .button,
+  .document-form .button {
+    width: 100%;
+  }
+
+  .commit-form {
     grid-template-columns: 1fr;
   }
 

@@ -1,8 +1,8 @@
-# Stage 3 API
+# Final API
 
-The Stage 1 API is intentionally small. It proves that the browser, REST service, migration layer, and PostgreSQL are connected before product workflows are added.
+The foundation API remains intentionally small. It proves that the browser, REST service, migration layer, and PostgreSQL are connected beneath the product workflows.
 
-Stage 3 adds startup profiles, stage-aware metrics, linked documents, submission/review workflow, and approval-gated visibility while keeping the Stage 2 session-based authentication contract.
+The final stage adds marketplace watchlists and investor interest requests on top of the Stage 5 portfolio and valuation workflow.
 
 ## `GET /actuator/health`
 
@@ -32,7 +32,7 @@ Example:
   "service": "startup-investment-platform-api",
   "stage": "foundation",
   "database": "connected",
-  "migrationVersion": "3",
+  "migrationVersion": "5",
   "checkedAt": "2026-10-22T17:00:00Z"
 }
 ```
@@ -149,6 +149,109 @@ Accepts `{ "visibility": "PUBLIC" | "PRIVATE" }`. A profile must be `APPROVED` b
 
 Requires an authenticated `INVESTOR` session and returns only profiles with `reviewStatus: "APPROVED"` and `visibility: "PUBLIC"`.
 
+## Fundraising pool endpoints
+
+### `GET /api/v1/startup/fundraising/pool`
+
+Returns the authenticated startup's pool configuration, or `404` if no pool has been saved.
+
+### `PUT /api/v1/startup/fundraising/pool`
+
+Saves the startup's simulated round terms. The startup profile must already be approved and public. Terms include `title`, `targetAmount`, `minCommitment`, optional `maxCommitment`, optional `valuationCap`, and optional `endsAt`.
+
+Saving terms returns the pool to `DRAFT`; an open pool must be closed before its terms can be changed.
+
+### `POST /api/v1/startup/fundraising/pool/open`
+
+Opens the saved pool for investor commitments. The profile must remain approved and public, and the end date cannot have passed.
+
+### `POST /api/v1/startup/fundraising/pool/close`
+
+Closes the startup's pool. Existing active commitments remain in the investor history, but new commitments are rejected.
+
+## Investor fundraising endpoints
+
+All investor endpoints require an authenticated `INVESTOR` session. State-changing requests require the session CSRF token.
+
+### `GET /api/v1/investor/fundraising/pools`
+
+Returns only open pools attached to approved, public startup profiles. Optional filters are `q`, `sector`, and `stage` (`PRE_REVENUE`, `EARLY_REVENUE`, or `GROWTH`).
+
+### `POST /api/v1/investor/fundraising/pools/{poolId}/commit`
+
+Records a simulated commitment such as `{ "amount": 50000 }`. The amount must be within the pool limits and cannot exceed remaining capacity. One active commitment per investor and pool is allowed.
+
+### `GET /api/v1/investor/fundraising/commitments`
+
+Returns the investor's active and cancelled simulated commitments.
+
+### `DELETE /api/v1/investor/fundraising/commitments/{commitmentId}`
+
+Cancels an active commitment without deleting its history.
+
+## Admin fundraising endpoints
+
+### `GET /api/v1/admin/fundraising/pools`
+
+Returns all configured pools with target, committed amount, and active commitment count.
+
+### `PATCH /api/v1/admin/fundraising/pools/{poolId}/status`
+
+Accepts `{ "status": "OPEN" | "CLOSED" }`. Admins can close a live pool or open a pool whose startup profile is approved and public.
+
+## Portfolio and valuation endpoints
+
+### `GET /api/v1/investor/portfolio`
+
+Requires an authenticated `INVESTOR` session. Returns active and cancelled positions, total committed amount, total QUANTS, valued amount, and illustrative gain.
+
+QUANTS are deterministic: `1 QUANT = ₹1,000` of commitment. A position's illustrative current value is calculated only when both the pool's valuation cap and a valuation snapshot exist:
+
+```text
+current value = commitment amount × latest valuation / valuation cap
+illustrative gain = current value − commitment amount
+```
+
+Without a valuation snapshot, the position remains visible but reports no current value or gain.
+
+### `GET /api/v1/admin/valuations`
+
+Requires an authenticated `ADMIN` session and returns valuation snapshot history.
+
+### `POST /api/v1/admin/valuations`
+
+Requires an authenticated `ADMIN` session. Accepts `{ "profileId": 1, "valuationAmount": 12000000, "snapshotAt": "2026-10-24T00:00:00Z", "note": "..." }`. Snapshots can only be recorded for approved, public startup profiles and cannot be dated in the future.
+
+## Marketplace endpoints
+
+### `GET /api/v1/investor/marketplace/watchlist`
+
+Returns the investor's saved approved/public startup profiles.
+
+### `PUT /api/v1/investor/marketplace/watchlist/{profileId}`
+
+Saves an approved/public startup for the investor. An optional `{ "note": "..." }` stores a private thesis note.
+
+### `DELETE /api/v1/investor/marketplace/watchlist/{profileId}`
+
+Removes a startup from the investor's watchlist.
+
+### `POST /api/v1/investor/marketplace/startups/{profileId}/interest`
+
+Sends a lightweight investor introduction to an approved/public startup. The body can include `{ "message": "..." }`. Repeating the request updates the existing pending request instead of creating duplicates.
+
+### `DELETE /api/v1/investor/marketplace/startups/{profileId}/interest`
+
+Withdraws a pending investor introduction for the startup, setting its status to `WITHDRAWN`.
+
+### `GET /api/v1/investor/marketplace/interests`
+
+Returns the authenticated investor's sent interest requests across startups, including company name, message, status (`PENDING` or `WITHDRAWN`), and timestamps.
+
+### `GET /api/v1/startup/marketplace/interests`
+
+Returns investor interest requests for the authenticated startup, including investor email, message, and pending/withdrawn status.
+
 ## Role boundary smoke endpoints
 
 These small endpoints remain available as simple authorization smoke boundaries:
@@ -165,7 +268,7 @@ Malformed requests are returned as JSON with a stable `code`, `message`, and opt
 
 ## Compatibility and CORS
 
-The backend permits the configured `FRONTEND_ORIGIN` for local development and allows credentials for the HttpOnly session cookie. Authentication and authorization are enforced for the Stage 3 protected endpoints.
+The backend permits the configured `FRONTEND_ORIGIN` for local development and allows credentials for the HttpOnly session cookie. Authentication and authorization are enforced for the final-stage protected endpoints.
 
 ## Postman
 
