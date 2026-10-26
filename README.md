@@ -1,126 +1,175 @@
 # Startup Investment Platform
 
-The final release delivers a complete simulated startup-investment journey from onboarding through marketplace interaction:
+Startup Investment Platform is a local-first simulated investment platform for founders, investors, and administrators. Founders can create and submit company profiles, administrators can review and publish approved companies, and investors can discover fundraising opportunities, record simulated commitments, track portfolio values, and interact with startups.
 
-- React + TypeScript + Vite frontend
-- Java + Spring Boot REST backend
-- PostgreSQL with versioned Flyway migrations
-- Actuator health checks and a database-backed platform status endpoint
-- Session-based authentication with Startup, Investor, and Admin roles
-- CSRF protection for state-changing API requests
-- Role-protected dashboard shells and responsive navigation
-- Startup profiles with stage-aware metrics and linked pitch/documents
-- Startup submission and admin review workflows with review notes
-- Approval-gated public visibility and investor discovery
-- Fundraising pools with target, commitment limits, valuation cap, and close date
-- Approval-gated round opening and admin pool controls
-- Simulated investor commitments with capacity checks and cancellation history
-- Filterable investor discovery and commitment portfolio
-- Deterministic QUANTS allocation from simulated commitment amounts
-- Admin-managed valuation snapshots for approved public startups
-- Portfolio values and illustrative gains derived from the latest snapshot
-- Investor watchlists with thesis notes
-- Investor interest requests and startup-side interest inbox
-- Marketplace interactions guarded by approved/public visibility
-- Backend and frontend tests
-- Windows-first local setup documentation
+## What the platform provides
 
-Real-money settlement, custody, securities workflows, and investment advice remain intentionally out of scope.
+- Startup registration, profiles, metrics, pitch links, and supporting documents
+- Admin review, feedback, approval, rejection, and public-visibility controls
+- Fundraising rounds with targets, commitment limits, valuation caps, and closing dates
+- Investor discovery with search and stage or sector filters
+- Simulated commitments with capacity checks and cancellation history
+- Deterministic QUANTS allocation from commitment amounts
+- Admin valuation snapshots and investor portfolio analytics
+- Investor watchlists with private thesis notes
+- Investor interest requests and a startup-side interest inbox
+- Session authentication, role-based access, CSRF protection, and health checks
+
+## Main user roles
+
+| Role | Capabilities |
+| --- | --- |
+| **Startup** | Create and submit a profile, attach pitch or document links, configure a fundraising round, open or close the round, and read investor interest requests. |
+| **Investor** | Discover approved public startups and open rounds, filter opportunities, make or cancel simulated commitments, view portfolio analytics, save watchlists, add thesis notes, and send interest requests. |
+| **Admin** | Review startup submissions, request changes, approve or reject profiles, control public visibility and fundraising access, and record valuation snapshots. |
+
+## Technology stack
+
+- **Frontend:** React 19, TypeScript, Vite, and React Router
+- **Backend:** Java 21, Spring Boot 4.1.2, Spring MVC, JDBC, validation, and Actuator
+- **Database:** PostgreSQL 18, run locally with Docker Compose
+- **Migrations:** Flyway versioned SQL migrations
+- **Authentication:** Server-side sessions with HttpOnly cookies and CSRF tokens
+- **Testing:** Spring Boot test support, H2 for backend tests, Vitest, Testing Library, TypeScript, and ESLint
 
 ## Architecture
 
 ```text
-Browser (React/Vite :5173)
-        |
-        | JSON REST
-        v
+React/Vite browser (:5173)
+          |
+          | JSON REST over HTTP
+          v
 Spring Boot API (:8080)
-        |
-        | JDBC + Flyway
-        v
+          |
+          | JDBC + Flyway
+          v
 PostgreSQL (:5432)
 ```
 
-The application is split into independently runnable modules:
+The frontend calls the backend API. The backend enforces authentication and role boundaries, persists application data through JDBC, and applies database migrations with Flyway. PostgreSQL is the only service started by Docker Compose.
+
+## Project structure
 
 ```text
-backend/       Maven Spring Boot service and migrations
-frontend/      Vite React TypeScript application
-docs/          API and architecture notes
-docker-compose.yml  Local PostgreSQL only
+backend/             Spring Boot API, business logic, tests, and migrations
+frontend/            React/Vite application, pages, API clients, and tests
+docs/                API contract and verification notes
+docker-compose.yml   Local PostgreSQL service
+start.ps1            PowerShell script to start database, backend, and frontend
+start.bat            Command Prompt startup script
+package.json         Root convenience scripts
 ```
 
-## Prerequisites
+## Requirements
 
-Install or make available on Windows:
+The documented local setup targets Windows and requires:
 
 - Node.js 24.x and npm 11.x
-- JDK 21 or newer (the current workspace has JDK 26)
+- JDK 21 or newer
 - Apache Maven 3.6.3 or newer
-- Docker Desktop with Compose, if you want to run PostgreSQL locally
+- Docker Desktop with Docker Compose
 
-Spring Boot 4.1.2 is configured in `backend/pom.xml`. The code targets Java 21 bytecode so it remains usable on supported newer JDKs.
+The backend is configured for Java 21 bytecode. Docker Compose supplies PostgreSQL 18 for local development.
 
 ## Quick start on Windows
 
-From PowerShell at the repository root:
+Clone the repository and open PowerShell at its root:
 
 ```powershell
-# Optional: Docker Compose reads these local defaults from .env.
-Copy-Item .env.example .env
+git clone https://github.com/shde21/startup-investment-platform.git
+Set-Location startup-investment-platform
+```
+
+If `.env` does not exist, copy the local database defaults and start PostgreSQL:
+
+```powershell
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
 docker compose up -d postgres
 ```
 
-Start the backend in a second terminal:
+Open a second PowerShell window at the repository root and start the backend:
 
 ```powershell
-Set-Location backend
+Set-Location .\backend
 mvn spring-boot:run
 ```
 
-Start the frontend in a third terminal:
+Open a third PowerShell window at the repository root, install frontend dependencies, and start Vite:
 
 ```powershell
-Set-Location frontend
+Set-Location .\frontend
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5173`.
+Open [http://localhost:5173](http://localhost:5173).
 
-The foundation page calls the backend; it does not use hardcoded platform status data. The backend calls PostgreSQL and Flyway applies the migration before serving the status endpoint.
+For automated Windows startup, run `.\start.ps1` from the repository root in PowerShell, or run `start.bat` from Command Prompt. These scripts start PostgreSQL, the backend, and the frontend.
 
-## Environment variables
+## Environment configuration
 
-Docker Compose reads the root `.env` file. Spring Boot reads backend variables from the process environment, and Vite reads variables beginning with `VITE_` from `frontend/.env*` files or the shell environment; neither automatically parses the root `.env` file. The committed defaults in `application.yml` and `api.ts` match the local Compose and frontend ports, so the first run works without extra environment configuration. Copy `frontend/.env.example` to `frontend/.env.local` when you need a different API URL.
+The root `.env` file is read by Docker Compose. Spring Boot reads backend settings from the process environment, and Vite reads `VITE_` settings from `frontend/.env*` files or the shell environment. The local defaults already match the provided Docker Compose setup.
 
-Important variables:
+### Database and backend variables
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `DB_URL` | `jdbc:postgresql://localhost:5432/startup_investment` | JDBC connection string |
-| `DB_USERNAME` | `startup_app` | Database username |
-| `DB_PASSWORD` | `change-me-local-only` | Local database password |
-| `SERVER_PORT` | `8080` | Backend port |
-| `FRONTEND_ORIGIN` | `http://localhost:5173` | Development CORS origin |
-| `VITE_API_BASE_URL` | `http://localhost:8080` | Frontend API base URL |
-| `DEMO_ADMIN_ENABLED` | `false` | Enables a local-only seeded admin account |
-| `DEMO_ADMIN_EMAIL` | `admin@ventureline.local` | Demo admin email when enabled |
-| `DEMO_ADMIN_PASSWORD` | empty | Required 12+ character demo admin password |
-| `SESSION_COOKIE_SECURE` | `false` | Set `true` when serving through HTTPS |
-| `SESSION_COOKIE_SAME_SITE` | `lax` | Session cookie SameSite policy; use `none` with HTTPS for genuinely cross-site deployments |
+| `POSTGRES_DB` | `startup_investment` | PostgreSQL database created by Docker Compose |
+| `POSTGRES_USER` | `startup_app` | PostgreSQL user created by Docker Compose |
+| `POSTGRES_PASSWORD` | `change-me-local-only` | Local PostgreSQL password |
+| `DB_URL` | `jdbc:postgresql://localhost:5432/startup_investment` | Backend JDBC connection string |
+| `DB_USERNAME` | `startup_app` | Backend database username |
+| `DB_PASSWORD` | `change-me-local-only` | Backend database password |
+| `SERVER_PORT` | `8080` | Backend HTTP port |
+| `FRONTEND_ORIGIN` | `http://localhost:5173` | Allowed frontend origin |
+| `SESSION_COOKIE_SECURE` | `false` | Whether the session cookie requires HTTPS |
+| `SESSION_COOKIE_SAME_SITE` | `lax` | Session cookie SameSite policy |
 
-Do not commit real credentials. The example password is only for local development.
+### Frontend variable
 
-## Checks
+Copy `frontend/.env.example` to `frontend/.env.local` only when the API is not running on its default URL:
 
-Run backend checks from `backend/`:
-
-```powershell
-mvn clean verify
+```text
+VITE_API_BASE_URL=http://localhost:8080
 ```
 
-Run frontend checks from `frontend/`:
+### Optional demo administrator
+
+Public registration creates only Startup and Investor accounts. To seed a local administrator, set these process variables before starting the backend from the repository root:
+
+```powershell
+$env:DEMO_ADMIN_ENABLED = "true"
+$env:DEMO_ADMIN_EMAIL = "admin@ventureline.local"
+$env:DEMO_ADMIN_PASSWORD = "choose-a-local-password-12"
+Set-Location .\backend
+mvn spring-boot:run
+```
+
+Use a local password and never commit credentials.
+
+## Application workflow
+
+1. **Register and sign in:** A user registers as a Startup or Investor. The browser uses an HttpOnly session cookie and CSRF token for state-changing requests.
+2. **Submit a startup profile:** A Startup saves company information, metrics, pitch links, and optional supporting documents, then submits the profile for review.
+3. **Review and publish:** An Admin requests changes, approves or rejects the profile, and controls whether an approved profile is public.
+4. **Configure fundraising:** An approved public Startup saves round terms and opens the round for commitments.
+5. **Discover and commit:** An Investor filters approved public startups or open rounds, saves watchlists, adds private thesis notes, sends interest requests, and records simulated commitments.
+6. **View portfolio and valuations:** Admin valuation snapshots allow eligible investor positions to show illustrative current values and gains. QUANTS are deterministic at one QUANT per ₹1,000 of commitment.
+7. **Manage marketplace conversations:** Investors can review or withdraw pending interest requests, while Startups can read incoming requests.
+
+## API documentation
+
+See [`docs/api.md`](docs/api.md) for the REST endpoints, request examples, authentication behavior, role boundaries, and error responses.
+
+## Verification and tests
+
+Run the backend verification from `backend/`:
+
+```powershell
+mvn -B -Dmaven.compiler.release=17 verify
+```
+
+Run the frontend checks from `frontend/`:
 
 ```powershell
 npm install
@@ -130,46 +179,21 @@ npm test -- --run
 npm run build
 ```
 
-Run the database-backed service checks manually:
+With the backend and database running, check the service endpoints:
 
 ```powershell
 Invoke-WebRequest http://localhost:8080/actuator/health
 Invoke-WebRequest http://localhost:8080/api/v1/platform
 ```
 
-Expected results include HTTP 200 responses, `"status":"UP"` from Actuator, and `"database":"connected"` from the platform endpoint.
+The documented final verification is available in [`docs/final-stage-verification.md`](docs/final-stage-verification.md).
 
-## Authentication flow
+## Limitations
 
-The browser uses an HttpOnly server session cookie. It does not store passwords or bearer tokens in local storage.
+- This is a simulated investment platform; it does not process real money, hold assets, settle securities, provide investment advice, or create legally binding commitments.
+- Startup documents are represented by validated HTTP or HTTPS links; binary file uploads are not implemented.
+- The repository provides a local development setup, not production deployment, backup, or observability automation.
 
-1. The frontend requests a CSRF token from `GET /api/v1/auth/csrf`.
-2. Registration or login sends the token in `X-CSRF-Token`.
-3. The backend creates the session and returns the authenticated role.
-4. Protected routes call `GET /api/v1/me` and role-specific API boundaries remain enforced by the backend.
+## Final project status
 
-Public registration supports `STARTUP` and `INVESTOR`. `ADMIN` accounts are never created through the public form. For local admin review, enable the demo seeder with process environment variables before starting Spring Boot:
-
-```powershell
-$env:DEMO_ADMIN_ENABLED = "true"
-$env:DEMO_ADMIN_EMAIL = "admin@ventureline.local"
-$env:DEMO_ADMIN_PASSWORD = "use-a-local-password-123"
-mvn spring-boot:run
-```
-
-The seeder is idempotent and does not overwrite an existing admin password.
-
-## API documentation
-
-See [`docs/api.md`](docs/api.md) for the final REST contract, authentication flow, role boundaries, and error behavior.
-
-## Current limitations
-
-- Maven and Docker Desktop must be installed and available on `PATH`; this repository does not silently install them.
-- Real-money settlement, custody, and securities workflows are not implemented in this simulated platform.
-- Binary file storage and uploads are not implemented; documents are represented by validated HTTP/HTTPS links.
-- PostgreSQL backups, observability, and deployment automation are not included in this local-first release.
-
-## Final project result
-
-The final project is implemented and verified in [`docs/final-stage-verification.md`](docs/final-stage-verification.md). It covers startup onboarding, review, fundraising, commitments, QUANTS, valuation snapshots, portfolio analytics, marketplace watchlists with thesis notes, sent introductions with withdrawal capability, and the startup interest inbox.
+The complete platform is implemented and verified across startup onboarding, admin review, fundraising, investor commitments, portfolio analytics, valuation snapshots, and marketplace interactions. See [`docs/final-stage-verification.md`](docs/final-stage-verification.md) for the recorded verification details.
