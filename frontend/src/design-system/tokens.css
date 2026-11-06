@@ -1,55 +1,61 @@
 /**
- * stashh Design System - Design Tokens
- * Philosophy: Apple + Groww + Stripe
- * Light-first architecture with pure, calm, high-contrast dark mode.
+ * Stashh Design System - Design Tokens
+ * Clean Modern Fintech Aesthetic (Apple + Groww + Stripe)
+ * High-trust, minimalist, crisp borders and tabular numerical figures.
  */
 
 :root {
-  /* Colors - Light Theme */
+  /* Colors - Light Theme Surfaces */
   --bg: #FFFFFF;
-  --bg-subtle: #F5F5F7;
+  --bg-subtle: #F8F9FA;
   --surface: #FFFFFF;
   --surface-raised: #FFFFFF;
-  --surface-muted: #F8F8FA;
+  --surface-muted: #F8F9FA;
 
-  --text: #1D1D1F;
-  --text-secondary: #6E6E73;
-  --text-tertiary: #86868B;
+  /* Typography Colors */
+  --text: #222222;
+  --text-secondary: #44475B;
+  --text-tertiary: #7C7E8C;
   --text-inverse: #FFFFFF;
 
-  --border: #E5E5EA;
-  --border-strong: #D2D2D7;
-  --border-focus: #0A5FFF;
+  /* Subtle Borders & Dividers */
+  --border: #EAECF0;
+  --border-strong: #D0D5DD;
+  --border-focus: #00D09C;
 
-  /* Accent - Restrained Brand Blue */
-  --accent: #0A5FFF;
-  --accent-hover: #004FE0;
-  --accent-subtle: #EEF4FF;
-  --accent-border: #D0E1FD;
+  /* Brand Primary / Positive Indicators (+) */
+  --accent: #00D09C;
+  --accent-hover: #00B588;
+  --accent-subtle: #E6FBF5;
+  --accent-border: #99ECCF;
 
-  /* Primary Ink (for Apple-like stark buttons) */
-  --ink: #1D1D1F;
-  --ink-hover: #000000;
-  --ink-secondary: #3A3A3C;
+  /* Primary Ink (CTA buttons / Brand) */
+  --ink: #00D09C;
+  --ink-hover: #00B588;
+  --ink-secondary: #00A37A;
 
-  /* Semantic Colors (WCAG AA compliant) */
-  --positive: #00B386;
+  /* Semantic Colors */
+  --positive: #00D09C;
+  --positive-hover: #00B588;
   --positive-text: #008765;
-  --positive-subtle: #E8F8F4;
-  --positive-border: #BAECD8;
+  --positive-subtle: #E6FBF5;
+  --positive-border: #99ECCF;
 
-  --negative: #E5484D;
-  --negative-text: #B52B30;
-  --negative-subtle: #FDE8E8;
-  --negative-border: #F8B4B4;
+  /* Negative / Sell / Destructive Indicators (-) */
+  --negative: #EB5B3C;
+  --negative-hover: #D64F32;
+  --negative-text: #D64F32;
+  --negative-subtle: #FDEEEB;
+  --negative-border: #F7B5A7;
 
-  --warning: #B7791F;
-  --warning-text: #92400E;
+  /* Warning / Caution */
+  --warning: #F59E0B;
+  --warning-text: #B45309;
   --warning-subtle: #FEF3C7;
   --warning-border: #FCD34D;
 
-  --neutral-pill-bg: #EFEFF4;
-  --neutral-pill-text: #3A3A3C;
+  --neutral-pill-bg: #F8F9FA;
+  --neutral-pill-text: #44475B;
 
   /* Typography */
   --font-sans: 'Inter Variable', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
@@ -58,14 +64,14 @@
   --font-display: 3.5rem;   /* 56px */
   --lh-display: 3.75rem;    /* 60px */
 
-  --font-h1: 2.5rem;        /* 40px */
-  --lh-h1: 2.875rem;        /* 46px */
+  --font-h1: 2.25rem;       /* 36px */
+  --lh-h1: 2.625rem;        /* 42px */
 
-  --font-h2: 1.75rem;       /* 28px */
-  --lh-h2: 2.125rem;        /* 34px */
+  --font-h2: 1.625rem;      /* 26px */
+  --lh-h2: 2rem;            /* 32px */
 
   --font-h3: 1.25rem;       /* 20px */
-  --lh-h3: 1.75rem;         /* 28px */
+  --lh-h3: 1.625rem;        /* 26px */
 
   --font-body: 1rem;        /* 16px */
   --lh-body: 1.5rem;        /* 24px */
@@ -99,19 +105,19 @@
   --space-24: 96px;
   --space-32: 128px;
 
-  /* Radius */
+  /* Shapes & Radii: Clean modern corners (8px) and fully rounded pills */
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
   --radius-full: 9999px;
 
-  /* Elevation */
+  /* Elevations: Minimal 1px subtle borders over heavy drop-shadows */
   --shadow-none: none;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
-  --shadow-popover: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.04);
-  --shadow-modal: 0 20px 48px -12px rgba(0, 0, 0, 0.16), 0 0 1px 1px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-popover: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-modal: 0 4px 20px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
 
   /* Layout */
   --max-content: 1200px;
@@ -129,57 +135,58 @@
 
 /* ==========================================================================
    DARK THEME TOKENS
-   Calm, high-contrast, Apple Pro / Stripe dark aesthetic. No glowing neons.
+   Minimalist, high-contrast dark fintech surfaces.
    ========================================================================== */
 [data-theme="dark"] {
-  --bg: #0D0D0E;
-  --bg-subtle: #161619;
-  --surface: #18181C;
-  --surface-raised: #202025;
-  --surface-muted: #141417;
+  --bg: #0F1115;
+  --bg-subtle: #171A21;
+  --surface: #171A21;
+  --surface-raised: #1E222B;
+  --surface-muted: #13151A;
 
-  --text: #F4F4F6;
-  --text-secondary: #A0A0A8;
-  --text-tertiary: #71717A;
-  --text-inverse: #0D0D0E;
+  --text: #F7F8FA;
+  --text-secondary: #BDC1CB;
+  --text-tertiary: #7E8494;
+  --text-inverse: #0F1115;
 
-  --border: #26262B;
-  --border-strong: #3F3F46;
-  --border-focus: #3B82F6;
+  --border: #292E3B;
+  --border-strong: #383E4F;
+  --border-focus: #00D09C;
 
-  /* Accent - Clean deep blue */
-  --accent: #3B82F6;
-  --accent-hover: #60A5FA;
-  --accent-subtle: #172554;
-  --accent-border: #1E3A8A;
+  /* Brand Primary / Positive Indicators (+) */
+  --accent: #00D09C;
+  --accent-hover: #00B588;
+  --accent-subtle: rgba(0, 208, 156, 0.15);
+  --accent-border: rgba(0, 208, 156, 0.35);
 
-  /* Primary Ink (stark white button on dark surface) */
-  --ink: #F4F4F6;
-  --ink-hover: #FFFFFF;
-  --ink-secondary: #E4E4E7;
+  --ink: #00D09C;
+  --ink-hover: #00B588;
+  --ink-secondary: #00A37A;
 
   /* Semantic Colors for Dark Mode */
   --positive: #00D09C;
+  --positive-hover: #00B588;
   --positive-text: #34D399;
-  --positive-subtle: #064E3B;
-  --positive-border: #047857;
+  --positive-subtle: rgba(0, 208, 156, 0.15);
+  --positive-border: rgba(0, 208, 156, 0.35);
 
-  --negative: #F87171;
+  --negative: #EB5B3C;
+  --negative-hover: #D64F32;
   --negative-text: #FCA5A5;
-  --negative-subtle: #450A0A;
-  --negative-border: #7F1D1D;
+  --negative-subtle: rgba(235, 91, 60, 0.15);
+  --negative-border: rgba(235, 91, 60, 0.35);
 
   --warning: #FBBF24;
   --warning-text: #FDE68A;
-  --warning-subtle: #451A03;
-  --warning-border: #78350F;
+  --warning-subtle: rgba(251, 191, 36, 0.15);
+  --warning-border: rgba(251, 191, 36, 0.35);
 
-  --neutral-pill-bg: #27272A;
-  --neutral-pill-text: #D4D4D8;
+  --neutral-pill-bg: #222631;
+  --neutral-pill-text: #BDC1CB;
 
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
-  --shadow-popover: 0 8px 24px -4px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.08);
-  --shadow-modal: 0 24px 56px -12px rgba(0, 0, 0, 0.85), 0 0 1px 1px rgba(255, 255, 255, 0.1);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-popover: 0 4px 20px rgba(0, 0, 0, 0.25);
+  --shadow-modal: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 
 @media (prefers-reduced-motion: reduce) {

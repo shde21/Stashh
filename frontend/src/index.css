@@ -30,13 +30,26 @@ body {
   font-weight: var(--weight-regular);
 }
 
-/* Tabular figures for all numbers */
+/* Tabular figures for all numbers, prices, balances, metrics, and tables */
 num,
 data,
+table,
+th,
+td,
 .tabular-nums,
 [data-tabular-nums="true"],
 .vl-stat-value,
-.vl-table-numeric {
+.vl-stat-delta,
+.vl-stat-subtext,
+.vl-table-numeric,
+.metric-card strong,
+.metric-value,
+.stat-value,
+.badge,
+.vl-badge,
+.status-badge,
+.role-badge,
+input[type="number"] {
   font-variant-numeric: tabular-nums;
 }
 
@@ -152,8 +165,8 @@ p {
   width: 28px;
   height: 28px;
   border-radius: var(--radius-sm);
-  background-color: var(--ink);
-  color: var(--text-inverse);
+  background-color: var(--accent);
+  color: #FFFFFF;
   font-weight: var(--weight-bold);
   font-size: var(--font-small);
 }
@@ -184,35 +197,39 @@ p {
   height: 40px;
   padding: 0 var(--space-4);
   font-size: var(--font-small);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   border-radius: var(--radius-md);
-  border: 1px solid var(--ink);
-  background-color: var(--ink);
-  color: var(--text-inverse);
+  border: 1px solid var(--accent);
+  background-color: var(--accent);
+  color: #FFFFFF;
   cursor: pointer;
   transition: background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
-.button:hover:not(:disabled) {
-  background-color: var(--ink-hover);
-  border-color: var(--ink-hover);
+.button:hover:not(:disabled),
+.button-primary:hover:not(:disabled) {
+  background-color: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: #FFFFFF;
 }
 
 .button-small {
   height: 32px;
   padding: 0 var(--space-3);
   font-size: var(--font-caption);
+  border-radius: var(--radius-sm);
 }
 
 .button-secondary {
   background-color: var(--surface);
   color: var(--text);
-  border-color: var(--border-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
 }
 
 .button-secondary:hover:not(:disabled) {
   background-color: var(--bg-subtle);
-  border-color: var(--text-secondary);
+  border-color: var(--border-strong);
 }
 
 .text-button {
@@ -360,8 +377,13 @@ p {
 }
 
 .nav-item-active {
-  background-color: var(--bg-subtle);
-  border-left: 2px solid var(--ink);
+  background-color: var(--accent-subtle);
+  border-left: 3px solid var(--accent);
+}
+
+.nav-item-active span {
+  color: var(--accent-hover);
+  font-weight: var(--weight-semibold);
 }
 
 .nav-item-active small {
@@ -550,10 +572,10 @@ p {
   font-size: var(--font-small);
   color: var(--text);
   background-color: var(--surface);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: var(--space-2) var(--space-3);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
 }
 
 .field input {
@@ -564,8 +586,28 @@ p {
 .field select:focus,
 .field textarea:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--border-focus);
   box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+/* Search inputs: pill-shaped container (rounded-full, height 40px, background #F8F9FA, subtle border #EAECF0) */
+input[type="search"],
+input[placeholder*="Search" i],
+.search-input {
+  border-radius: var(--radius-full) !important;
+  height: 40px;
+  background-color: var(--bg-subtle) !important;
+  border: 1px solid var(--border) !important;
+  padding-left: var(--space-4) !important;
+  padding-right: var(--space-4) !important;
+}
+
+input[type="search"]:focus,
+input[placeholder*="Search" i]:focus,
+.search-input:focus {
+  background-color: var(--surface) !important;
+  border-color: var(--border-focus) !important;
+  box-shadow: 0 0 0 3px var(--accent-subtle) !important;
 }
 
 .field-error {
@@ -914,15 +956,29 @@ p {
 }
 
 .gain-positive {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  background-color: var(--positive-subtle);
+  border: 1px solid var(--positive-border);
   color: var(--positive-text);
   font-weight: var(--weight-medium);
   font-variant-numeric: tabular-nums;
+  font-size: var(--font-caption);
 }
 
 .gain-negative {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  background-color: var(--negative-subtle);
+  border: 1px solid var(--negative-border);
   color: var(--negative-text);
   font-weight: var(--weight-medium);
   font-variant-numeric: tabular-nums;
+  font-size: var(--font-caption);
 }
 
 /* ==========================================================================

@@ -78,10 +78,11 @@ export function AppShell() {
           <span
             style={{
               fontSize: 'var(--font-caption)',
-              padding: '2px 8px',
+              fontWeight: 'var(--weight-medium)',
+              padding: '3px 10px',
               backgroundColor: 'var(--bg-subtle)',
               border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-sm)',
+              borderRadius: 'var(--radius-full)',
               color: 'var(--text-secondary)',
             }}
           >
