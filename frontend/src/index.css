@@ -415,6 +415,46 @@ p {
 }
 
 /* ==========================================================================
+   DASHBOARD SPOTLIGHT GLOW (Exclusive to Dashboard Workspace)
+   Ambient radial cursor glow with zero re-render overhead.
+   ========================================================================== */
+.dashboard-spotlight-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+}
+
+.dashboard-spotlight-glow {
+  position: absolute;
+  inset: -20px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--spotlight-opacity, 0);
+  transition: opacity 0.4s ease-out;
+  background: radial-gradient(
+    700px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(0, 208, 156, 0.08),
+    rgba(0, 208, 156, 0.03) 40%,
+    transparent 80%
+  );
+}
+
+[data-theme="dark"] .dashboard-spotlight-glow {
+  background: radial-gradient(
+    700px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(0, 208, 156, 0.13),
+    rgba(0, 208, 156, 0.03) 40%,
+    transparent 80%
+  );
+}
+
+.dashboard-spotlight-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+/* ==========================================================================
    PAGE HEADINGS & COMMON SURFACES
    ========================================================================== */
 .dashboard-page {
