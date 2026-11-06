@@ -57,4 +57,4 @@ Result: **PASS**
 
 ## Stage 4 boundary
 
-Commitments are explicitly simulated records. No payment, custody, securities settlement, valuation snapshot, QUANTS allocation, or real-money transfer is implemented in this stage.
+Commitments are explicitly simulated records. No payment, custody, securities settlement, valuation snapshot, equity share allocation, or real-money transfer is implemented in this stage.

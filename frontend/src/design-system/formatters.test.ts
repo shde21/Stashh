@@ -5,7 +5,7 @@ import {
   formatDate,
   formatINR,
   formatPercent,
-  formatQuants,
+  formatShares,
 } from './formatters'
 
 describe('formatters', () => {
@@ -67,11 +67,11 @@ describe('formatters', () => {
     })
   })
 
-  describe('formatQuants', () => {
-    it('formats quants with Indian number format', () => {
-      expect(formatQuants(250)).toBe('250')
-      expect(formatQuants(1250.5)).toBe('1,250.5')
-      expect(formatQuants(0)).toBe('0')
+  describe('formatShares', () => {
+    it('formats shares with Indian number format', () => {
+      expect(formatShares(250)).toBe('250')
+      expect(formatShares(1250)).toBe('1,250')
+      expect(formatShares(0)).toBe('0')
     })
   })
 })

@@ -49,6 +49,43 @@ public class StartupService {
         return repository.findByUserId(userId).orElseThrow(() -> new IllegalStateException("Saved startup profile was not returned"));
     }
 
+    public Optional<CompanyCapitalization> findCapitalization(long userId) {
+        StartupProfile profile = repository.findByUserId(userId)
+                .orElseThrow(() -> new AuthException("PROFILE_REQUIRED", "Save your company profile first.", 400));
+        return repository.findCapitalization(profile.id());
+    }
+
+    public CompanyCapitalization saveCapitalization(long userId, CompanyCapitalizationRequest request) {
+        StartupProfile profile = repository.findByUserId(userId)
+                .orElseThrow(() -> new AuthException("PROFILE_REQUIRED", "Save your company profile first.", 400));
+        validateCapitalization(request);
+        repository.saveCapitalization(profile.id(), request);
+        return repository.findCapitalization(profile.id())
+                .orElseThrow(() -> new IllegalStateException("Saved capitalization was not returned"));
+    }
+
+    private void validateCapitalization(CompanyCapitalizationRequest request) {
+        Map<String, String> errors = new LinkedHashMap<>();
+        if (request == null) {
+            errors.put("capitalization", "Capitalization payload is required.");
+            throw new AuthException("INVALID_REQUEST", "Review the highlighted fields.", 400, errors);
+        }
+        long auth = request.authorizedShares() != null ? request.authorizedShares() : 10000000L;
+        long out = request.outstandingShares() != null ? request.outstandingShares() : 1000000L;
+        long tr = request.treasuryShares() != null ? request.treasuryShares() : 0L;
+        long res = request.reservedShares() != null ? request.reservedShares() : 0L;
+        long iss = request.issuedShares() != null ? request.issuedShares() : (out + tr);
+
+        if (auth <= 0) errors.put("authorizedShares", "Authorized shares must be positive.");
+        if (out <= 0) errors.put("outstandingShares", "Outstanding shares must be positive.");
+        if (tr < 0) errors.put("treasuryShares", "Treasury shares cannot be negative.");
+        if (res < 0) errors.put("reservedShares", "Reserved shares cannot be negative.");
+        if (iss != (out + tr)) errors.put("issuedShares", "Issued shares must equal outstanding plus treasury shares.");
+        if (auth < (iss + res)) errors.put("authorizedShares", "Authorized shares must be at least issued plus reserved shares.");
+        if (request.parValue() != null && request.parValue().signum() <= 0) errors.put("parValue", "Par value must be positive.");
+        if (!errors.isEmpty()) throw new AuthException("INVALID_REQUEST", "Review the highlighted fields.", 400, errors);
+    }
+
     public StartupProfile submit(long userId) {
         StartupProfile profile = repository.findByUserId(userId)
                 .orElseThrow(() -> new AuthException("PROFILE_REQUIRED", "Save your company profile before submitting it.", 400));

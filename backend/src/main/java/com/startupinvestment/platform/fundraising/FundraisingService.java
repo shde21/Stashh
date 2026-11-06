@@ -1,6 +1,7 @@
 package com.startupinvestment.platform.fundraising;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.startupinvestment.platform.auth.AuthException;
+import com.startupinvestment.platform.startup.CompanyCapitalization;
 import com.startupinvestment.platform.startup.ReviewStatus;
 import com.startupinvestment.platform.startup.StartupProfile;
 import com.startupinvestment.platform.startup.StartupRepository;
@@ -32,13 +34,43 @@ public class FundraisingService {
     }
 
     public FundraisingPool saveForStartup(long userId, FundraisingPoolRequest request) {
-        requireFundraisingReady(userId);
+        StartupProfile profile = requireFundraisingReady(userId);
         validate(request);
         FundraisingPool existing = repository.findForStartup(userId).orElse(null);
         if (existing != null && existing.status() == PoolStatus.OPEN) {
             throw new AuthException("POOL_OPEN", "Close the active pool before changing its terms.", 409);
         }
-        repository.savePool(userId, request);
+
+        CompanyCapitalization capitalization = profile.capitalization();
+        long outstandingShares = (capitalization != null && capitalization.outstandingShares() > 0)
+                ? capitalization.outstandingShares()
+                : 1_000_000L;
+
+        BigDecimal valuationBasis = request.roundValuationBasis() != null ? request.roundValuationBasis() : request.valuationCap();
+        BigDecimal pricePerShare = request.pricePerShare();
+
+        if (pricePerShare == null || pricePerShare.signum() <= 0) {
+            if (valuationBasis != null && valuationBasis.signum() > 0) {
+                pricePerShare = valuationBasis.divide(BigDecimal.valueOf(outstandingShares), 4, RoundingMode.HALF_UP);
+            } else {
+                pricePerShare = BigDecimal.valueOf(10);
+            }
+        }
+
+        Long totalSharesOffered = request.totalSharesOffered();
+        if (totalSharesOffered == null || totalSharesOffered <= 0) {
+            if (request.targetAmount() != null && pricePerShare.signum() > 0) {
+                totalSharesOffered = request.targetAmount().divide(pricePerShare, 0, RoundingMode.DOWN).longValue();
+            } else {
+                totalSharesOffered = 100_000L;
+            }
+        }
+
+        if (valuationBasis == null && pricePerShare.signum() > 0) {
+            valuationBasis = pricePerShare.multiply(BigDecimal.valueOf(outstandingShares)).setScale(2, RoundingMode.HALF_UP);
+        }
+
+        repository.savePool(userId, request, pricePerShare, totalSharesOffered, valuationBasis);
         return repository.findForStartup(userId)
                 .orElseThrow(() -> new IllegalStateException("Saved fundraising pool was not returned"));
     }
@@ -91,21 +123,62 @@ public class FundraisingService {
         if (pool.endsAt() != null && !pool.endsAt().isAfter(Instant.now())) {
             throw new AuthException("POOL_EXPIRED", "The pool end date has passed.", 409);
         }
+
+        BigDecimal pricePerShare = pool.pricePerShare();
         BigDecimal amount = request == null ? null : request.amount();
+        Long requestedShares = request == null ? null : request.shares();
+
+        if (amount == null && requestedShares != null && requestedShares > 0) {
+            amount = pricePerShare.multiply(BigDecimal.valueOf(requestedShares)).setScale(2, RoundingMode.HALF_UP);
+        }
+
         Map<String, String> errors = new LinkedHashMap<>();
         if (amount == null || amount.signum() <= 0) {
             errors.put("amount", "Enter a positive commitment amount.");
-        } else {
-            if (amount.compareTo(pool.minCommitment()) < 0) errors.put("amount", "The commitment is below this pool's minimum.");
-            if (pool.maxCommitment() != null && amount.compareTo(pool.maxCommitment()) > 0) errors.put("amount", "The commitment exceeds this pool's maximum.");
-            if (amount.add(pool.totalCommitted()).compareTo(pool.targetAmount()) > 0) errors.put("amount", "This commitment would exceed the remaining pool capacity.");
+            throw invalidRequest(errors);
         }
+
+        // Whole-shares policy: indivisible units, strict check that amount purchases a whole number of shares
+        BigDecimal[] divRem = amount.divideAndRemainder(pricePerShare);
+        BigDecimal wholeSharesDec = divRem[0];
+        BigDecimal remainder = divRem[1];
+
+        if (remainder.compareTo(BigDecimal.ZERO) != 0) {
+            throw new AuthException(
+                    "FRACTIONAL_SHARES_NOT_ALLOWED",
+                    "Commitment amount must purchase a whole number of shares at ₹" + pricePerShare.stripTrailingZeros().toPlainString() + " per share.",
+                    400
+            );
+        }
+
+        long sharesToAllocate = wholeSharesDec.longValue();
+        if (sharesToAllocate <= 0) {
+            errors.put("amount", "Commitment amount must purchase at least 1 whole share.");
+        }
+
+        if (amount.compareTo(pool.minCommitment()) < 0) {
+            errors.put("amount", "The commitment is below this pool's minimum.");
+        }
+        if (pool.maxCommitment() != null && amount.compareTo(pool.maxCommitment()) > 0) {
+            errors.put("amount", "The commitment exceeds this pool's maximum.");
+        }
+        if (amount.add(pool.totalCommitted()).compareTo(pool.targetAmount()) > 0) {
+            errors.put("amount", "This commitment would exceed the remaining pool capacity.");
+        }
+
+        long availableShares = pool.sharesRemaining();
+        if (sharesToAllocate > availableShares) {
+            errors.put("amount", "Requested " + sharesToAllocate + " shares exceeds remaining capacity of " + availableShares + " shares in this round.");
+        }
+
         if (!errors.isEmpty()) throw invalidRequest(errors);
+
         Optional<InvestorCommitment> current = repository.findCommitment(investorUserId, poolId);
         if (current.isPresent() && current.get().status() == CommitmentStatus.ACTIVE) {
             throw new AuthException("COMMITMENT_EXISTS", "You already have an active commitment in this pool.", 409);
         }
-        repository.saveCommitment(investorUserId, poolId, amount);
+
+        repository.saveCommitment(investorUserId, poolId, amount, sharesToAllocate, pricePerShare);
         return repository.findCommitment(investorUserId, poolId)
                 .orElseThrow(() -> new IllegalStateException("Saved commitment was not returned"));
     }
@@ -137,6 +210,8 @@ public class FundraisingService {
         if (request != null && request.targetAmount() != null && request.minCommitment() != null && request.minCommitment().compareTo(request.targetAmount()) > 0) errors.put("minCommitment", "The minimum cannot exceed the target.");
         if (request != null && request.maxCommitment() != null && request.minCommitment() != null && request.maxCommitment().compareTo(request.minCommitment()) < 0) errors.put("maxCommitment", "The maximum cannot be below the minimum.");
         if (request != null && request.valuationCap() != null && request.valuationCap().signum() <= 0) errors.put("valuationCap", "The valuation cap must be positive.");
+        if (request != null && request.pricePerShare() != null && request.pricePerShare().signum() <= 0) errors.put("pricePerShare", "The price per share must be positive.");
+        if (request != null && request.totalSharesOffered() != null && request.totalSharesOffered() <= 0) errors.put("totalSharesOffered", "Total shares offered must be positive.");
         if (request != null && request.endsAt() != null && !request.endsAt().isAfter(Instant.now())) errors.put("endsAt", "Choose a future end date.");
         if (!errors.isEmpty()) throw invalidRequest(errors);
     }

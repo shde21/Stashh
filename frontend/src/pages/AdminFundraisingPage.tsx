@@ -17,7 +17,7 @@ import {
   Td,
   Th,
   formatCompactINR,
-  formatQuants,
+  formatShares,
   useToast,
 } from '../design-system'
 import { AlertCircle, Lock, Play } from 'lucide-react'
@@ -162,7 +162,7 @@ export default function AdminFundraisingPage() {
                       </div>
                     </Td>
                     <Td numeric style={{ fontVariantNumeric: 'tabular-nums' }}>
-                      {pool.commitmentCount} ({formatQuants(pool.totalCommitted / 1000)} Q)
+                      {pool.commitmentCount} ({formatShares(pool.sharesAllocated)} shares)
                     </Td>
                     <Td numeric>
                       {pool.status !== 'OPEN' ? (

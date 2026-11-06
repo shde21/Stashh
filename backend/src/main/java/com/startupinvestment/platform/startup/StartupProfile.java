@@ -25,6 +25,7 @@ public record StartupProfile(
         Instant reviewedAt,
         Instant updatedAt,
         Map<String, BigDecimal> metrics,
-        List<StartupDocument> documents
+        List<StartupDocument> documents,
+        CompanyCapitalization capitalization
 ) {
 }

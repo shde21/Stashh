@@ -4,15 +4,15 @@
 
 ## Result
 
-Stage 5 is implemented and verified across valuation snapshots, QUANTS allocation, and portfolio analytics.
+Stage 5 is implemented and verified across valuation snapshots, equity share allocation, and portfolio analytics.
 
 ## Delivered workflow
 
 - Admins can record valuation snapshots for approved, public startup profiles.
 - Snapshot dates cannot be in the future.
-- Investors receive deterministic QUANTS from commitment amounts at `1 QUANT = ₹1,000`.
+- Investors receive company-specific equity share allocations from round pricing.
 - Investor portfolio totals include active commitments only while retaining cancelled positions in history.
-- The portfolio shows each position's commitment, QUANTS, latest valuation, current illustrative value, and illustrative gain.
+- The portfolio shows each position's commitment, allocated shares, latest valuation, current illustrative value, and illustrative gain.
 - Portfolio values remain explicitly unvalued until a matching valuation snapshot exists.
 - Latest valuation snapshots are used for calculations without rewriting original commitments.
 
@@ -33,7 +33,7 @@ Result: **PASS**
 - 0 errors
 - 0 skipped
 - Flyway validated and applied migrations 1 through 5.
-- `PortfolioWorkflowControllerTest` covers commitment readback, QUANTS allocation, valuation snapshot creation, latest-snapshot portfolio valuation, and admin history access.
+- `PortfolioWorkflowControllerTest` covers commitment readback, share allocation, valuation snapshot creation, latest-snapshot portfolio valuation, and admin history access.
 
 ### Frontend
 
@@ -55,4 +55,4 @@ Result: **PASS**
 
 ## Stage 5 boundary
 
-QUANTS, valuations, and gains are illustrative product calculations. The platform does not execute payments, custody, securities settlement, investment advice, or real-money transfers.
+Equity shares, valuations, and gains are illustrative product calculations. The platform does not execute payments, custody, securities settlement, investment advice, or real-money transfers.

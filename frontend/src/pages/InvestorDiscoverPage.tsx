@@ -34,7 +34,7 @@ import {
   formatCompactINR,
   formatDate,
   formatINR,
-  formatQuants,
+  formatShares,
   useToast,
 } from '../design-system'
 import {
@@ -249,13 +249,16 @@ export default function InvestorDiscoverPage() {
             ? {
                 ...item,
                 totalCommitted: item.totalCommitted + saved.amount,
+                sharesAllocated: item.sharesAllocated + saved.sharesAllocated,
+                sharesRemaining: Math.max(0, item.sharesRemaining - saved.sharesAllocated),
                 commitmentCount: item.commitmentCount + 1,
                 viewerCommitment: saved.amount,
+                viewerSharesAllocated: saved.sharesAllocated,
               }
             : item,
         ),
       )
-      showToast(`Successfully committed ${formatINR(num)} (${formatQuants(num / 1000)} QUANTS).`, 'success')
+      showToast(`Successfully committed ${formatINR(num)} for ${formatShares(saved.sharesAllocated)} shares in ${commitPool.companyName}.`, 'success')
       setCommitPool(null)
       if (detailPool?.id === commitPool.id) {
         setDetailPool((prev) =>
@@ -263,8 +266,11 @@ export default function InvestorDiscoverPage() {
             ? {
                 ...prev,
                 totalCommitted: prev.totalCommitted + saved.amount,
+                sharesAllocated: prev.sharesAllocated + saved.sharesAllocated,
+                sharesRemaining: Math.max(0, prev.sharesRemaining - saved.sharesAllocated),
                 commitmentCount: prev.commitmentCount + 1,
                 viewerCommitment: saved.amount,
+                viewerSharesAllocated: saved.sharesAllocated,
               }
             : null,
         )
@@ -287,7 +293,7 @@ export default function InvestorDiscoverPage() {
           <p className="eyebrow">Marketplace Discovery</p>
           <h1>Find the signal before the rush.</h1>
           <p>
-            Explore approved startup rounds, evaluate verified metrics, maintain thesis notes, and record simulated commitments in QUANTS.
+            Explore approved startup rounds, evaluate verified metrics, maintain thesis notes, and record simulated equity commitments.
           </p>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
@@ -464,7 +470,7 @@ export default function InvestorDiscoverPage() {
 
                 {pool.viewerCommitment ? (
                   <div className="commitment-confirmation" style={{ marginTop: 'var(--space-3)' }}>
-                    <span>You committed {formatINR(pool.viewerCommitment)} ({formatQuants(pool.viewerCommitment / 1000)} QUANTS). </span>
+                    <span>You committed {formatINR(pool.viewerCommitment)} ({formatShares(pool.viewerSharesAllocated ?? (pool.pricePerShare > 0 ? Math.floor(pool.viewerCommitment / pool.pricePerShare) : 0))} shares). </span>
                     <Link to="/app/investor/portfolio" style={{ textDecoration: 'underline', color: 'inherit' }}>View portfolio</Link>
                   </div>
                 ) : (
@@ -475,7 +481,7 @@ export default function InvestorDiscoverPage() {
                       style={{ flex: 1 }}
                       onClick={() => openCommitModal(pool)}
                     >
-                      Commit QUANTS
+                      Invest in Shares
                     </Button>
                     <Button
                       variant="secondary"
@@ -617,7 +623,7 @@ export default function InvestorDiscoverPage() {
               <div style={{ borderTop: '1px solid var(--border)', paddingTop: 'var(--space-4)' }}>
                 <span className="eyebrow">Important terms</span>
                 <p style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)', lineHeight: '1.4' }}>
-                  Commitments are denominated in QUANTS (1 QUANT = ₹1,000). Allocations are simulated and recorded for marketplace evaluation.
+                  Commitments purchase company equity shares at the round price per share. Allocations are simulated and recorded for marketplace evaluation.
                 </p>
               </div>
             </div>
@@ -626,16 +632,28 @@ export default function InvestorDiscoverPage() {
               <span className="eyebrow">Round Terms</span>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginTop: 'var(--space-2)', marginBottom: 'var(--space-4)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-small)' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Price Per Share</span>
+                  <strong>{formatINR(detailPool.pricePerShare)}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-small)' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>Target Amount</span>
                   <strong>{formatINR(detailPool.targetAmount)}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-small)' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Shares Offered</span>
+                  <strong>{formatShares(detailPool.totalSharesOffered)}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-small)' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Shares Remaining</span>
+                  <strong>{formatShares(detailPool.sharesRemaining)}</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-small)' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>Total Committed</span>
                   <strong>{formatINR(detailPool.totalCommitted)}</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-small)' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Valuation Cap</span>
-                  <strong>{detailPool.valuationCap ? formatINR(detailPool.valuationCap) : 'None'}</strong>
+                  <span style={{ color: 'var(--text-secondary)' }}>Round Valuation</span>
+                  <strong>{detailPool.valuationCap ? formatINR(detailPool.valuationCap) : (detailPool.roundValuationBasis ? formatINR(detailPool.roundValuationBasis) : 'None')}</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-small)' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>Min Commitment</span>
@@ -665,7 +683,7 @@ export default function InvestorDiscoverPage() {
                   openCommitModal(p)
                 }}
               >
-                Commit QUANTS
+                Invest in Shares
               </Button>
 
               <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
@@ -695,7 +713,7 @@ export default function InvestorDiscoverPage() {
         )}
       </Modal>
 
-      {/* COMMIT MODAL (Step 1: Input & live QUANTS, Step 2: Confirm) */}
+      {/* COMMIT MODAL (Step 1: Input & live shares, Step 2: Confirm) */}
       <Modal
         isOpen={Boolean(commitPool)}
         onClose={() => setCommitPool(null)}
@@ -717,6 +735,20 @@ export default function InvestorDiscoverPage() {
                   const num = Number(commitAmount)
                   if (!num || num < (commitPool?.minCommitment || 0)) {
                     setCommitError(`Minimum commitment is ${formatINR(commitPool?.minCommitment || 0)}.`)
+                    return
+                  }
+                  if (commitPool?.maxCommitment && num > commitPool.maxCommitment) {
+                    setCommitError(`Maximum commitment is ${formatINR(commitPool.maxCommitment)}.`)
+                    return
+                  }
+                  const pps = commitPool?.pricePerShare || 10
+                  if (num % pps !== 0) {
+                    setCommitError(`Commitment must purchase a whole number of shares at ${formatINR(pps)} per share.`)
+                    return
+                  }
+                  const sharesRequested = Math.floor(num / pps)
+                  if (sharesRequested > (commitPool?.sharesRemaining ?? 0)) {
+                    setCommitError(`Requested ${formatShares(sharesRequested)} shares exceeds remaining round capacity of ${formatShares(commitPool?.sharesRemaining ?? 0)} shares.`)
                     return
                   }
                   setCommitError('')
@@ -747,7 +779,7 @@ export default function InvestorDiscoverPage() {
                 <Field
                   label="Commitment amount (₹)"
                   htmlFor="commit-inr-input"
-                  hint={`Min: ${formatINR(commitPool.minCommitment)}${commitPool.maxCommitment ? ` · Max: ${formatINR(commitPool.maxCommitment)}` : ''}`}
+                  hint={`Min: ${formatINR(commitPool.minCommitment)}${commitPool.maxCommitment ? ` · Max: ${formatINR(commitPool.maxCommitment)}` : ''} · Price: ${formatINR(commitPool.pricePerShare)}/share`}
                 >
                   {(fieldProps) => (
                     <Input
@@ -755,7 +787,7 @@ export default function InvestorDiscoverPage() {
                       type="number"
                       min={commitPool.minCommitment}
                       max={commitPool.maxCommitment ?? undefined}
-                      step={1000}
+                      step={commitPool.pricePerShare || 10}
                       value={commitAmount}
                       onChange={(e) => setCommitAmount(e.target.value)}
                     />
@@ -764,13 +796,13 @@ export default function InvestorDiscoverPage() {
 
                 <div style={{ margin: 'var(--space-4) 0', padding: 'var(--space-4)', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-secondary)' }}>Position in QUANTS</span>
+                    <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-secondary)' }}>Calculated Equity Allocation</span>
                     <strong style={{ fontSize: 'var(--font-h3)', fontVariantNumeric: 'tabular-nums' }}>
-                      {formatQuants(Math.floor((Number(commitAmount) || 0) / 1000))} QUANTS
+                      {formatShares(commitPool.pricePerShare > 0 ? Math.floor((Number(commitAmount) || 0) / commitPool.pricePerShare) : 0)} shares
                     </strong>
                   </div>
                   <div style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)', marginTop: '4px' }}>
-                    Formula: ₹1,000 committed = 1 QUANT
+                    Formula: {formatINR(commitPool.pricePerShare)} per share · {formatShares(commitPool.sharesRemaining)} shares remaining in round
                   </div>
                 </div>
 
@@ -790,12 +822,18 @@ export default function InvestorDiscoverPage() {
                   <strong>{commitPool.title}</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-2) 0', borderBottom: '1px solid var(--border)' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Amount</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>Price per share</span>
+                  <strong>{formatINR(commitPool.pricePerShare)}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-2) 0', borderBottom: '1px solid var(--border)' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Committed amount</span>
                   <strong>{formatINR(Number(commitAmount))}</strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', padding: 'var(--space-2) 0', borderBottom: '1px solid var(--border)' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Allocation</span>
-                  <strong style={{ color: 'var(--accent)' }}>{formatQuants(Math.floor(Number(commitAmount) / 1000))} QUANTS</strong>
+                  <span style={{ color: 'var(--text-secondary)' }}>Share allocation</span>
+                  <strong style={{ color: 'var(--accent)' }}>
+                    {formatShares(commitPool.pricePerShare > 0 ? Math.floor(Number(commitAmount) / commitPool.pricePerShare) : 0)} shares
+                  </strong>
                 </div>
                 <p style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)', marginTop: 'var(--space-2)' }}>
                   You can cancel active simulated commitments at any time from your Portfolio page.

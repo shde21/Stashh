@@ -160,7 +160,7 @@ export function AppShell() {
           <Outlet />
 
           <footer className="simulation-disclaimer" role="contentinfo">
-            Ventureline is an educational simulation platform. 1 QUANT = ₹1,000 of simulated commitment. No real capital or securities are transferred.
+            Ventureline is an educational simulation platform. Company-specific equity share allocations and valuations are simulated for educational evaluation. No real capital or securities are transferred.
           </footer>
         </main>
       </div>

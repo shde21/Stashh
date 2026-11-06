@@ -60,4 +60,4 @@ Result: **PASS**
 
 ## Remaining Stage 3 boundary
 
-Documents are link-based in this stage. Binary upload storage, fundraising pools, investor commitments, portfolios, and QUANTS remain deferred to later stages.
+Documents are link-based in this stage. Binary upload storage, fundraising pools, investor commitments, portfolios, and equity share allocations remain deferred to later stages.

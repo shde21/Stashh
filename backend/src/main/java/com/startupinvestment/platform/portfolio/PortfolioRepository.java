@@ -61,11 +61,15 @@ public class PortfolioRepository {
     public List<PortfolioRow> findInvestorPositions(long investorUserId) {
         return jdbcTemplate.query(
                 """
-                SELECT c.id, c.pool_id, sp.company_name, p.title, c.status, c.amount, p.currency, p.valuation_cap,
+                SELECT c.id, c.pool_id, sp.id AS profile_id, sp.company_name, p.title, c.status, c.amount,
+                       c.shares_allocated, c.price_per_share, p.currency, p.valuation_cap, p.round_valuation_basis,
+                       COALESCE(cc.outstanding_shares, 1000000) AS outstanding_shares,
+                       p.shares_allocated AS pool_shares_allocated,
                        latest.valuation_amount, latest.snapshot_at
                   FROM fundraising_commitments c
                   JOIN fundraising_pools p ON p.id = c.pool_id
                   JOIN startup_profiles sp ON sp.id = p.profile_id
+                  LEFT JOIN company_capitalization cc ON cc.profile_id = sp.id
                   LEFT JOIN valuation_snapshots latest
                     ON latest.id = (
                         SELECT candidate.id
@@ -80,12 +84,18 @@ public class PortfolioRepository {
                 (rs, rowNum) -> new PortfolioRow(
                         rs.getLong("id"),
                         rs.getLong("pool_id"),
+                        rs.getLong("profile_id"),
                         rs.getString("company_name"),
                         rs.getString("title"),
                         CommitmentStatus.valueOf(rs.getString("status")),
                         rs.getBigDecimal("amount"),
+                        rs.getLong("shares_allocated"),
+                        rs.getBigDecimal("price_per_share"),
                         rs.getString("currency"),
                         rs.getBigDecimal("valuation_cap"),
+                        rs.getBigDecimal("round_valuation_basis"),
+                        rs.getLong("outstanding_shares"),
+                        rs.getLong("pool_shares_allocated"),
                         rs.getBigDecimal("valuation_amount"),
                         instant(rs.getTimestamp("snapshot_at"))
                 ),
@@ -121,12 +131,18 @@ public class PortfolioRepository {
     public record PortfolioRow(
             long commitmentId,
             long poolId,
+            long profileId,
             String companyName,
             String poolTitle,
             CommitmentStatus status,
             BigDecimal amount,
+            long sharesAllocated,
+            BigDecimal pricePerShare,
             String currency,
             BigDecimal valuationCap,
+            BigDecimal roundValuationBasis,
+            long outstandingShares,
+            long poolSharesAllocated,
             BigDecimal latestValuation,
             Instant valuationAt
     ) {

@@ -18,7 +18,7 @@ import {
   formatCompactINR,
   formatDate,
   formatINR,
-  formatQuants,
+  formatShares,
   useToast,
 } from '../design-system'
 import { AlertCircle, Calendar, Eye, Lock, Play } from 'lucide-react'
@@ -155,7 +155,7 @@ export default function StartupFundraisingPage() {
           <p className="eyebrow">Fundraising Workspace</p>
           <h1>Make the round easy to understand.</h1>
           <p>
-            Configure simulated fundraising terms with clear limits. 1 QUANT = ₹1,000 committed. Allocations are simulated and recorded for marketplace evaluation.
+            Configure company-specific equity fundraising terms with clear share limits and pricing. Allocations are simulated for marketplace evaluation.
           </p>
         </div>
         {pool && <StatusPill status={pool.status} />}
@@ -187,7 +187,7 @@ export default function StartupFundraisingPage() {
             <Stat
               label="Committed Capacity"
               value={formatINR(pool.totalCommitted)}
-              subtext={`${pool.commitmentCount} active commitments (${formatQuants(pool.totalCommitted / 1000)} QUANTS)`}
+              subtext={`${pool.commitmentCount} active commitments (${formatShares(pool.sharesAllocated)} shares allocated)`}
             />
           </Card>
           <Card>
@@ -407,7 +407,7 @@ export default function StartupFundraisingPage() {
             )}
 
             <div style={{ marginTop: 'var(--space-4)', padding: 'var(--space-2) var(--space-3)', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-md)', textAlign: 'center', fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)' }}>
-              1 QUANT = ₹1,000 · Preview only
+              Company-specific equity shares · Simulation preview
             </div>
           </Card>
         </div>

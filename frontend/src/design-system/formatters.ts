@@ -1,6 +1,6 @@
 /**
- * Centralized formatting utilities for currency, percentages, dates, and units.
- * Strict en-IN currency rules and 1 QUANT = ₹1,000.
+ * Centralized formatting utilities for currency, percentages, dates, and shares.
+ * Strict en-IN currency rules and company-specific share formatting.
  */
 
 export function formatINR(value: number | null | undefined): string {
@@ -58,10 +58,7 @@ export function daysLeft(closingDate: string | Date | null | undefined): number 
   return Math.max(0, days)
 }
 
-export function formatQuants(quants: number | null | undefined): string {
-  if (quants == null || isNaN(quants)) return '0'
-  return quants.toLocaleString('en-IN', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 4,
-  })
+export function formatShares(shares: number | null | undefined): string {
+  if (shares == null || isNaN(shares)) return '0'
+  return Math.round(shares).toLocaleString('en-IN')
 }

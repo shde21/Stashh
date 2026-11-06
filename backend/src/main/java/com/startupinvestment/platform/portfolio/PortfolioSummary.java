@@ -5,9 +5,9 @@ import java.util.List;
 
 public record PortfolioSummary(
         BigDecimal totalCommitted,
-        BigDecimal totalQuants,
         BigDecimal valuedAmount,
         BigDecimal illustrativeGain,
+        int activeHoldingsCount,
         List<PortfolioPosition> positions
 ) {
 }

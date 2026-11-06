@@ -45,7 +45,7 @@ class PortfolioWorkflowControllerTest {
     private PasswordEncoder passwordEncoder;
 
     @Test
-    void investorPortfolioAllocatesQuantsAndExplainsIllustrativeValueFromLatestSnapshot() throws Exception {
+    void investorPortfolioAllocatesSharesAndExplainsIllustrativeValueFromLatestSnapshot() throws Exception {
         MockHttpSession startupSession = register("portfolio-startup-" + UUID.randomUUID() + "@example.com", "startup-password-123", "STARTUP");
         String profile = """
                 {
@@ -99,7 +99,9 @@ class PortfolioWorkflowControllerTest {
                         .header(CsrfService.HEADER_NAME, csrfToken(investorSession))
                         .contentType("application/json")
                         .content("{\"amount\":50000}"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.sharesAllocated").value(5000))
+                .andExpect(jsonPath("$.pricePerShare").value(10.0));
 
         mockMvc.perform(post("/api/v1/admin/valuations")
                         .session(adminSession)
@@ -112,16 +114,18 @@ class PortfolioWorkflowControllerTest {
         mockMvc.perform(get("/api/v1/investor/portfolio").session(investorSession))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalCommitted").value(50000))
-                .andExpect(jsonPath("$.totalQuants").value(50))
+                .andExpect(jsonPath("$.activeHoldingsCount").value(1))
                 .andExpect(jsonPath("$.valuedAmount").value(60000))
                 .andExpect(jsonPath("$.illustrativeGain").value(10000))
-                .andExpect(jsonPath("$.positions[0].quants").value(50))
+                .andExpect(jsonPath("$.positions[0].shares").value(5000))
+                .andExpect(jsonPath("$.positions[0].acquisitionPricePerShare").value(10.0))
+                .andExpect(jsonPath("$.positions[0].latestSharePrice").value(12.0))
                 .andExpect(jsonPath("$.positions[0].currentValue").value(60000))
                 .andExpect(jsonPath("$.positions[0].illustrativeGain").value(10000));
 
         mockMvc.perform(get("/api/v1/admin/valuations").session(adminSession))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].valuationAmount").value(12000000));
+                .andExpect(jsonPath("$[?(@.companyName == 'Atlas Commerce')].valuationAmount").value(12000000.0));
     }
 
     private void approveAndPublish(MockHttpSession adminSession, long profileId) throws Exception {

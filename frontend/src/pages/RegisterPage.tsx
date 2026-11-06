@@ -84,7 +84,7 @@ export default function RegisterPage() {
               />
               <span>
                 <strong>Investor</strong>
-                <small>Discover & commit QUANTS</small>
+                <small>Discover & evaluate equity shares</small>
               </span>
             </label>
           </div>

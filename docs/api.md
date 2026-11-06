@@ -203,16 +203,18 @@ Accepts `{ "status": "OPEN" | "CLOSED" }`. Admins can close a live pool or open 
 
 ### `GET /api/v1/investor/portfolio`
 
-Requires an authenticated `INVESTOR` session. Returns active and cancelled positions, total committed amount, total QUANTS, valued amount, and illustrative gain.
+Requires an authenticated `INVESTOR` session. Returns active and cancelled positions, total committed amount, active holdings count, valued amount, and illustrative gain.
 
-QUANTS are deterministic: `1 QUANT = ₹1,000` of commitment. A position's illustrative current value is calculated only when both the pool's valuation cap and a valuation snapshot exist:
+Positions reflect company-specific equity shares allocated at the round price per share. A position's illustrative current value is calculated using the company's latest valuation snapshot and capitalization:
 
 ```text
-current value = commitment amount × latest valuation / valuation cap
+latest share price = latest valuation / outstanding shares
+current value = allocated shares × latest share price
 illustrative gain = current value − commitment amount
+ownership percentage = (allocated shares / total company shares) × 100%
 ```
 
-Without a valuation snapshot, the position remains visible but reports no current value or gain.
+Without a valuation snapshot, the position remains visible and acquisition cost is preserved.
 
 ### `GET /api/v1/admin/valuations`
 

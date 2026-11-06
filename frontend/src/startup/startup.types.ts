@@ -11,6 +11,31 @@ export type StartupDocument = {
   createdAt: string
 }
 
+export type CompanyCapitalization = {
+  id: number
+  profileId: number
+  authorizedShares: number
+  issuedShares: number
+  outstandingShares: number
+  treasuryShares: number
+  reservedShares: number
+  shareClass: string
+  parValue: number
+  unissuedShares: number
+  fullyDilutedShares: number
+  updatedAt: string
+}
+
+export type CompanyCapitalizationInput = {
+  authorizedShares?: number
+  issuedShares?: number
+  outstandingShares?: number
+  treasuryShares?: number
+  reservedShares?: number
+  shareClass?: string
+  parValue?: number
+}
+
 export type StartupProfile = {
   id: number
   userId: number
@@ -32,6 +57,7 @@ export type StartupProfile = {
   updatedAt: string
   metrics: Record<string, number>
   documents: StartupDocument[]
+  capitalization: CompanyCapitalization | null
 }
 
 export type StartupProfileInput = {

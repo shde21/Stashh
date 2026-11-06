@@ -50,7 +50,7 @@ export default function FoundationPage() {
             <p className="eyebrow">Simulated Capital Marketplace</p>
             <h1 id="hero-title">Invest and raise with precision.</h1>
             <p className="hero-summary">
-              A calm, trustworthy investment environment where startups publish verified metrics and investors allocate simulated capital in QUANTS.
+              A calm, trustworthy investment environment where startups publish verified metrics and investors evaluate company-specific equity shares.
             </p>
             <div className="hero-actions" aria-label="Get started">
               <Link to="/register?role=STARTUP">
@@ -133,12 +133,12 @@ export default function FoundationPage() {
               <div style={{ marginBottom: 'var(--space-3)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-caption)', color: 'var(--text-secondary)', marginBottom: 'var(--space-1)' }}>
                   <span>78% capacity filled</span>
-                  <span>550 QUANTS remaining</span>
+                  <span>5,500 shares remaining</span>
                 </div>
                 <ProgressBar value={78} />
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 'var(--space-2)' }}>
-                <Badge variant="neutral">1 QUANT = ₹1,000</Badge>
+                <Badge variant="neutral">Equity Shares</Badge>
                 <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)' }}>Simulated allocation</span>
               </div>
             </Card>
@@ -149,7 +149,7 @@ export default function FoundationPage() {
                 <Badge variant="positive">Active</Badge>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
-                <Stat label="Total Committed" value="₹15,00,000" subtext="1,500 QUANTS" />
+                <Stat label="Total Committed" value="₹15,00,000" subtext="15,000 shares" />
                 <Stat
                   label="Illustrative Value"
                   value="₹18,75,000"
@@ -190,7 +190,7 @@ export default function FoundationPage() {
               <div>
                 <h3 style={{ margin: '0 0 var(--space-1) 0', fontSize: 'var(--font-body)', fontWeight: 'var(--weight-semibold)' }}>For Investors</h3>
                 <p style={{ fontSize: 'var(--font-small)', color: 'var(--text-secondary)', margin: 0 }}>
-                  Filter approved opportunities by sector and stage, maintain private thesis notes, and allocate QUANTS without real capital transfers.
+                  Filter approved opportunities by sector and stage, maintain private thesis notes, and simulate equity investments without real capital transfers.
                 </p>
               </div>
             </Card>
@@ -214,7 +214,7 @@ export default function FoundationPage() {
             <strong style={{ fontSize: 'var(--font-small)' }}>Simulated Environment</strong>
           </div>
           <p style={{ fontSize: 'var(--font-caption)', color: 'var(--text-secondary)', maxWidth: '640px', margin: '0 auto' }}>
-            Ventureline is a simulation and workflow platform. 1 QUANT represents ₹1,000 of simulated commitment. Nothing on this platform involves real currency, real securities, or financial advice.
+            Ventureline is a simulation and workflow platform. All equity shares, valuations, and commitments are simulated. Nothing on this platform involves real currency, real securities, or financial advice.
           </p>
         </section>
       </main>

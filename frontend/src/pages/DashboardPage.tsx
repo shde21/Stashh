@@ -116,7 +116,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       cards: [
         { label: 'Opportunities', value: 'Open rounds', note: 'Filter approved fundraising pools.' },
         { label: 'Watchlist', value: 'Live', note: 'Track theses & introductions.' },
-        { label: 'Portfolio value', value: 'Live', note: 'Valuation & QUANTS analytics live.' },
+        { label: 'Portfolio value', value: 'Live', note: 'Company share valuation analytics live.' },
       ],
       emptyTitle: 'Your investment view starts with discovery',
       emptyDescription: 'Explore approved fundraising pools with context, then keep your simulated commitments in one place.',
@@ -138,10 +138,10 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
     portfolio: {
       eyebrow: 'Portfolio',
       title: 'Know what your position means.',
-      description: 'Commitments, QUANTS, valuation snapshots, and illustrative gains are calculated deterministically without real money transfers.',
+      description: 'Simulated commitments, company equity shares, valuation snapshots, and illustrative gains are calculated without real money transfers.',
       cards: [
         { label: 'Committed', value: 'Live', note: 'Active simulated commitments.' },
-        { label: 'QUANTS', value: 'Live', note: '1 QUANT = ₹1,000 committed.' },
+        { label: 'Equity Shares', value: 'Live', note: 'Company-specific equity shares.' },
         { label: 'Estimated value', value: 'Live', note: 'Updates from valuation snapshots.' },
       ],
       emptyTitle: 'Your portfolio is intentionally empty',

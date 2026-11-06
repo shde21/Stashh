@@ -78,6 +78,17 @@ public class StartupRepository {
             );
         }
         long profileId = findProfileIdByUserId(userId);
+        jdbcTemplate.update(
+                """
+                INSERT INTO company_capitalization (
+                    profile_id, authorized_shares, issued_shares, outstanding_shares,
+                    treasury_shares, reserved_shares, share_class, par_value
+                )
+                SELECT ?, 10000000, 1000000, 1000000, 0, 0, 'EQUITY', 10.00
+                 WHERE NOT EXISTS (SELECT 1 FROM company_capitalization WHERE profile_id = ?)
+                """,
+                profileId, profileId
+        );
         jdbcTemplate.update("DELETE FROM startup_metrics WHERE profile_id = ?", profileId);
         Map<String, BigDecimal> metrics = request.metrics() == null ? Map.of() : request.metrics();
         metrics.forEach((key, value) -> jdbcTemplate.update(
@@ -180,6 +191,63 @@ public class StartupRepository {
         return profiles;
     }
 
+    public Optional<CompanyCapitalization> findCapitalization(long profileId) {
+        List<CompanyCapitalization> list = jdbcTemplate.query(
+                """
+                SELECT id, profile_id, authorized_shares, issued_shares, outstanding_shares,
+                       treasury_shares, reserved_shares, share_class, par_value, updated_at
+                  FROM company_capitalization
+                 WHERE profile_id = ?
+                """,
+                (rs, rowNum) -> CompanyCapitalization.of(
+                        rs.getLong("id"),
+                        rs.getLong("profile_id"),
+                        rs.getLong("authorized_shares"),
+                        rs.getLong("issued_shares"),
+                        rs.getLong("outstanding_shares"),
+                        rs.getLong("treasury_shares"),
+                        rs.getLong("reserved_shares"),
+                        rs.getString("share_class"),
+                        rs.getBigDecimal("par_value"),
+                        instant(rs.getTimestamp("updated_at"))
+                ),
+                profileId
+        );
+        return list.stream().findFirst();
+    }
+
+    public void saveCapitalization(long profileId, CompanyCapitalizationRequest request) {
+        long authorized = request.authorizedShares() != null ? request.authorizedShares() : 10000000L;
+        long outstanding = request.outstandingShares() != null ? request.outstandingShares() : 1000000L;
+        long treasury = request.treasuryShares() != null ? request.treasuryShares() : 0L;
+        long issued = request.issuedShares() != null ? request.issuedShares() : (outstanding + treasury);
+        long reserved = request.reservedShares() != null ? request.reservedShares() : 0L;
+        String shareClass = request.shareClass() != null && !request.shareClass().isBlank() ? request.shareClass().trim() : "EQUITY";
+        BigDecimal parValue = request.parValue() != null ? request.parValue() : BigDecimal.valueOf(10);
+
+        int updated = jdbcTemplate.update(
+                """
+                UPDATE company_capitalization
+                   SET authorized_shares = ?, issued_shares = ?, outstanding_shares = ?,
+                       treasury_shares = ?, reserved_shares = ?, share_class = ?, par_value = ?,
+                       updated_at = CURRENT_TIMESTAMP
+                 WHERE profile_id = ?
+                """,
+                authorized, issued, outstanding, treasury, reserved, shareClass, parValue, profileId
+        );
+        if (updated == 0) {
+            jdbcTemplate.update(
+                    """
+                    INSERT INTO company_capitalization (
+                        profile_id, authorized_shares, issued_shares, outstanding_shares,
+                        treasury_shares, reserved_shares, share_class, par_value
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    profileId, authorized, issued, outstanding, treasury, reserved, shareClass, parValue
+            );
+        }
+    }
+
     private StartupProfile toProfile(ProfileRow row) {
         Map<String, BigDecimal> metrics = new LinkedHashMap<>();
         jdbcTemplate.query(
@@ -192,11 +260,12 @@ public class StartupRepository {
                 (rs, rowNum) -> document(rs.getLong("id"), rs.getString("kind"), rs.getString("title"), rs.getString("resource_url"), rs.getTimestamp("created_at")),
                 row.id()
         );
+        CompanyCapitalization capitalization = findCapitalization(row.id()).orElse(null);
         return new StartupProfile(
                 row.id(), row.userId(), row.companyName(), row.tagline(), row.description(), row.website(),
                 row.sector(), row.headquarters(), row.foundedYear(), row.stage(), row.teamSize(), row.pitchUrl(),
                 row.reviewStatus(), row.visibility(), row.reviewNote(), row.submittedAt(), row.reviewedAt(), row.updatedAt(),
-                metrics, documents
+                metrics, documents, capitalization
         );
     }
 

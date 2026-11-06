@@ -9,6 +9,9 @@ public record FundraisingPoolRequest(
         BigDecimal minCommitment,
         BigDecimal maxCommitment,
         BigDecimal valuationCap,
+        BigDecimal pricePerShare,
+        Long totalSharesOffered,
+        BigDecimal roundValuationBasis,
         Instant endsAt
 ) {
 }

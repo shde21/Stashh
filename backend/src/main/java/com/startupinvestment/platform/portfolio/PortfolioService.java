@@ -20,9 +20,9 @@ import com.startupinvestment.platform.startup.StartupVisibility;
 @Service
 public class PortfolioService {
 
-    private static final BigDecimal QUANT_UNIT = BigDecimal.valueOf(1000);
     private static final int MONEY_SCALE = 2;
-    private static final int QUANT_SCALE = 4;
+    private static final int SHARE_PRICE_SCALE = 4;
+    private static final int PERCENT_SCALE = 4;
 
     private final PortfolioRepository repository;
     private final StartupRepository startupRepository;
@@ -35,32 +35,63 @@ public class PortfolioService {
     public PortfolioSummary investorPortfolio(long investorUserId) {
         List<PortfolioPosition> positions = new ArrayList<>();
         BigDecimal totalCommitted = BigDecimal.ZERO;
-        BigDecimal totalQuants = BigDecimal.ZERO;
         BigDecimal valuedAmount = BigDecimal.ZERO;
         BigDecimal illustrativeGain = BigDecimal.ZERO;
+        int activeCount = 0;
 
         for (PortfolioRepository.PortfolioRow row : repository.findInvestorPositions(investorUserId)) {
-            BigDecimal quants = row.amount().divide(QUANT_UNIT, QUANT_SCALE, RoundingMode.HALF_UP);
-            BigDecimal currentValue = calculateCurrentValue(row.amount(), row.valuationCap(), row.latestValuation());
-            BigDecimal gain = currentValue == null ? null : currentValue.subtract(row.amount()).setScale(MONEY_SCALE, RoundingMode.HALF_UP);
+            long shares = row.sharesAllocated();
+            BigDecimal acquisitionPrice = row.pricePerShare();
+            BigDecimal latestValuation = row.latestValuation();
+            long baseShares = row.outstandingShares() > 0 ? row.outstandingShares() : 1_000_000L;
+            long totalCompanyShares = row.outstandingShares() + row.poolSharesAllocated();
+            if (totalCompanyShares <= 0) {
+                totalCompanyShares = baseShares;
+            }
+
+            BigDecimal latestSharePrice = null;
+            BigDecimal currentValue = null;
+            BigDecimal gain = null;
+            BigDecimal gainPercentage = null;
+
+            if (latestValuation != null && latestValuation.signum() > 0) {
+                latestSharePrice = latestValuation.divide(BigDecimal.valueOf(baseShares), SHARE_PRICE_SCALE, RoundingMode.HALF_UP);
+                currentValue = BigDecimal.valueOf(shares).multiply(latestSharePrice).setScale(MONEY_SCALE, RoundingMode.HALF_UP);
+                gain = currentValue.subtract(row.amount()).setScale(MONEY_SCALE, RoundingMode.HALF_UP);
+                if (row.amount().signum() > 0) {
+                    gainPercentage = gain.multiply(BigDecimal.valueOf(100)).divide(row.amount(), 2, RoundingMode.HALF_UP);
+                }
+            }
+
+            BigDecimal ownershipPercentage = null;
+            if (totalCompanyShares > 0 && shares > 0) {
+                ownershipPercentage = BigDecimal.valueOf(shares)
+                        .multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(totalCompanyShares), PERCENT_SCALE, RoundingMode.HALF_UP);
+            }
+
             positions.add(new PortfolioPosition(
-                    row.commitmentId(), row.poolId(), row.companyName(), row.poolTitle(), row.status(), row.amount(), quants,
-                    row.currency(), row.valuationCap(), row.latestValuation(), row.valuationAt(), currentValue, gain
+                    row.commitmentId(), row.poolId(), row.profileId(), row.companyName(), row.poolTitle(),
+                    row.status(), row.amount(), shares, acquisitionPrice, latestSharePrice,
+                    currentValue, gain, gainPercentage, ownershipPercentage,
+                    row.currency(), row.valuationCap(), latestValuation, row.valuationAt()
             ));
+
             if (row.status() == CommitmentStatus.ACTIVE) {
                 totalCommitted = totalCommitted.add(row.amount());
-                totalQuants = totalQuants.add(quants);
+                activeCount++;
                 if (currentValue != null) {
                     valuedAmount = valuedAmount.add(currentValue);
                     illustrativeGain = illustrativeGain.add(gain);
                 }
             }
         }
+
         return new PortfolioSummary(
                 money(totalCommitted),
-                totalQuants.setScale(QUANT_SCALE, RoundingMode.HALF_UP),
                 money(valuedAmount),
                 money(illustrativeGain),
+                activeCount,
                 positions
         );
     }
@@ -86,11 +117,6 @@ public class PortfolioService {
         if (request == null || request.snapshotAt() == null) errors.put("snapshotAt", "Choose when this valuation was recorded.");
         else if (request.snapshotAt().isAfter(Instant.now())) errors.put("snapshotAt", "A valuation snapshot cannot be in the future.");
         if (!errors.isEmpty()) throw new AuthException("INVALID_REQUEST", "Review the highlighted fields.", 400, errors);
-    }
-
-    private static BigDecimal calculateCurrentValue(BigDecimal amount, BigDecimal valuationCap, BigDecimal latestValuation) {
-        if (valuationCap == null || valuationCap.signum() <= 0 || latestValuation == null || latestValuation.signum() <= 0) return null;
-        return amount.multiply(latestValuation).divide(valuationCap, MONEY_SCALE, RoundingMode.HALF_UP);
     }
 
     private static BigDecimal money(BigDecimal value) {

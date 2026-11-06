@@ -9,6 +9,8 @@ public record InvestorCommitment(
         String companyName,
         String poolTitle,
         BigDecimal amount,
+        long sharesAllocated,
+        BigDecimal pricePerShare,
         CommitmentStatus status,
         Instant createdAt,
         Instant updatedAt

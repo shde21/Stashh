@@ -3,24 +3,29 @@ import type { CommitmentStatus } from '../fundraising/fundraising.types'
 export type PortfolioPosition = {
   commitmentId: number
   poolId: number
+  profileId: number
   companyName: string
   poolTitle: string
   status: CommitmentStatus
   amount: number
-  quants: number
+  shares: number
+  acquisitionPricePerShare: number
+  latestSharePrice: number | null
+  currentValue: number | null
+  illustrativeGain: number | null
+  gainPercentage: number | null
+  ownershipPercentage: number | null
   currency: string
   valuationCap: number | null
   latestValuation: number | null
   valuationAt: string | null
-  currentValue: number | null
-  illustrativeGain: number | null
 }
 
 export type PortfolioSummary = {
   totalCommitted: number
-  totalQuants: number
   valuedAmount: number
   illustrativeGain: number
+  activeHoldingsCount: number
   positions: PortfolioPosition[]
 }
 

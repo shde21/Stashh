@@ -15,6 +15,11 @@ export type FundraisingPool = {
   minCommitment: number
   maxCommitment: number | null
   valuationCap: number | null
+  pricePerShare: number
+  totalSharesOffered: number
+  sharesRemaining: number
+  sharesAllocated: number
+  roundValuationBasis: number | null
   currency: string
   status: PoolStatus
   opensAt: string | null
@@ -22,6 +27,7 @@ export type FundraisingPool = {
   totalCommitted: number
   commitmentCount: number
   viewerCommitment: number | null
+  viewerSharesAllocated: number | null
 }
 
 export type FundraisingPoolInput = {
@@ -30,6 +36,9 @@ export type FundraisingPoolInput = {
   minCommitment: number | null
   maxCommitment: number | null
   valuationCap: number | null
+  pricePerShare?: number | null
+  totalSharesOffered?: number | null
+  roundValuationBasis?: number | null
   endsAt: string | null
 }
 
@@ -39,7 +48,14 @@ export type InvestorCommitment = {
   companyName: string
   poolTitle: string
   amount: number
+  sharesAllocated: number
+  pricePerShare: number
   status: CommitmentStatus
   createdAt: string
   updatedAt: string
+}
+
+export type CommitmentInput = {
+  amount?: number
+  shares?: number
 }

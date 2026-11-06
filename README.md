@@ -9,7 +9,7 @@ Startup Investment Platform is a local-first simulated investment platform for f
 - Fundraising rounds with targets, commitment limits, valuation caps, and closing dates
 - Investor discovery with search and stage or sector filters
 - Simulated commitments with capacity checks and cancellation history
-- Deterministic QUANTS allocation from commitment amounts
+- Company-specific equity share allocations and round capacity tracking
 - Admin valuation snapshots and investor portfolio analytics
 - Investor watchlists with private thesis notes
 - Investor interest requests and a startup-side interest inbox
@@ -154,7 +154,7 @@ Use a local password and never commit credentials.
 3. **Review and publish:** An Admin requests changes, approves or rejects the profile, and controls whether an approved profile is public.
 4. **Configure fundraising:** An approved public Startup saves round terms and opens the round for commitments.
 5. **Discover and commit:** An Investor filters approved public startups or open rounds, saves watchlists, adds private thesis notes, sends interest requests, and records simulated commitments.
-6. **View portfolio and valuations:** Admin valuation snapshots allow eligible investor positions to show illustrative current values and gains. QUANTS are deterministic at one QUANT per ₹1,000 of commitment.
+6. **View portfolio and valuations:** Admin valuation snapshots allow eligible investor positions to show illustrative current values, share pricing, and gains based on company capitalization and locked acquisition prices.
 7. **Manage marketplace conversations:** Investors can review or withdraw pending interest requests, while Startups can read incoming requests.
 
 ## API documentation

@@ -30,10 +30,11 @@ export function fetchInvestorPools(filters: { sector?: string; stage?: StartupSt
   return apiRequest<FundraisingPool[]>(`/api/v1/investor/fundraising/pools${suffix}`)
 }
 
-export function commitToPool(poolId: number, amount: number, csrfToken: string): Promise<InvestorCommitment> {
+export function commitToPool(poolId: number, commitment: number | { amount?: number; shares?: number }, csrfToken: string): Promise<InvestorCommitment> {
+  const body = typeof commitment === 'number' ? { amount: commitment } : commitment
   return apiRequest<InvestorCommitment>(`/api/v1/investor/fundraising/pools/${poolId}/commit`, {
     method: 'POST',
-    body: JSON.stringify({ amount }),
+    body: JSON.stringify(body),
     csrfToken,
   })
 }

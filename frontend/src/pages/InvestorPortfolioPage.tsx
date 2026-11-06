@@ -18,7 +18,7 @@ import {
   Th,
   formatINR,
   formatPercent,
-  formatQuants,
+  formatShares,
   useToast,
 } from '../design-system'
 import { AlertCircle } from 'lucide-react'
@@ -69,7 +69,6 @@ export default function InvestorPortfolioPage() {
   const activePositions = positions.filter((position) => position.status === 'ACTIVE')
   const cancelledCount = positions.length - activePositions.length
   const totalCommitted = portfolio?.totalCommitted ?? 0
-  const totalQuants = portfolio?.totalQuants ?? 0
   const valuedAmount = portfolio?.valuedAmount ?? 0
   const illustrativeGain = portfolio?.illustrativeGain ?? 0
   const gainPercent = totalCommitted > 0 ? (illustrativeGain / totalCommitted) * 100 : 0
@@ -82,7 +81,7 @@ export default function InvestorPortfolioPage() {
           <p className="eyebrow">Portfolio Analytics</p>
           <h1>Know what your position means.</h1>
           <p>
-            Illustrative values and QUANTS are derived deterministically from your simulated commitments and startup valuation snapshots. No real money or custody is involved.
+            Illustrative values and share holdings are derived from your simulated commitments, company share prices, and startup valuation snapshots. No real money or custody is involved.
           </p>
         </div>
         <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
@@ -99,14 +98,14 @@ export default function InvestorPortfolioPage() {
           <Stat
             label="Total Committed"
             value={formatINR(totalCommitted)}
-            subtext={`${formatQuants(totalQuants)} QUANTS`}
+            subtext={`${activePositions.length} active companies`}
           />
         </Card>
         <Card>
           <Stat
             label="Illustrative Value"
             value={formatINR(valuedAmount)}
-            subtext="Based on latest snapshots"
+            subtext="Based on latest valuations"
           />
         </Card>
         <Card>
@@ -130,7 +129,7 @@ export default function InvestorPortfolioPage() {
               <h2 style={{ fontSize: 'var(--font-h3)', margin: 0 }}>Allocation Breakdown</h2>
             </div>
             <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)' }}>
-              1 QUANT = ₹1,000 committed
+              Weighted by invested capital
             </span>
           </div>
 
@@ -213,7 +212,10 @@ export default function InvestorPortfolioPage() {
                 <tr>
                   <Th>Company & Round</Th>
                   <Th>Status</Th>
-                  <Th numeric>QUANTS</Th>
+                  <Th numeric>Shares</Th>
+                  <Th numeric>Issue Price</Th>
+                  <Th numeric>Latest Share Price</Th>
+                  <Th numeric>Ownership</Th>
                   <Th numeric>Committed (₹)</Th>
                   <Th numeric>Current Value</Th>
                   <Th numeric>Illustrative Gain</Th>
@@ -245,7 +247,14 @@ export default function InvestorPortfolioPage() {
                         <StatusPill status={position.status} />
                       </Td>
                       <Td numeric style={{ fontWeight: 'var(--weight-medium)' }}>
-                        {formatQuants(position.quants)}
+                        {formatShares(position.shares)}
+                      </Td>
+                      <Td numeric>{formatINR(position.acquisitionPricePerShare)}</Td>
+                      <Td numeric>
+                        {position.latestSharePrice != null ? formatINR(position.latestSharePrice) : '—'}
+                      </Td>
+                      <Td numeric>
+                        {position.ownershipPercentage != null ? `${position.ownershipPercentage.toFixed(3)}%` : '—'}
                       </Td>
                       <Td numeric>{formatINR(position.amount)}</Td>
                       <Td numeric>
@@ -299,7 +308,7 @@ export default function InvestorPortfolioPage() {
         isOpen={Boolean(cancellingPosition)}
         onClose={() => setCancellingPosition(null)}
         title="Cancel simulated commitment?"
-        description={`Are you sure you want to cancel your commitment of ${formatINR(cancellingPosition?.amount ?? 0)} (${formatQuants(cancellingPosition?.quants ?? 0)} QUANTS) to ${cancellingPosition?.companyName}?`}
+        description={`Are you sure you want to cancel your commitment of ${formatINR(cancellingPosition?.amount ?? 0)} (${formatShares(cancellingPosition?.shares ?? 0)} shares) in ${cancellingPosition?.companyName}?`}
         footer={
           <>
             <Button variant="ghost" onClick={() => setCancellingPosition(null)} disabled={cancelSubmitting}>

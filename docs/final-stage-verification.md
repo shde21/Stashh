@@ -12,7 +12,7 @@ The final stage is implemented and verified. The platform now provides the compl
 - Admins review startups, control visibility, configure fundraising access, and record valuation snapshots.
 - Startups configure simulated rounds and read investor interest requests.
 - Investors discover open rounds, filter by stage/sector/search, save startup watchlists, add private thesis notes, express interest, and make simulated commitments.
-- Investor portfolios show commitments, deterministic QUANTS, valuation-derived illustrative values, and gains.
+- Investor portfolios show commitments, company-specific equity shares, valuation-derived illustrative values, and gains.
 - Marketplace actions are restricted to approved, public startup profiles.
 - Watchlist and interest records are idempotent rather than duplicating repeated actions.
 

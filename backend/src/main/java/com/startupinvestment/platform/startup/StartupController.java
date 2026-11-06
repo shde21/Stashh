@@ -34,6 +34,17 @@ public class StartupController {
         return ResponseEntity.of(startupService.findForStartup(user.id()));
     }
 
+    @GetMapping("/capitalization")
+    public ResponseEntity<CompanyCapitalization> capitalization(HttpServletRequest request) {
+        SessionUser user = startupUser(request);
+        return ResponseEntity.of(startupService.findCapitalization(user.id()));
+    }
+
+    @PutMapping("/capitalization")
+    public CompanyCapitalization saveCapitalization(@RequestBody CompanyCapitalizationRequest capitalization, HttpServletRequest request) {
+        return startupService.saveCapitalization(startupUser(request).id(), capitalization);
+    }
+
     @PutMapping("/profile")
     public StartupProfile saveProfile(@RequestBody StartupProfileRequest profile, HttpServletRequest request) {
         return startupService.saveProfile(startupUser(request).id(), profile);
