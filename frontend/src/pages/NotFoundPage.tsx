@@ -37,12 +37,12 @@ export default function NotFoundPage() {
           This page does not exist.
         </h1>
         <p style={{ fontSize: 'var(--font-small)', color: 'var(--text-secondary)', marginBottom: 'var(--space-6)' }}>
-          The link you followed may be expired or incorrect. Return to stashh to continue navigating.
+          The link you followed may be expired or incorrect. Return to Stashh to continue navigating.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Link to="/">
             <Button variant="primary" size="md" rightIcon={<ArrowRight size={14} strokeWidth={1.75} />}>
-              Back to stashh
+              Back to Stashh
             </Button>
           </Link>
         </div>

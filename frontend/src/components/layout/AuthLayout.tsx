@@ -21,9 +21,9 @@ export function AuthLayout({
         <ThemeToggle />
       </div>
       <div className="auth-panel">
-        <Link className="auth-brand-center" to="/" aria-label="stashh home">
+        <Link className="auth-brand-center" to="/" aria-label="Stashh home">
           <span className="brand-mark" aria-hidden="true">S</span>
-          <span>stashh</span>
+          <span>Stashh</span>
         </Link>
         <div className="auth-panel-inner">
           <p className="eyebrow">{eyebrow}</p>

@@ -30,9 +30,9 @@ export default function FoundationPage() {
     <div className="shell public-shell">
       {/* Top Navigation */}
       <nav className="topbar" aria-label="Primary navigation">
-        <Link className="brand" to="/" aria-label="stashh home">
+        <Link className="brand" to="/" aria-label="Stashh home">
           <span className="brand-mark" aria-hidden="true">S</span>
-          <span>stashh</span>
+          <span>Stashh</span>
         </Link>
         <div className="public-actions">
           <ThemeToggle />
@@ -172,7 +172,7 @@ export default function FoundationPage() {
         {/* Section 3: How it Works (3 clean rows) */}
         <section aria-labelledby="how-it-works-title" style={{ marginBottom: 'var(--space-16)' }}>
           <p className="eyebrow" id="how-it-works-title">Operating Model</p>
-          <h2 style={{ marginBottom: 'var(--space-8)' }}>How stashh works</h2>
+          <h2 style={{ marginBottom: 'var(--space-8)' }}>How Stashh works</h2>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
             <Card style={{ display: 'grid', gridTemplateColumns: '80px 1fr', alignItems: 'center', gap: 'var(--space-4)' }}>
@@ -214,7 +214,7 @@ export default function FoundationPage() {
             <strong style={{ fontSize: 'var(--font-small)' }}>Simulated Environment</strong>
           </div>
           <p style={{ fontSize: 'var(--font-caption)', color: 'var(--text-secondary)', maxWidth: '640px', margin: '0 auto' }}>
-            stashh is a simulation and workflow platform. All equity shares, valuations, and commitments are simulated. Nothing on this platform involves real currency, real securities, or financial advice.
+            Stashh is a simulation and workflow platform. All equity shares, valuations, and commitments are simulated. Nothing on this platform involves real currency, real securities, or financial advice.
           </p>
         </section>
       </main>
@@ -222,7 +222,7 @@ export default function FoundationPage() {
       <footer className="footer">
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
           <span className="brand-mark" style={{ width: '20px', height: '20px', fontSize: '10px' }}>S</span>
-          <span>stashh</span>
+          <span>Stashh</span>
         </div>
         <span>Simulation platform · Designed for clarity and trust.</span>
       </footer>

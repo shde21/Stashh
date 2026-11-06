@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { EmptyState as DSEmptyState } from '../../design-system/EmptyState'
 
-export function FullPageLoading({ label = 'Loading stashh…' }: { label?: string }) {
+export function FullPageLoading({ label = 'Loading Stashh…' }: { label?: string }) {
   return (
     <main className="full-page-state" aria-busy="true">
       <span className="loading-orbit" aria-hidden="true" />

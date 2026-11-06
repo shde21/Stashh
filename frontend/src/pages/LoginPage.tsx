@@ -43,7 +43,7 @@ export default function LoginPage() {
   return (
     <AuthLayout
       eyebrow="Account access"
-      title="Sign in to stashh"
+      title="Sign in to Stashh"
       description="Enter your credentials to access your workspace."
       footer={<span>Don’t have an account? <Link to="/register">Create an account</Link></span>}
     >
