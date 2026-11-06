@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthSessionService {
 
-    public static final String SESSION_USER_ATTRIBUTE = "ventureline.session-user";
+    public static final String SESSION_USER_ATTRIBUTE = "stashh.session-user";
 
     public SessionUser establish(HttpServletRequest request, AppUser user) {
         HttpSession session = request.getSession(true);

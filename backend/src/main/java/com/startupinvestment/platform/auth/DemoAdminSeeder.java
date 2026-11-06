@@ -19,7 +19,7 @@ public class DemoAdminSeeder implements ApplicationRunner {
             AuthUserRepository userRepository,
             PasswordEncoder passwordEncoder,
             @Value("${app.auth.demo-admin.enabled:false}") boolean enabled,
-            @Value("${app.auth.demo-admin.email:admin@ventureline.local}") String email,
+            @Value("${app.auth.demo-admin.email:admin@stashh.local}") String email,
             @Value("${app.auth.demo-admin.password:}") String password
     ) {
         this.userRepository = userRepository;

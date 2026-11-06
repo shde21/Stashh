@@ -31,7 +31,7 @@ app:
   auth:
     demo-admin:
       enabled: ${DEMO_ADMIN_ENABLED:false}
-      email: ${DEMO_ADMIN_EMAIL:admin@ventureline.local}
+      email: ${DEMO_ADMIN_EMAIL:admin@stashh.local}
       password: ${DEMO_ADMIN_PASSWORD:}
 
 management:

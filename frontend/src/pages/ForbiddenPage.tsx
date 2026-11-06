@@ -36,7 +36,7 @@ export default function ForbiddenPage() {
           This door is not part of your role.
         </h1>
         <p style={{ fontSize: 'var(--font-small)', color: 'var(--text-secondary)', marginBottom: 'var(--space-6)' }}>
-          Ventureline isolates startup, investor, and administrator permissions. Return to your designated workspace or visit the public overview.
+          stashh isolates startup, investor, and administrator permissions. Return to your designated workspace or visit the public overview.
         </p>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-3)' }}>
           <Link to="/app">

@@ -139,7 +139,7 @@ Public registration creates only Startup and Investor accounts. To seed a local 
 
 ```powershell
 $env:DEMO_ADMIN_ENABLED = "true"
-$env:DEMO_ADMIN_EMAIL = "admin@ventureline.local"
+$env:DEMO_ADMIN_EMAIL = "admin@stashh.local"
 $env:DEMO_ADMIN_PASSWORD = "choose-a-local-password-12"
 Set-Location .\backend
 mvn spring-boot:run

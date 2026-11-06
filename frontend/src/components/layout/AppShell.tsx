@@ -71,9 +71,9 @@ export function AppShell() {
     <div className="app-frame">
       <header className="app-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
-          <Link className="brand" to="/app" aria-label="Ventureline workspace home">
-            <span className="brand-mark" aria-hidden="true">V</span>
-            <span>Ventureline</span>
+          <Link className="brand" to="/app" aria-label="stashh workspace home">
+            <span className="brand-mark" aria-hidden="true">S</span>
+            <span>stashh</span>
           </Link>
           <span
             style={{
@@ -160,7 +160,7 @@ export function AppShell() {
           <Outlet />
 
           <footer className="simulation-disclaimer" role="contentinfo">
-            Ventureline is an educational simulation platform. Company-specific equity share allocations and valuations are simulated for educational evaluation. No real capital or securities are transferred.
+            stashh is an educational simulation platform. Company-specific equity share allocations and valuations are simulated for educational evaluation. No real capital or securities are transferred.
           </footer>
         </main>
       </div>

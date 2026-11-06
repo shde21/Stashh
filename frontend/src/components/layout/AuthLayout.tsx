@@ -21,9 +21,9 @@ export function AuthLayout({
         <ThemeToggle />
       </div>
       <div className="auth-panel">
-        <Link className="auth-brand-center" to="/" aria-label="Ventureline home">
-          <span className="brand-mark" aria-hidden="true">V</span>
-          <span>Ventureline</span>
+        <Link className="auth-brand-center" to="/" aria-label="stashh home">
+          <span className="brand-mark" aria-hidden="true">S</span>
+          <span>stashh</span>
         </Link>
         <div className="auth-panel-inner">
           <p className="eyebrow">{eyebrow}</p>

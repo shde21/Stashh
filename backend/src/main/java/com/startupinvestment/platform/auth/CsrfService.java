@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CsrfService {
 
-    public static final String SESSION_TOKEN_ATTRIBUTE = "ventureline.csrf-token";
+    public static final String SESSION_TOKEN_ATTRIBUTE = "stashh.csrf-token";
     public static final String HEADER_NAME = "X-CSRF-Token";
 
     private final SecureRandom secureRandom = new SecureRandom();
