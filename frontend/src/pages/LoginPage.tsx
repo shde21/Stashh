@@ -4,6 +4,7 @@ import { AuthLayout } from '../components/layout/AuthLayout'
 import { ApiError } from '../lib/api'
 import { validateLogin, type FieldErrors } from '../lib/validators'
 import { useAuth } from '../auth/useAuth'
+import { Button, Field, Input } from '../design-system'
 
 export default function LoginPage() {
   const { login } = useAuth()
@@ -41,41 +42,49 @@ export default function LoginPage() {
 
   return (
     <AuthLayout
-      eyebrow="Welcome back"
-      title="Return to the signal."
-      description="Sign in to continue building, discovering, or reviewing what matters next."
-      footer={<span>New to Ventureline? <Link to="/register">Create an account</Link></span>}
+      eyebrow="Account access"
+      title="Sign in to Ventureline"
+      description="Enter your credentials to access your workspace."
+      footer={<span>Don’t have an account? <Link to="/register">Create an account</Link></span>}
     >
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
         {formError && <div className="form-alert" role="alert">{formError}</div>}
-        <label className="field">
-          <span>Email address</span>
-          <input
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            autoComplete="email"
-            aria-invalid={Boolean(errors.email)}
-            placeholder="you@company.com"
-          />
-          {errors.email && <small className="field-error">{errors.email}</small>}
-        </label>
-        <label className="field">
-          <span>Password</span>
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            autoComplete="current-password"
-            aria-invalid={Boolean(errors.password)}
-            placeholder="At least 12 characters"
-          />
-          {errors.password && <small className="field-error">{errors.password}</small>}
-        </label>
-        <button className="button form-submit" type="submit" disabled={submitting}>
+        
+        <Field label="Email address" htmlFor="email-input" error={errors.email}>
+          {(fieldProps) => (
+            <Input
+              {...fieldProps}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              placeholder="name@company.com"
+            />
+          )}
+        </Field>
+
+        <Field label="Password" htmlFor="password-input" error={errors.password}>
+          {(fieldProps) => (
+            <Input
+              {...fieldProps}
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+              placeholder="Enter your password"
+            />
+          )}
+        </Field>
+
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          loading={submitting}
+          style={{ width: '100%', marginTop: 'var(--space-2)' }}
+        >
           {submitting ? 'Signing you in…' : 'Sign in'}
-          {!submitting && <span>↗</span>}
-        </button>
+        </Button>
       </form>
     </AuthLayout>
   )

@@ -5,6 +5,7 @@ import { ApiError } from '../lib/api'
 import type { UserRole } from '../auth/auth.types'
 import { validateRegistration, type FieldErrors } from '../lib/validators'
 import { useAuth } from '../auth/useAuth'
+import { Button, Field, Input } from '../design-system'
 
 export default function RegisterPage() {
   const { register } = useAuth()
@@ -21,7 +22,12 @@ export default function RegisterPage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const nextErrors = validateRegistration({ email, password, confirmPassword, role: role as 'STARTUP' | 'INVESTOR' })
+    const nextErrors = validateRegistration({
+      email,
+      password,
+      confirmPassword,
+      role: role as 'STARTUP' | 'INVESTOR',
+    })
     setErrors(nextErrors)
     setFormError('')
     if (Object.keys(nextErrors).length > 0) return
@@ -44,48 +50,97 @@ export default function RegisterPage() {
 
   return (
     <AuthLayout
-      eyebrow="Start with the right context"
-      title="Choose the path that fits your next move."
-      description="Create a secure workspace. You can refine the details as the product takes shape."
+      eyebrow="Get started"
+      title="Create your account"
+      description="Choose your account role to set up your simulated workspace."
       footer={<span>Already have an account? <Link to="/login">Sign in</Link></span>}
     >
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
         {formError && <div className="form-alert" role="alert">{formError}</div>}
+        
         <fieldset className="role-picker">
           <legend>Account type</legend>
-          <div className="role-options">
+          <div className="role-options" role="radiogroup" aria-label="Account type">
             <label className={`role-option ${role === 'STARTUP' ? 'role-option-selected' : ''}`}>
-              <input type="radio" name="role" value="STARTUP" checked={role === 'STARTUP'} onChange={() => setRole('STARTUP')} />
-              <span><strong>Startup</strong><small>Build the company profile</small></span>
+              <input
+                type="radio"
+                name="role"
+                value="STARTUP"
+                checked={role === 'STARTUP'}
+                onChange={() => setRole('STARTUP')}
+              />
+              <span>
+                <strong>Startup</strong>
+                <small>Raise simulated rounds</small>
+              </span>
             </label>
             <label className={`role-option ${role === 'INVESTOR' ? 'role-option-selected' : ''}`}>
-              <input type="radio" name="role" value="INVESTOR" checked={role === 'INVESTOR'} onChange={() => setRole('INVESTOR')} />
-              <span><strong>Investor</strong><small>Explore opportunities</small></span>
+              <input
+                type="radio"
+                name="role"
+                value="INVESTOR"
+                checked={role === 'INVESTOR'}
+                onChange={() => setRole('INVESTOR')}
+              />
+              <span>
+                <strong>Investor</strong>
+                <small>Discover & commit QUANTS</small>
+              </span>
             </label>
           </div>
           {errors.role && <small className="field-error">{errors.role}</small>}
         </fieldset>
-        <label className="field">
-          <span>Email address</span>
-          <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" aria-invalid={Boolean(errors.email)} placeholder="you@company.com" />
-          {errors.email && <small className="field-error">{errors.email}</small>}
-        </label>
+
+        <Field label="Email address" htmlFor="email-input" error={errors.email}>
+          {(fieldProps) => (
+            <Input
+              {...fieldProps}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              placeholder="name@company.com"
+            />
+          )}
+        </Field>
+
         <div className="field-grid">
-          <label className="field">
-            <span>Password</span>
-            <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" aria-invalid={Boolean(errors.password)} placeholder="12+ characters" />
-            {errors.password && <small className="field-error">{errors.password}</small>}
-          </label>
-          <label className="field">
-            <span>Confirm password</span>
-            <input type="password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} autoComplete="new-password" aria-invalid={Boolean(errors.confirmPassword)} placeholder="Repeat password" />
-            {errors.confirmPassword && <small className="field-error">{errors.confirmPassword}</small>}
-          </label>
+          <Field label="Password" htmlFor="password-input" error={errors.password}>
+            {(fieldProps) => (
+              <Input
+                {...fieldProps}
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
+                placeholder="At least 12 characters"
+              />
+            )}
+          </Field>
+
+          <Field label="Confirm password" htmlFor="confirm-password-input" error={errors.confirmPassword}>
+            {(fieldProps) => (
+              <Input
+                {...fieldProps}
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
+                placeholder="Repeat password"
+              />
+            )}
+          </Field>
         </div>
-        <button className="button form-submit" type="submit" disabled={submitting}>
+
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          loading={submitting}
+          style={{ width: '100%', marginTop: 'var(--space-2)' }}
+        >
           {submitting ? 'Creating workspace…' : 'Create workspace'}
-          {!submitting && <span>↗</span>}
-        </button>
+        </Button>
       </form>
     </AuthLayout>
   )

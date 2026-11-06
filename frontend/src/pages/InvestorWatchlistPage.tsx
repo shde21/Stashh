@@ -10,9 +10,27 @@ import {
   withdrawInterest,
 } from '../marketplace/marketplace.api'
 import type { InterestResponse, MarketplaceStartup } from '../marketplace/marketplace.types'
+import {
+  Badge,
+  Button,
+  Card,
+  Field,
+  StatusPill,
+  Table,
+  TableWrapper,
+  Td,
+  Textarea,
+  Th,
+  formatDate,
+  useToast,
+} from '../design-system'
+import { Trash2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function InvestorWatchlistPage() {
   const { withCsrf } = useAuth()
+  const { showToast } = useToast()
+
   const [watchlist, setWatchlist] = useState<MarketplaceStartup[]>([])
   const [interests, setInterests] = useState<InterestResponse[]>([])
   const [editingNotes, setEditingNotes] = useState<Record<number, string>>({})
@@ -46,9 +64,10 @@ export default function InvestorWatchlistPage() {
     try {
       await withCsrf((token) => saveToWatchlist(profileId, note, token))
       setWatchlist((current) =>
-        current.map((item) => (item.profileId === profileId ? { ...item, note: note || null } : item))
+        current.map((item) => (item.profileId === profileId ? { ...item, note: note || null } : item)),
       )
       setSuccess('Thesis note updated.')
+      showToast('Thesis note updated.', 'success')
     } catch (nextError: unknown) {
       if (nextError instanceof ApiError) setError(nextError.message)
       else setError(nextError instanceof Error ? nextError.message : 'Failed to save note.')
@@ -65,6 +84,7 @@ export default function InvestorWatchlistPage() {
       await withCsrf((token) => removeFromWatchlist(profileId, token))
       setWatchlist((current) => current.filter((item) => item.profileId !== profileId))
       setSuccess('Startup removed from watchlist.')
+      showToast('Startup removed from watchlist.', 'info')
     } catch (nextError: unknown) {
       if (nextError instanceof ApiError) setError(nextError.message)
       else setError(nextError instanceof Error ? nextError.message : 'Failed to remove from watchlist.')
@@ -80,9 +100,10 @@ export default function InvestorWatchlistPage() {
     try {
       const updated = await withCsrf((token) => withdrawInterest(profileId, token))
       setInterests((current) =>
-        current.map((item) => (item.profileId === profileId ? updated : item))
+        current.map((item) => (item.profileId === profileId ? updated : item)),
       )
       setSuccess('Interest request withdrawn.')
+      showToast('Interest request withdrawn.', 'info')
     } catch (nextError: unknown) {
       if (nextError instanceof ApiError) setError(nextError.message)
       else setError(nextError instanceof Error ? nextError.message : 'Failed to withdraw interest.')
@@ -95,123 +116,186 @@ export default function InvestorWatchlistPage() {
 
   return (
     <div className="dashboard-page">
+      {/* Header */}
       <div className="page-heading">
         <div>
           <p className="eyebrow">Investor Watchlist</p>
           <h1>Track conviction before capital.</h1>
           <p>
-            Review approved startups you are watching, record your investment theses, and manage your introductions.
+            Review approved startups you are watching, record private investment theses, and manage your introductions.
           </p>
         </div>
-        <span className="status-badge">{watchlist.length} saved</span>
+        <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+          <Badge variant="neutral">{watchlist.length} saved</Badge>
+          <Badge variant="neutral">{interests.length} introductions</Badge>
+        </div>
       </div>
 
       {error && <div className="form-alert" role="alert">{error}</div>}
       {success && <div className="form-alert form-alert-success" role="status">{success}</div>}
 
-      <section className="workspace-panel">
-        <div className="section-header">
+      {/* Section 1: Saved Startups & Theses */}
+      <section aria-labelledby="watchlist-title">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
           <div>
-            <h2>Saved Startups & Thesis Notes</h2>
-            <p>Keep your thoughts and conviction clear as companies develop.</p>
+            <h2 id="watchlist-title" style={{ fontSize: 'var(--font-h3)', margin: 0 }}>Saved Startups & Thesis Notes</h2>
+            <p style={{ fontSize: 'var(--font-small)', color: 'var(--text-secondary)', margin: 'var(--space-1) 0 0 0' }}>
+              Keep your thoughts and conviction clear as companies develop. Notes are strictly private.
+            </p>
           </div>
         </div>
 
         {watchlist.length === 0 ? (
-          <EmptyState
-            title="Your watchlist is empty"
-            description="Explore open rounds and approved startups in the discovery room to bookmark companies for later evaluation."
-          />
+          <Card>
+            <EmptyState
+              title="Your watchlist is empty"
+              description="Explore open rounds and approved startups in the discovery room to bookmark companies for later evaluation."
+              action={
+                <Link to="/app/investor/discover">
+                  <Button variant="primary" size="sm">
+                    Discover startups
+                  </Button>
+                </Link>
+              }
+            />
+          </Card>
         ) : (
-          <div className="document-list portfolio-list">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
             {watchlist.map((item) => (
-              <article className="document-row" key={item.profileId}>
-                <div>
-                  <span className="document-kind">
-                    {item.sector ?? 'Startup'} · {item.stage.replace('_', ' ')} · Saved{' '}
-                    {new Date(item.savedAt).toLocaleDateString()}
-                  </span>
-                  <strong>{item.companyName}</strong>
-                  {item.tagline && <span>{item.tagline}</span>}
-
-                  <div className="field" style={{ marginTop: '0.75rem' }}>
-                    <label htmlFor={`thesis-${item.profileId}`}>
-                      <span>Private thesis note</span>
-                    </label>
-                    <textarea
-                      id={`thesis-${item.profileId}`}
-                      rows={2}
-                      value={editingNotes[item.profileId] ?? ''}
-                      onChange={(e) =>
-                        setEditingNotes((prev) => ({ ...prev, [item.profileId]: e.target.value }))
-                      }
-                      placeholder="Why are you watching this company? What milestones matter?"
-                    />
+              <Card key={item.profileId} as="article" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-4)' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-1)' }}>
+                      <Badge variant="neutral">{item.sector ?? 'Startup'}</Badge>
+                      <Badge variant="neutral">{item.stage.replace('_', ' ')}</Badge>
+                      <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)' }}>
+                        Saved {formatDate(item.savedAt)}
+                      </span>
+                    </div>
+                    <h3 style={{ fontSize: 'var(--font-h3)', margin: 0 }}>{item.companyName}</h3>
+                    {item.tagline && (
+                      <p style={{ fontSize: 'var(--font-small)', color: 'var(--text-secondary)', marginTop: 'var(--space-1)' }}>
+                        {item.tagline}
+                      </p>
+                    )}
                   </div>
 
-                  <div className="marketplace-actions" style={{ marginTop: '0.5rem' }}>
-                    <button
-                      className="button button-small"
-                      type="button"
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => void handleRemove(item.profileId)}
+                    disabled={workingId === item.profileId}
+                    leftIcon={<Trash2 size={14} strokeWidth={1.75} />}
+                    style={{ color: 'var(--negative-text)' }}
+                  >
+                    Remove
+                  </Button>
+                </div>
+
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: 'var(--space-4)' }}>
+                  <Field
+                    label="Private thesis note"
+                    htmlFor={`thesis-${item.profileId}`}
+                    hint="Only you can see this. Record why you are watching and key milestones."
+                    suffix="Confidential"
+                  >
+                    {(fieldProps) => (
+                      <Textarea
+                        {...fieldProps}
+                        id={`thesis-${item.profileId}`}
+                        rows={2}
+                        value={editingNotes[item.profileId] ?? ''}
+                        onChange={(e) =>
+                          setEditingNotes((prev) => ({ ...prev, [item.profileId]: e.target.value }))
+                        }
+                        placeholder="Why are you watching this company? What milestones matter?"
+                      />
+                    )}
+                  </Field>
+
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       onClick={() => void handleSaveNote(item.profileId)}
                       disabled={workingId === item.profileId}
                     >
                       {workingId === item.profileId ? 'Saving…' : 'Save thesis note'}
-                    </button>
-                    <button
-                      className="text-button"
-                      type="button"
-                      onClick={() => void handleRemove(item.profileId)}
-                      disabled={workingId === item.profileId}
-                    >
-                      Remove from watchlist
-                    </button>
+                    </Button>
                   </div>
                 </div>
-              </article>
+              </Card>
             ))}
           </div>
         )}
       </section>
 
-      <section className="workspace-panel" style={{ marginTop: '2rem' }}>
-        <div className="section-header">
+      {/* Section 2: Introductions & Expressed Interest */}
+      <section aria-labelledby="introductions-title" style={{ marginTop: 'var(--space-12)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
           <div>
-            <h2>Your Introductions & Expressed Interest</h2>
-            <p>Signal-level conversations you initiated from the marketplace.</p>
+            <h2 id="introductions-title" style={{ fontSize: 'var(--font-h3)', margin: 0 }}>
+              Your Introductions & Expressed Interest
+            </h2>
+            <p style={{ fontSize: 'var(--font-small)', color: 'var(--text-secondary)', margin: 'var(--space-1) 0 0 0' }}>
+              Signal-level conversations you initiated from the marketplace.
+            </p>
           </div>
-          <span className="status-badge">{interests.length} introductions</span>
         </div>
 
         {interests.length === 0 ? (
-          <EmptyState
-            title="No introductions sent yet"
-            description="When you find a company you would like to connect with, send a lightweight introduction from the discovery room."
-          />
+          <Card>
+            <EmptyState
+              title="No introductions sent yet"
+              description="When you find a company you would like to connect with, send a lightweight introduction from the discovery room."
+            />
+          </Card>
         ) : (
-          <div className="document-list portfolio-list">
-            {interests.map((interest) => (
-              <article className="document-row" key={interest.id}>
-                <div>
-                  <span className="document-kind">
-                    {interest.status} · {new Date(interest.updatedAt).toLocaleDateString()}
-                  </span>
-                  <strong>{interest.companyName}</strong>
-                  <span>{interest.message ?? 'No introduction note provided.'}</span>
-                </div>
-                {interest.status === 'PENDING' && (
-                  <button
-                    className="text-button"
-                    type="button"
-                    onClick={() => void handleWithdrawInterest(interest.profileId)}
-                    disabled={workingId === interest.profileId}
-                  >
-                    {workingId === interest.profileId ? 'Withdrawing…' : 'Withdraw introduction'}
-                  </button>
-                )}
-              </article>
-            ))}
-          </div>
+          <TableWrapper>
+            <Table>
+              <thead>
+                <tr>
+                  <Th>Company</Th>
+                  <Th>Status</Th>
+                  <Th>Introduction Message</Th>
+                  <Th>Date</Th>
+                  <Th numeric>Action</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {interests.map((interest) => (
+                  <tr key={interest.id}>
+                    <Td>
+                      <strong style={{ color: 'var(--text)' }}>{interest.companyName}</strong>
+                    </Td>
+                    <Td>
+                      <StatusPill status={interest.status} />
+                    </Td>
+                    <Td style={{ maxWidth: '360px' }}>
+                      <span style={{ fontSize: 'var(--font-small)', color: 'var(--text)' }}>
+                        {interest.message ?? 'No introduction note provided.'}
+                      </span>
+                    </Td>
+                    <Td style={{ color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+                      {formatDate(interest.updatedAt)}
+                    </Td>
+                    <Td numeric>
+                      {interest.status === 'PENDING' && (
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => void handleWithdrawInterest(interest.profileId)}
+                          disabled={workingId === interest.profileId}
+                        >
+                          {workingId === interest.profileId ? 'Withdrawing…' : 'Withdraw introduction'}
+                        </Button>
+                      )}
+                    </Td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </TableWrapper>
         )}
       </section>
     </div>

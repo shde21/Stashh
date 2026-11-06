@@ -1,0 +1,191 @@
+/**
+ * Ventureline Design System - Design Tokens
+ * Philosophy: Apple + Groww + Stripe
+ * Light-first architecture with pure, calm, high-contrast dark mode.
+ */
+
+:root {
+  /* Colors - Light Theme */
+  --bg: #FFFFFF;
+  --bg-subtle: #F5F5F7;
+  --surface: #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --surface-muted: #F8F8FA;
+
+  --text: #1D1D1F;
+  --text-secondary: #6E6E73;
+  --text-tertiary: #86868B;
+  --text-inverse: #FFFFFF;
+
+  --border: #E5E5EA;
+  --border-strong: #D2D2D7;
+  --border-focus: #0A5FFF;
+
+  /* Accent - Restrained Brand Blue */
+  --accent: #0A5FFF;
+  --accent-hover: #004FE0;
+  --accent-subtle: #EEF4FF;
+  --accent-border: #D0E1FD;
+
+  /* Primary Ink (for Apple-like stark buttons) */
+  --ink: #1D1D1F;
+  --ink-hover: #000000;
+  --ink-secondary: #3A3A3C;
+
+  /* Semantic Colors (WCAG AA compliant) */
+  --positive: #00B386;
+  --positive-text: #008765;
+  --positive-subtle: #E8F8F4;
+  --positive-border: #BAECD8;
+
+  --negative: #E5484D;
+  --negative-text: #B52B30;
+  --negative-subtle: #FDE8E8;
+  --negative-border: #F8B4B4;
+
+  --warning: #B7791F;
+  --warning-text: #92400E;
+  --warning-subtle: #FEF3C7;
+  --warning-border: #FCD34D;
+
+  --neutral-pill-bg: #EFEFF4;
+  --neutral-pill-text: #3A3A3C;
+
+  /* Typography */
+  --font-sans: 'Inter Variable', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+
+  --font-display: 3.5rem;   /* 56px */
+  --lh-display: 3.75rem;    /* 60px */
+
+  --font-h1: 2.5rem;        /* 40px */
+  --lh-h1: 2.875rem;        /* 46px */
+
+  --font-h2: 1.75rem;       /* 28px */
+  --lh-h2: 2.125rem;        /* 34px */
+
+  --font-h3: 1.25rem;       /* 20px */
+  --lh-h3: 1.75rem;         /* 28px */
+
+  --font-body: 1rem;        /* 16px */
+  --lh-body: 1.5rem;        /* 24px */
+
+  --font-small: 0.875rem;   /* 14px */
+  --lh-small: 1.25rem;      /* 20px */
+
+  --font-caption: 0.75rem;  /* 12px */
+  --lh-caption: 1rem;       /* 16px */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --tracking-tight: -0.02em;
+  --tracking-snug: -0.01em;
+  --tracking-normal: 0;
+
+  /* Spacing (4px base scale) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* Radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Elevation */
+  --shadow-none: none;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-popover: 0 4px 20px -2px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.04);
+  --shadow-modal: 0 20px 48px -12px rgba(0, 0, 0, 0.16), 0 0 1px 1px rgba(0, 0, 0, 0.05);
+
+  /* Layout */
+  --max-content: 1200px;
+  --max-reading: 680px;
+  --nav-height: 60px;
+
+  /* Transitions */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 250ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: var(--duration-fast) var(--ease-out);
+  --transition-base: var(--duration-base) var(--ease-out);
+}
+
+/* ==========================================================================
+   DARK THEME TOKENS
+   Calm, high-contrast, Apple Pro / Stripe dark aesthetic. No glowing neons.
+   ========================================================================== */
+[data-theme="dark"] {
+  --bg: #0D0D0E;
+  --bg-subtle: #161619;
+  --surface: #18181C;
+  --surface-raised: #202025;
+  --surface-muted: #141417;
+
+  --text: #F4F4F6;
+  --text-secondary: #A0A0A8;
+  --text-tertiary: #71717A;
+  --text-inverse: #0D0D0E;
+
+  --border: #26262B;
+  --border-strong: #3F3F46;
+  --border-focus: #3B82F6;
+
+  /* Accent - Clean deep blue */
+  --accent: #3B82F6;
+  --accent-hover: #60A5FA;
+  --accent-subtle: #172554;
+  --accent-border: #1E3A8A;
+
+  /* Primary Ink (stark white button on dark surface) */
+  --ink: #F4F4F6;
+  --ink-hover: #FFFFFF;
+  --ink-secondary: #E4E4E7;
+
+  /* Semantic Colors for Dark Mode */
+  --positive: #00D09C;
+  --positive-text: #34D399;
+  --positive-subtle: #064E3B;
+  --positive-border: #047857;
+
+  --negative: #F87171;
+  --negative-text: #FCA5A5;
+  --negative-subtle: #450A0A;
+  --negative-border: #7F1D1D;
+
+  --warning: #FBBF24;
+  --warning-text: #FDE68A;
+  --warning-subtle: #451A03;
+  --warning-border: #78350F;
+
+  --neutral-pill-bg: #27272A;
+  --neutral-pill-text: #D4D4D8;
+
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+  --shadow-popover: 0 8px 24px -4px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.08);
+  --shadow-modal: 0 24px 56px -12px rgba(0, 0, 0, 0.85), 0 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+}

@@ -10,6 +10,22 @@ import {
   submitStartupProfile,
 } from '../startup/startup.api'
 import type { DocumentKind, StartupProfile, StartupProfileInput, StartupStage } from '../startup/startup.types'
+import {
+  Badge,
+  Button,
+  Card,
+  Field,
+  Input,
+  Select,
+  StatusPill,
+  Table,
+  TableWrapper,
+  Td,
+  Textarea,
+  Th,
+  useToast,
+} from '../design-system'
+import { AlertCircle, ExternalLink, Send } from 'lucide-react'
 
 type FieldErrors = Record<string, string>
 
@@ -97,11 +113,16 @@ function inputFromForm(form: FormState): StartupProfileInput {
 
 export default function StartupProfilePage() {
   const { withCsrf } = useAuth()
+  const { showToast } = useToast()
+
   const [profile, setProfile] = useState<StartupProfile>()
   const [form, setForm] = useState<FormState>(emptyForm)
+  const [initialJson, setInitialJson] = useState<string>(JSON.stringify(emptyForm))
+
   const [documentKind, setDocumentKind] = useState<DocumentKind>('PITCH_DECK')
   const [documentTitle, setDocumentTitle] = useState('')
   const [documentUrl, setDocumentUrl] = useState('')
+
   const [errors, setErrors] = useState<FieldErrors>({})
   const [formError, setFormError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -115,7 +136,9 @@ export default function StartupProfilePage() {
       .then((nextProfile) => {
         if (!active) return
         setProfile(nextProfile)
-        setForm(formFromProfile(nextProfile))
+        const nextForm = formFromProfile(nextProfile)
+        setForm(nextForm)
+        setInitialJson(JSON.stringify(nextForm))
       })
       .catch((error: unknown) => {
         if (error instanceof ApiError && error.status === 404) return
@@ -124,8 +147,14 @@ export default function StartupProfilePage() {
       .finally(() => {
         if (active) setLoading(false)
       })
-    return () => { active = false }
+    return () => {
+      active = false
+    }
   }, [])
+
+  const isDirty = useMemo(() => {
+    return JSON.stringify(form) !== initialJson
+  }, [form, initialJson])
 
   const metrics = useMemo(() => metricFields[form.stage], [form.stage])
 
@@ -152,7 +181,10 @@ export default function StartupProfilePage() {
     try {
       const saved = await withCsrf((token) => saveStartupProfile(inputFromForm(form), token))
       setProfile(saved)
-      setForm(formFromProfile(saved))
+      const nextForm = formFromProfile(saved)
+      setForm(nextForm)
+      setInitialJson(JSON.stringify(nextForm))
+      showToast('Profile draft saved successfully.', 'success')
     } catch (error: unknown) {
       if (error instanceof ApiError) {
         setErrors(error.fieldErrors)
@@ -171,7 +203,10 @@ export default function StartupProfilePage() {
     try {
       const submitted = await withCsrf((token) => submitStartupProfile(token))
       setProfile(submitted)
-      setForm(formFromProfile(submitted))
+      const nextForm = formFromProfile(submitted)
+      setForm(nextForm)
+      setInitialJson(JSON.stringify(nextForm))
+      showToast('Profile submitted for admin review.', 'success')
     } catch (error: unknown) {
       if (error instanceof ApiError) {
         setErrors(error.fieldErrors)
@@ -189,10 +224,18 @@ export default function StartupProfilePage() {
     setAddingDocument(true)
     setFormError('')
     try {
-      const document = await withCsrf((token) => addStartupDocument({ kind: documentKind, title: documentTitle, resourceUrl: documentUrl }, token))
-      setProfile((current) => current ? { ...current, documents: [document, ...current.documents] } : current)
+      const document = await withCsrf((token) =>
+        addStartupDocument(
+          { kind: documentKind, title: documentTitle, resourceUrl: documentUrl },
+          token,
+        ),
+      )
+      setProfile((current) =>
+        current ? { ...current, documents: [document, ...current.documents] } : current,
+      )
       setDocumentTitle('')
       setDocumentUrl('')
+      showToast('Document added to profile.', 'success')
     } catch (error: unknown) {
       if (error instanceof ApiError) {
         setErrors(error.fieldErrors)
@@ -208,7 +251,12 @@ export default function StartupProfilePage() {
   async function handleDeleteDocument(documentId: number) {
     try {
       await withCsrf((token) => deleteStartupDocument(documentId, token))
-      setProfile((current) => current ? { ...current, documents: current.documents.filter((document) => document.id !== documentId) } : current)
+      setProfile((current) =>
+        current
+          ? { ...current, documents: current.documents.filter((d) => d.id !== documentId) }
+          : current,
+      )
+      showToast('Document removed.', 'info')
     } catch (error: unknown) {
       setFormError(error instanceof Error ? error.message : 'The document could not be removed.')
     }
@@ -217,63 +265,369 @@ export default function StartupProfilePage() {
   if (loading) return <FullPageLoading label="Loading company workspace…" />
 
   return (
-    <div className="dashboard-page">
+    <div className="dashboard-page" style={{ paddingBottom: 'var(--space-16)' }}>
+      {/* Page Header */}
       <div className="page-heading">
         <div>
-          <p className="eyebrow">Company profile</p>
+          <p className="eyebrow">Startup Workspace</p>
           <h1>Make the right context easy to find.</h1>
-          <p>Save a clear company story, add the metrics that fit your stage, and submit it when the picture is ready for review.</p>
+          <p>
+            Build your company profile, add stage-aware metrics, and submit your story when it is ready for administrator review.
+          </p>
         </div>
-        {profile && <span className={`status-badge status-${profile.reviewStatus.toLowerCase()}`}>{profile.reviewStatus.replaceAll('_', ' ')}</span>}
+        {profile && <StatusPill status={profile.reviewStatus} />}
       </div>
 
       {formError && <div className="form-alert" role="alert">{formError}</div>}
-      {profile?.reviewNote && <div className="review-note"><strong>Reviewer note</strong><span>{profile.reviewNote}</span></div>}
 
-      <form className="stage3-form" onSubmit={handleSave} noValidate>
-        <section className="stage3-panel">
-          <div className="panel-heading"><div><p className="eyebrow">01 · Company story</p><h2>Start with the essentials.</h2></div><span>Drafts are always private.</span></div>
-          <div className="field-grid">
-            <label className="field"><span>Company name</span><input value={form.companyName} onChange={(event) => updateField('companyName', event.target.value)} aria-invalid={Boolean(errors.companyName)} placeholder="Acme Labs" />{errors.companyName && <small className="field-error">{errors.companyName}</small>}</label>
-            <label className="field"><span>Sector</span><input value={form.sector} onChange={(event) => updateField('sector', event.target.value)} aria-invalid={Boolean(errors.sector)} placeholder="Climate software" />{errors.sector && <small className="field-error">{errors.sector}</small>}</label>
+      {/* Reviewer Note Callout */}
+      {profile?.reviewNote && (
+        <div className="review-note">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+            <AlertCircle size={16} strokeWidth={1.75} />
+            <strong>Reviewer note</strong>
           </div>
-          <label className="field"><span>One-line description</span><input value={form.tagline} onChange={(event) => updateField('tagline', event.target.value)} aria-invalid={Boolean(errors.tagline)} placeholder="The operating system for ..." />{errors.tagline && <small className="field-error">{errors.tagline}</small>}</label>
-          <label className="field"><span>Company description</span><textarea value={form.description} onChange={(event) => updateField('description', event.target.value)} aria-invalid={Boolean(errors.description)} rows={5} placeholder="What are you building, for whom, and why now?" />{errors.description && <small className="field-error">{errors.description}</small>}</label>
-          <div className="field-grid">
-            <label className="field"><span>Website</span><input type="url" value={form.website} onChange={(event) => updateField('website', event.target.value)} aria-invalid={Boolean(errors.website)} placeholder="https://company.com" />{errors.website && <small className="field-error">{errors.website}</small>}</label>
-            <label className="field"><span>Pitch link</span><input type="url" value={form.pitchUrl} onChange={(event) => updateField('pitchUrl', event.target.value)} aria-invalid={Boolean(errors.pitchUrl)} placeholder="https://..." />{errors.pitchUrl && <small className="field-error">{errors.pitchUrl}</small>}</label>
-          </div>
-          <div className="field-grid">
-            <label className="field"><span>Headquarters</span><input value={form.headquarters} onChange={(event) => updateField('headquarters', event.target.value)} placeholder="Bengaluru, India" /></label>
-            <label className="field"><span>Team size</span><input type="number" min="1" value={form.teamSize} onChange={(event) => updateField('teamSize', event.target.value)} placeholder="8" /></label>
-          </div>
-          <label className="field"><span>Founded year</span><input type="number" min="1900" max="2100" value={form.foundedYear} onChange={(event) => updateField('foundedYear', event.target.value)} aria-invalid={Boolean(errors.foundedYear)} placeholder="2024" />{errors.foundedYear && <small className="field-error">{errors.foundedYear}</small>}</label>
-        </section>
+          <span>{profile.reviewNote}</span>
+        </div>
+      )}
 
-        <section className="stage3-panel">
-          <div className="panel-heading"><div><p className="eyebrow">02 · Stage-aware metrics</p><h2>Use the numbers that fit the journey.</h2></div><span>Required metrics change by stage.</span></div>
-          <label className="field"><span>Company stage</span><select value={form.stage} onChange={(event) => updateStage(event.target.value as StartupStage)}><option value="PRE_REVENUE">Pre-revenue</option><option value="EARLY_REVENUE">Early revenue</option><option value="GROWTH">Growth</option></select>{errors.stage && <small className="field-error">{errors.stage}</small>}</label>
-          <div className="field-grid metric-fields">
-            {metrics.map((metric) => <label className="field" key={metric.key}><span>{metric.label}{metric.suffix && <small className="field-suffix">{metric.suffix}</small>}</span><input type="number" min="0" step="0.01" value={form.metrics[metric.key] ?? ''} onChange={(event) => updateMetric(metric.key, event.target.value)} aria-invalid={Boolean(errors[`metrics.${metric.key}`])} placeholder="0" />{errors[`metrics.${metric.key}`] && <small className="field-error">{errors[`metrics.${metric.key}`]}</small>}</label>)}
+      {/* Profile Form */}
+      <form onSubmit={handleSave} noValidate>
+        {/* Section 01: Company Story */}
+        <Card style={{ marginBottom: 'var(--space-6)' }}>
+          <div className="panel-heading">
+            <div>
+              <p className="eyebrow">01 · Company story</p>
+              <h2>Start with the essentials.</h2>
+            </div>
+            <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)' }}>
+              Drafts remain private until submitted.
+            </span>
           </div>
-        </section>
 
-        <div className="stage3-actions"><button className="button" type="submit" disabled={saving}>{saving ? 'Saving draft…' : 'Save profile'} {!saving && <span>↗</span>}</button>{profile && <button className="button button-secondary" type="button" onClick={() => void handleSubmit()} disabled={submitting || profile.reviewStatus === 'SUBMITTED'}>{submitting ? 'Submitting…' : profile.reviewStatus === 'SUBMITTED' ? 'Waiting for review' : 'Submit for review'}</button>}</div>
+          <div className="field-grid">
+            <Field label="Company name" htmlFor="company-name-input" error={errors.companyName} required>
+              {(fieldProps) => (
+                <Input
+                  {...fieldProps}
+                  value={form.companyName}
+                  onChange={(e) => updateField('companyName', e.target.value)}
+                  placeholder="e.g. Acme Technologies"
+                />
+              )}
+            </Field>
+
+            <Field label="Sector" htmlFor="sector-input" error={errors.sector} required>
+              {(fieldProps) => (
+                <Input
+                  {...fieldProps}
+                  value={form.sector}
+                  onChange={(e) => updateField('sector', e.target.value)}
+                  placeholder="e.g. Climate Software"
+                />
+              )}
+            </Field>
+          </div>
+
+          <Field label="One-line description" htmlFor="tagline-input" error={errors.tagline} required>
+            {(fieldProps) => (
+              <Input
+                {...fieldProps}
+                value={form.tagline}
+                onChange={(e) => updateField('tagline', e.target.value)}
+                placeholder="The operating system for..."
+              />
+            )}
+          </Field>
+
+          <Field label="Company description" htmlFor="description-input" error={errors.description} required>
+            {(fieldProps) => (
+              <Textarea
+                {...fieldProps}
+                rows={4}
+                value={form.description}
+                onChange={(e) => updateField('description', e.target.value)}
+                placeholder="What are you building, for whom, and why now?"
+              />
+            )}
+          </Field>
+
+          <div className="field-grid">
+            <Field label="Website" htmlFor="website-input" error={errors.website}>
+              {(fieldProps) => (
+                <Input
+                  {...fieldProps}
+                  type="url"
+                  value={form.website}
+                  onChange={(e) => updateField('website', e.target.value)}
+                  placeholder="https://company.com"
+                />
+              )}
+            </Field>
+
+            <Field label="Pitch link" htmlFor="pitch-url-input" error={errors.pitchUrl}>
+              {(fieldProps) => (
+                <Input
+                  {...fieldProps}
+                  type="url"
+                  value={form.pitchUrl}
+                  onChange={(e) => updateField('pitchUrl', e.target.value)}
+                  placeholder="https://pitch.com/deck..."
+                />
+              )}
+            </Field>
+          </div>
+
+          <div className="field-grid">
+            <Field label="Headquarters" htmlFor="hq-input" error={errors.headquarters}>
+              {(fieldProps) => (
+                <Input
+                  {...fieldProps}
+                  value={form.headquarters}
+                  onChange={(e) => updateField('headquarters', e.target.value)}
+                  placeholder="Bengaluru, India"
+                />
+              )}
+            </Field>
+
+            <Field label="Team size" htmlFor="team-size-input" error={errors.teamSize}>
+              {(fieldProps) => (
+                <Input
+                  {...fieldProps}
+                  type="number"
+                  min="1"
+                  value={form.teamSize}
+                  onChange={(e) => updateField('teamSize', e.target.value)}
+                  placeholder="8"
+                />
+              )}
+            </Field>
+
+            <Field label="Founded year" htmlFor="founded-year-input" error={errors.foundedYear}>
+              {(fieldProps) => (
+                <Input
+                  {...fieldProps}
+                  type="number"
+                  min="1900"
+                  max="2100"
+                  value={form.foundedYear}
+                  onChange={(e) => updateField('foundedYear', e.target.value)}
+                  placeholder="2024"
+                />
+              )}
+            </Field>
+          </div>
+        </Card>
+
+        {/* Section 02: Stage-aware Metrics */}
+        <Card style={{ marginBottom: 'var(--space-6)' }}>
+          <div className="panel-heading">
+            <div>
+              <p className="eyebrow">02 · Stage-aware metrics</p>
+              <h2>Use the numbers that fit the journey.</h2>
+            </div>
+            <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)' }}>
+              Required fields update based on stage.
+            </span>
+          </div>
+
+          <Field label="Company stage" htmlFor="stage-selector" error={errors.stage} required>
+            {(fieldProps) => (
+              <Select
+                {...fieldProps}
+                value={form.stage}
+                onChange={(e) => updateStage(e.target.value as StartupStage)}
+              >
+                <option value="PRE_REVENUE">Pre-revenue</option>
+                <option value="EARLY_REVENUE">Early revenue</option>
+                <option value="GROWTH">Growth</option>
+              </Select>
+            )}
+          </Field>
+
+          <div className="field-grid" style={{ marginTop: 'var(--space-4)' }}>
+            {metrics.map((metric) => (
+              <Field
+                key={metric.key}
+                label={metric.label}
+                htmlFor={`metric-${metric.key}`}
+                suffix={metric.suffix}
+                error={errors[`metrics.${metric.key}`]}
+              >
+                {(fieldProps) => (
+                  <Input
+                    {...fieldProps}
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={form.metrics[metric.key] ?? ''}
+                    onChange={(e) => updateMetric(metric.key, e.target.value)}
+                    placeholder="0"
+                  />
+                )}
+              </Field>
+            ))}
+          </div>
+        </Card>
+
+        {/* Sticky Action Bar */}
+        <div className="stage-sticky-bar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+            <span
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: isDirty ? 'var(--warning)' : 'var(--positive)',
+              }}
+              aria-hidden="true"
+            />
+            <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-secondary)' }}>
+              {isDirty ? 'Unsaved changes' : 'All changes saved'}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+            <Button type="submit" variant="primary" size="md" loading={saving}>
+              {saving ? 'Saving…' : 'Save draft'}
+            </Button>
+
+            {profile && (
+              <Button
+                type="button"
+                variant="secondary"
+                size="md"
+                onClick={() => void handleSubmit()}
+                disabled={submitting || profile.reviewStatus === 'SUBMITTED'}
+                loading={submitting}
+                rightIcon={<Send size={14} strokeWidth={1.75} />}
+              >
+                {profile.reviewStatus === 'SUBMITTED' ? 'Submitted for review' : 'Submit for review'}
+              </Button>
+            )}
+          </div>
+        </div>
       </form>
 
-      <section className="stage3-panel documents-panel">
-        <div className="panel-heading"><div><p className="eyebrow">03 · Documents</p><h2>Keep supporting material close to the story.</h2></div><span>Link-based handling for this stage.</span></div>
-        {!profile && <EmptyState title="Save your profile first" description="Once a profile exists, you can add a pitch deck, financials, or other supporting links." />}
-        {profile && <>
-          <form className="document-form" onSubmit={handleAddDocument}>
-            <label className="field"><span>Type</span><select value={documentKind} onChange={(event) => setDocumentKind(event.target.value as DocumentKind)}><option value="PITCH_DECK">Pitch deck</option><option value="FINANCIALS">Financials</option><option value="OTHER">Other</option></select></label>
-            <label className="field"><span>Title</span><input value={documentTitle} onChange={(event) => setDocumentTitle(event.target.value)} placeholder="Investor deck · October 2026" /></label>
-            <label className="field"><span>Secure link</span><input type="url" value={documentUrl} onChange={(event) => setDocumentUrl(event.target.value)} placeholder="https://..." /></label>
-            <button className="button button-small" type="submit" disabled={addingDocument}>{addingDocument ? 'Adding…' : 'Add document'}</button>
-          </form>
-          {profile.documents.length === 0 ? <EmptyState title="No supporting documents yet" description="Add a link to the material that helps a reviewer understand the company." /> : <div className="document-list">{profile.documents.map((document) => <article className="document-row" key={document.id}><div><span className="document-kind">{document.kind.replace('_', ' ')}</span><strong>{document.title}</strong><a href={document.resourceUrl} target="_blank" rel="noreferrer">Open document ↗</a></div><button className="text-button" type="button" onClick={() => void handleDeleteDocument(document.id)}>Remove</button></article>)}</div>}
-        </>}
-      </section>
+      {/* Section 03: Documents */}
+      <Card style={{ marginTop: 'var(--space-8)' }}>
+        <div className="panel-heading">
+          <div>
+            <p className="eyebrow">03 · Documents</p>
+            <h2>Keep supporting material close to the story.</h2>
+          </div>
+          <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)' }}>
+            Link-based pitch decks and financial models.
+          </span>
+        </div>
+
+        {!profile ? (
+          <EmptyState
+            title="Save your company profile first"
+            description="Once your basic company profile is saved, you can attach links to pitch decks and financial models."
+          />
+        ) : (
+          <div>
+            <form onSubmit={handleAddDocument} style={{ display: 'grid', gridTemplateColumns: '140px 1fr 1fr auto', gap: 'var(--space-3)', alignItems: 'flex-end', marginBottom: 'var(--space-6)' }}>
+              <Field label="Type" htmlFor="doc-type-select">
+                {(fieldProps) => (
+                  <Select
+                    {...fieldProps}
+                    value={documentKind}
+                    onChange={(e) => setDocumentKind(e.target.value as DocumentKind)}
+                  >
+                    <option value="PITCH_DECK">Pitch deck</option>
+                    <option value="FINANCIALS">Financials</option>
+                    <option value="OTHER">Other</option>
+                  </Select>
+                )}
+              </Field>
+
+              <Field label="Title" htmlFor="doc-title-input" required>
+                {(fieldProps) => (
+                  <Input
+                    {...fieldProps}
+                    value={documentTitle}
+                    onChange={(e) => setDocumentTitle(e.target.value)}
+                    placeholder="e.g. Investor Deck · Oct 2026"
+                  />
+                )}
+              </Field>
+
+              <Field label="Secure Link URL" htmlFor="doc-url-input" required>
+                {(fieldProps) => (
+                  <Input
+                    {...fieldProps}
+                    type="url"
+                    value={documentUrl}
+                    onChange={(e) => setDocumentUrl(e.target.value)}
+                    placeholder="https://..."
+                  />
+                )}
+              </Field>
+
+              <div style={{ marginBottom: 'var(--space-1)' }}>
+                <Button type="submit" variant="secondary" size="md" loading={addingDocument}>
+                  Add link
+                </Button>
+              </div>
+            </form>
+
+            {profile.documents.length === 0 ? (
+              <EmptyState
+                title="No supporting documents attached"
+                description="Add a link to the deck or model that helps reviewers and investors evaluate your startup."
+              />
+            ) : (
+              <TableWrapper>
+                <Table>
+                  <thead>
+                    <tr>
+                      <Th>Kind</Th>
+                      <Th>Document Title</Th>
+                      <Th>Link</Th>
+                      <Th numeric>Action</Th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {profile.documents.map((doc) => (
+                      <tr key={doc.id}>
+                        <Td>
+                          <Badge variant="neutral">{doc.kind.replace('_', ' ')}</Badge>
+                        </Td>
+                        <Td>
+                          <strong>{doc.title}</strong>
+                        </Td>
+                        <Td>
+                          <a
+                            href={doc.resourceUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--accent)', fontSize: 'var(--font-small)' }}
+                          >
+                            <span>Open document</span>
+                            <ExternalLink size={12} strokeWidth={1.75} />
+                          </a>
+                        </Td>
+                        <Td numeric>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => void handleDeleteDocument(doc.id)}
+                            style={{ color: 'var(--negative-text)' }}
+                          >
+                            Remove
+                          </Button>
+                        </Td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </TableWrapper>
+            )}
+          </div>
+        )}
+      </Card>
     </div>
   )
 }

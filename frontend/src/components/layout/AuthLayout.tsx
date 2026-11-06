@@ -1,7 +1,14 @@
 import { Link } from 'react-router-dom'
 import type { ReactNode } from 'react'
+import { ThemeToggle } from '../../design-system/ThemeToggle'
 
-export function AuthLayout({ eyebrow, title, description, children, footer }: {
+export function AuthLayout({
+  eyebrow,
+  title,
+  description,
+  children,
+  footer,
+}: {
   eyebrow: string
   title: string
   description: string
@@ -9,23 +16,13 @@ export function AuthLayout({ eyebrow, title, description, children, footer }: {
   footer: ReactNode
 }) {
   return (
-    <main className="auth-page">
-      <div className="auth-visual" aria-hidden="true">
-        <div className="visual-grid" />
-        <div className="visual-orb visual-orb-one" />
-        <div className="visual-orb visual-orb-two" />
-        <Link className="auth-brand" to="/">
-          <span className="brand-mark">V</span>
-          <span>Ventureline</span>
-        </Link>
-        <div className="visual-note">
-          <span>Ventureline / 02</span>
-          <strong>Make the next move with a clearer view.</strong>
-        </div>
+    <main className="auth-page" style={{ position: 'relative' }}>
+      <div style={{ position: 'absolute', top: 'var(--space-6)', right: 'var(--space-6)' }}>
+        <ThemeToggle />
       </div>
-      <section className="auth-panel" aria-labelledby="auth-title">
-        <Link className="mobile-auth-brand" to="/">
-          <span className="brand-mark">V</span>
+      <div className="auth-panel">
+        <Link className="auth-brand-center" to="/" aria-label="Ventureline home">
+          <span className="brand-mark" aria-hidden="true">V</span>
           <span>Ventureline</span>
         </Link>
         <div className="auth-panel-inner">
@@ -35,7 +32,7 @@ export function AuthLayout({ eyebrow, title, description, children, footer }: {
           {children}
           <div className="auth-footer">{footer}</div>
         </div>
-      </section>
+      </div>
     </main>
   )
 }

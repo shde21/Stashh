@@ -1,9 +1,27 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { ApiError } from '../lib/api'
-import { EmptyState, FullPageLoading } from '../components/feedback/States'
+import { FullPageLoading } from '../components/feedback/States'
 import { useAuth } from '../auth/useAuth'
 import { fetchStartupPool, saveStartupPool, setStartupPoolStatus } from '../fundraising/fundraising.api'
 import type { FundraisingPool, FundraisingPoolInput } from '../fundraising/fundraising.types'
+import {
+  Badge,
+  Button,
+  Card,
+  Field,
+  Input,
+  Modal,
+  ProgressBar,
+  Stat,
+  StatusPill,
+  daysLeft,
+  formatCompactINR,
+  formatDate,
+  formatINR,
+  formatQuants,
+  useToast,
+} from '../design-system'
+import { AlertCircle, Calendar, Eye, Lock, Play } from 'lucide-react'
 
 type FieldErrors = Record<string, string>
 
@@ -48,12 +66,10 @@ function inputFromForm(form: FormState): FundraisingPoolInput {
   }
 }
 
-function money(value: number) {
-  return `₹${value.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
-}
-
 export default function StartupFundraisingPage() {
   const { withCsrf } = useAuth()
+  const { showToast } = useToast()
+
   const [pool, setPool] = useState<FundraisingPool>()
   const [form, setForm] = useState<FormState>(emptyForm)
   const [errors, setErrors] = useState<FieldErrors>({})
@@ -61,6 +77,9 @@ export default function StartupFundraisingPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [changingStatus, setChangingStatus] = useState(false)
+
+  // Status Change Confirmation Modal
+  const [pendingStatusChange, setPendingStatusChange] = useState<'OPEN' | 'CLOSED' | null>(null)
 
   useEffect(() => {
     fetchStartupPool()
@@ -89,23 +108,29 @@ export default function StartupFundraisingPage() {
       const saved = await withCsrf((token) => saveStartupPool(inputFromForm(form), token))
       setPool(saved)
       setForm(formFromPool(saved))
+      showToast('Fundraising terms saved successfully.', 'success')
     } catch (error: unknown) {
       if (error instanceof ApiError) {
         setErrors(error.fieldErrors)
         setFormError(error.message)
-      } else setFormError(error instanceof Error ? error.message : 'The pool could not be saved.')
+      } else {
+        setFormError(error instanceof Error ? error.message : 'The pool could not be saved.')
+      }
     } finally {
       setSaving(false)
     }
   }
 
-  async function changeStatus(status: 'OPEN' | 'CLOSED') {
+  async function handleConfirmStatusChange() {
+    if (!pendingStatusChange) return
     setChangingStatus(true)
     setFormError('')
     try {
-      const updated = await withCsrf((token) => setStartupPoolStatus(status, token))
+      const updated = await withCsrf((token) => setStartupPoolStatus(pendingStatusChange, token))
       setPool(updated)
       setForm(formFromPool(updated))
+      showToast(`Fundraising pool is now ${pendingStatusChange.toLowerCase()}.`, 'success')
+      setPendingStatusChange(null)
     } catch (error: unknown) {
       if (error instanceof ApiError) setFormError(error.message)
       else setFormError(error instanceof Error ? error.message : 'The pool status could not be changed.')
@@ -116,27 +141,310 @@ export default function StartupFundraisingPage() {
 
   if (loading) return <FullPageLoading label="Loading fundraising workspace…" />
 
-  const progress = pool && pool.targetAmount > 0 ? Math.min(100, (pool.totalCommitted / pool.targetAmount) * 100) : 0
+  const target = Number(form.targetAmount) || (pool?.targetAmount ?? 0)
+  const committed = pool?.totalCommitted ?? 0
+  const progress = target > 0 ? Math.min(100, (committed / target) * 100) : 0
+  const remaining = Math.max(0, target - committed)
+  const days = daysLeft(form.endsAt)
 
   return (
     <div className="dashboard-page">
-      <div className="page-heading"><div><p className="eyebrow">Fundraising</p><h1>Make the round easy to understand.</h1><p>Configure a simulated fundraising pool with clear limits. No money moves here—commitments are illustrative and stored for the workflow.</p></div>{pool && <span className={`status-badge status-${pool.status.toLowerCase()}`}>{pool.status}</span>}</div>
+      {/* Header */}
+      <div className="page-heading">
+        <div>
+          <p className="eyebrow">Fundraising Workspace</p>
+          <h1>Make the round easy to understand.</h1>
+          <p>
+            Configure simulated fundraising terms with clear limits. 1 QUANT = ₹1,000 committed. Allocations are simulated and recorded for marketplace evaluation.
+          </p>
+        </div>
+        {pool && <StatusPill status={pool.status} />}
+      </div>
+
       {formError && <div className="form-alert" role="alert">{formError}</div>}
-      {!pool && <div className="review-note"><strong>Before you open a pool</strong><span>Your startup profile must be approved and public by an admin. You can prepare the terms after Stage 3 approval.</span></div>}
-      {pool && <section className="metric-grid" aria-label="Fundraising summary"><article className="metric-card"><span>Target</span><strong>{money(pool.targetAmount)}</strong><small>{pool.title}</small></article><article className="metric-card"><span>Committed</span><strong>{money(pool.totalCommitted)}</strong><small>{pool.commitmentCount} active commitments</small></article><article className="metric-card"><span>Progress</span><strong>{progress.toFixed(0)}%</strong><small>{pool.status.toLowerCase()} pool</small></article></section>}
 
-      <section className="stage3-panel">
-        <div className="panel-heading"><div><p className="eyebrow">01 · Round terms</p><h2>Set the boundaries investors can trust.</h2></div><span>Currency: INR</span></div>
-        <form className="stage3-form" onSubmit={handleSave} noValidate>
-          <label className="field"><span>Round title</span><input value={form.title} onChange={(event) => updateField('title', event.target.value)} aria-invalid={Boolean(errors.title)} placeholder="Seed round · 2026" />{errors.title && <small className="field-error">{errors.title}</small>}</label>
-          <div className="field-grid"><label className="field"><span>Target amount <small className="field-suffix">₹</small></span><input type="number" min="1" step="1" value={form.targetAmount} onChange={(event) => updateField('targetAmount', event.target.value)} aria-invalid={Boolean(errors.targetAmount)} placeholder="2500000" />{errors.targetAmount && <small className="field-error">{errors.targetAmount}</small>}</label><label className="field"><span>Minimum commitment <small className="field-suffix">₹</small></span><input type="number" min="1" step="1" value={form.minCommitment} onChange={(event) => updateField('minCommitment', event.target.value)} aria-invalid={Boolean(errors.minCommitment)} placeholder="25000" />{errors.minCommitment && <small className="field-error">{errors.minCommitment}</small>}</label></div>
-          <div className="field-grid"><label className="field"><span>Maximum commitment <small className="field-suffix">optional · ₹</small></span><input type="number" min="1" step="1" value={form.maxCommitment} onChange={(event) => updateField('maxCommitment', event.target.value)} aria-invalid={Boolean(errors.maxCommitment)} placeholder="500000" />{errors.maxCommitment && <small className="field-error">{errors.maxCommitment}</small>}</label><label className="field"><span>Valuation cap <small className="field-suffix">optional · ₹</small></span><input type="number" min="1" step="1" value={form.valuationCap} onChange={(event) => updateField('valuationCap', event.target.value)} aria-invalid={Boolean(errors.valuationCap)} placeholder="25000000" />{errors.valuationCap && <small className="field-error">{errors.valuationCap}</small>}</label></div>
-          <label className="field"><span>Pool closes</span><input type="datetime-local" value={form.endsAt} onChange={(event) => updateField('endsAt', event.target.value)} aria-invalid={Boolean(errors.endsAt)} />{errors.endsAt && <small className="field-error">{errors.endsAt}</small>}</label>
-          <div className="stage3-actions"><button className="button" type="submit" disabled={saving}>{saving ? 'Saving terms…' : 'Save terms'} {!saving && <span>↗</span>}</button>{pool && pool.status !== 'OPEN' && <button className="button button-secondary" type="button" onClick={() => void changeStatus('OPEN')} disabled={changingStatus}>{changingStatus ? 'Opening…' : 'Open pool'}</button>}{pool?.status === 'OPEN' && <button className="button button-secondary" type="button" onClick={() => void changeStatus('CLOSED')} disabled={changingStatus}>{changingStatus ? 'Closing…' : 'Close pool'}</button>}</div>
-        </form>
-      </section>
+      {!pool && (
+        <Card style={{ backgroundColor: 'var(--surface-muted)', borderLeft: '3px solid var(--accent)' }}>
+          <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+            <AlertCircle size={20} strokeWidth={1.75} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+            <div>
+              <strong style={{ display: 'block', fontSize: 'var(--font-small)' }}>Before opening a round</strong>
+              <p style={{ fontSize: 'var(--font-small)', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                Your company profile must be approved and set to public by an administrator. You can configure and save your terms below in advance.
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
 
-      <section className="stage3-panel documents-panel"><div className="panel-heading"><div><p className="eyebrow">02 · Capacity</p><h2>See the round fill in real time.</h2></div><span>{pool ? `${progress.toFixed(0)}% of target` : 'No pool yet'}</span></div>{pool ? <><div className="progress-track" aria-label="Fundraising progress"><span style={{ width: `${progress}%` }} /></div><div className="startup-card-footer"><span>{money(pool.totalCommitted)} committed</span><span>{money(Math.max(0, pool.targetAmount - pool.totalCommitted))} remaining</span></div></> : <EmptyState title="No fundraising pool configured" description="Save approved, public round terms to start showing capacity and simulated commitments." />}</section>
+      {/* Hero Stats */}
+      {pool && (
+        <div className="metric-grid" aria-label="Fundraising summary">
+          <Card>
+            <Stat label="Target Amount" value={formatINR(pool.targetAmount)} subtext={pool.title} />
+          </Card>
+          <Card>
+            <Stat
+              label="Committed Capacity"
+              value={formatINR(pool.totalCommitted)}
+              subtext={`${pool.commitmentCount} active commitments (${formatQuants(pool.totalCommitted / 1000)} QUANTS)`}
+            />
+          </Card>
+          <Card>
+            <Stat
+              label="Remaining Capacity"
+              value={formatINR(remaining)}
+              subtext={`${progress.toFixed(0)}% subscribed`}
+            />
+          </Card>
+        </div>
+      )}
+
+      {/* Two Column Layout: Terms Form on Left, Live Preview on Right */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 'var(--space-8)', alignItems: 'start' }}>
+        {/* Left Column: Form */}
+        <div>
+          <form onSubmit={handleSave} className="vl-card" noValidate>
+            <div className="panel-heading">
+              <div>
+                <p className="eyebrow">Round Parameters</p>
+                <h2>Configure round terms</h2>
+              </div>
+              <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)' }}>
+                Currency: INR (₹)
+              </span>
+            </div>
+
+            <Field label="Round title" htmlFor="round-title-input" error={errors.title} required>
+              {(fieldProps) => (
+                <Input
+                  {...fieldProps}
+                  value={form.title}
+                  onChange={(e) => updateField('title', e.target.value)}
+                  placeholder="e.g. Seed Round · 2026"
+                />
+              )}
+            </Field>
+
+            <div className="field-grid">
+              <Field
+                label="Target amount"
+                htmlFor="target-amount-input"
+                suffix="₹"
+                error={errors.targetAmount}
+                required
+              >
+                {(fieldProps) => (
+                  <Input
+                    {...fieldProps}
+                    type="number"
+                    min="1"
+                    step="1000"
+                    value={form.targetAmount}
+                    onChange={(e) => updateField('targetAmount', e.target.value)}
+                    placeholder="2500000"
+                  />
+                )}
+              </Field>
+
+              <Field
+                label="Minimum commitment"
+                htmlFor="min-commitment-input"
+                suffix="₹"
+                error={errors.minCommitment}
+                required
+              >
+                {(fieldProps) => (
+                  <Input
+                    {...fieldProps}
+                    type="number"
+                    min="1"
+                    step="1000"
+                    value={form.minCommitment}
+                    onChange={(e) => updateField('minCommitment', e.target.value)}
+                    placeholder="25000"
+                  />
+                )}
+              </Field>
+            </div>
+
+            <div className="field-grid">
+              <Field
+                label="Maximum commitment"
+                htmlFor="max-commitment-input"
+                suffix="Optional · ₹"
+                error={errors.maxCommitment}
+              >
+                {(fieldProps) => (
+                  <Input
+                    {...fieldProps}
+                    type="number"
+                    min="1"
+                    step="1000"
+                    value={form.maxCommitment}
+                    onChange={(e) => updateField('maxCommitment', e.target.value)}
+                    placeholder="500000"
+                  />
+                )}
+              </Field>
+
+              <Field
+                label="Valuation cap"
+                htmlFor="val-cap-input"
+                suffix="Optional · ₹"
+                error={errors.valuationCap}
+              >
+                {(fieldProps) => (
+                  <Input
+                    {...fieldProps}
+                    type="number"
+                    min="1"
+                    step="1000"
+                    value={form.valuationCap}
+                    onChange={(e) => updateField('valuationCap', e.target.value)}
+                    placeholder="25000000"
+                  />
+                )}
+              </Field>
+            </div>
+
+            <Field label="Pool closing date" htmlFor="close-date-input" error={errors.endsAt}>
+              {(fieldProps) => (
+                <Input
+                  {...fieldProps}
+                  type="datetime-local"
+                  value={form.endsAt}
+                  onChange={(e) => updateField('endsAt', e.target.value)}
+                />
+              )}
+            </Field>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'var(--space-6)', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--border)' }}>
+              <Button type="submit" variant="primary" size="md" loading={saving}>
+                {saving ? 'Saving terms…' : 'Save terms'}
+              </Button>
+
+              {pool && pool.status !== 'OPEN' && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="md"
+                  onClick={() => setPendingStatusChange('OPEN')}
+                  leftIcon={<Play size={14} strokeWidth={1.75} />}
+                >
+                  Open pool
+                </Button>
+              )}
+
+              {pool?.status === 'OPEN' && (
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="md"
+                  onClick={() => setPendingStatusChange('CLOSED')}
+                  leftIcon={<Lock size={14} strokeWidth={1.75} />}
+                >
+                  Close pool
+                </Button>
+              )}
+            </div>
+          </form>
+        </div>
+
+        {/* Right Column: Live Investor Preview */}
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-3)' }}>
+            <Eye size={16} strokeWidth={1.75} style={{ color: 'var(--text-secondary)' }} />
+            <span style={{ fontSize: 'var(--font-caption)', fontWeight: 'var(--weight-semibold)', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Live Investor Preview
+            </span>
+          </div>
+
+          <Card className="startup-card" style={{ border: '1px solid var(--border-strong)', boxShadow: 'var(--shadow-sm)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+                <Badge variant="neutral">{pool?.sector || 'Sector'}</Badge>
+                <Badge variant="neutral">{pool?.stage.replace('_', ' ') || 'Stage'}</Badge>
+              </div>
+              <StatusPill status={pool?.status || 'DRAFT'} />
+            </div>
+
+            <h2 style={{ fontSize: 'var(--font-h3)', margin: 'var(--space-2) 0 4px 0' }}>
+              {pool?.companyName || 'Your Company Name'}
+            </h2>
+            <p style={{ fontSize: 'var(--font-small)', color: 'var(--text-secondary)', minHeight: '36px' }}>
+              {form.title || 'Seed round · 2026'}
+            </p>
+
+            <div className="pool-terms">
+              <span>
+                <strong>Target</strong>
+                {target > 0 ? formatCompactINR(target) : '₹0'}
+              </span>
+              <span>
+                <strong>Valuation cap</strong>
+                {form.valuationCap ? formatCompactINR(Number(form.valuationCap)) : 'None'}
+              </span>
+              <span>
+                <strong>Min. commit</strong>
+                {form.minCommitment ? formatINR(Number(form.minCommitment)) : '—'}
+              </span>
+            </div>
+
+            <div style={{ marginTop: 'var(--space-3)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 'var(--font-caption)', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                <span>{formatCompactINR(committed)} committed ({progress.toFixed(0)}%)</span>
+                <span>{formatCompactINR(remaining)} remaining</span>
+              </div>
+              <ProgressBar value={progress} />
+            </div>
+
+            {days != null && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)', marginTop: 'var(--space-2)' }}>
+                <Calendar size={12} strokeWidth={1.75} />
+                <span>Closing {formatDate(form.endsAt)} ({days} days left)</span>
+              </div>
+            )}
+
+            <div style={{ marginTop: 'var(--space-4)', padding: 'var(--space-2) var(--space-3)', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-md)', textAlign: 'center', fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)' }}>
+              1 QUANT = ₹1,000 · Preview only
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      {/* Confirmation Dialog for Open/Close Pool */}
+      <Modal
+        isOpen={Boolean(pendingStatusChange)}
+        onClose={() => setPendingStatusChange(null)}
+        title={pendingStatusChange === 'OPEN' ? 'Open fundraising pool?' : 'Close fundraising pool?'}
+        description={
+          pendingStatusChange === 'OPEN'
+            ? 'Opening the pool makes your round terms visible in the investor discovery feed and allows simulated commitments to be recorded.'
+            : 'Closing the pool stops accepting new simulated commitments from investors. Existing commitments remain preserved.'
+        }
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setPendingStatusChange(null)} disabled={changingStatus}>
+              Cancel
+            </Button>
+            <Button
+              variant={pendingStatusChange === 'OPEN' ? 'primary' : 'destructive'}
+              loading={changingStatus}
+              onClick={() => void handleConfirmStatusChange()}
+            >
+              {pendingStatusChange === 'OPEN' ? 'Confirm & Open' : 'Confirm & Close'}
+            </Button>
+          </>
+        }
+      >
+        <div style={{ display: 'flex', gap: 'var(--space-3)', padding: 'var(--space-3)', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+          <AlertCircle size={18} strokeWidth={1.75} style={{ color: 'var(--accent)', flexShrink: 0 }} />
+          <p style={{ fontSize: 'var(--font-small)', color: 'var(--text)', margin: 0 }}>
+            Ensure your terms are verified. Changes can be saved at any time.
+          </p>
+        </div>
+      </Modal>
     </div>
   )
 }
