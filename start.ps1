@@ -1,4 +1,4 @@
-Write-Host "=== Starting Startup Investment Platform ===" -ForegroundColor Cyan
+Write-Host "=== Starting Stashh Platform ===" -ForegroundColor Cyan
 
 # 1. Check & start PostgreSQL
 Write-Host "[1/3] Ensuring PostgreSQL container is running..." -ForegroundColor Yellow

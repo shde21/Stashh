@@ -1,6 +1,6 @@
-# Startup Investment Platform
+# Stashh — Startup Investment Platform
 
-Startup Investment Platform is a local-first simulated investment platform for founders, investors, and administrators. Founders can create and submit company profiles, administrators can review and publish approved companies, and investors can discover fundraising opportunities, record simulated commitments, track portfolio values, and interact with startups.
+Stashh is a local-first simulated equity investment and fundraising platform for founders, investors, and administrators. Founders can create and submit company profiles, administrators can review and publish approved companies, and investors can discover fundraising opportunities, record simulated equity commitments, track portfolio values, and interact with startups.
 
 ## What the platform provides
 
