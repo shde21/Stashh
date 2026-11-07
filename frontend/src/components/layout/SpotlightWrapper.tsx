@@ -1,16 +1,16 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 
-export interface DashboardSpotlightWrapperProps {
+export interface SpotlightWrapperProps {
   children: ReactNode
   className?: string
 }
 
 /**
- * Ambient, interactive cursor-following radial spotlight glow exclusively for the Dashboard.
+ * Ambient, interactive cursor-following radial spotlight glow.
  * Operates purely on CSS variables updated via requestAnimationFrame for 60fps+ performance
  * with zero React state re-render penalty.
  */
-export function DashboardSpotlightWrapper({ children, className = '' }: DashboardSpotlightWrapperProps) {
+export function SpotlightWrapper({ children, className = '' }: SpotlightWrapperProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const rafIdRef = useRef<number | null>(null)
   const latestMouseRef = useRef<{ x: number; y: number } | null>(null)
@@ -28,11 +28,7 @@ export function DashboardSpotlightWrapper({ children, className = '' }: Dashboar
     }
 
     const handleMouseMove = (event: MouseEvent) => {
-      const rect = container.getBoundingClientRect()
-      const x = event.clientX - rect.left
-      const y = event.clientY - rect.top
-      latestMouseRef.current = { x, y }
-
+      latestMouseRef.current = { x: event.clientX, y: event.clientY }
       container.style.setProperty('--spotlight-opacity', '1')
 
       if (rafIdRef.current === null) {
@@ -52,14 +48,14 @@ export function DashboardSpotlightWrapper({ children, className = '' }: Dashboar
       container.style.setProperty('--spotlight-opacity', '1')
     }
 
-    container.addEventListener('mousemove', handleMouseMove, { passive: true })
-    container.addEventListener('mouseleave', handleMouseLeave)
-    container.addEventListener('mouseenter', handleMouseEnter)
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
+    document.addEventListener('mouseleave', handleMouseLeave)
+    document.addEventListener('mouseenter', handleMouseEnter)
 
     return () => {
-      container.removeEventListener('mousemove', handleMouseMove)
-      container.removeEventListener('mouseleave', handleMouseLeave)
-      container.removeEventListener('mouseenter', handleMouseEnter)
+      window.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseleave', handleMouseLeave)
+      document.removeEventListener('mouseenter', handleMouseEnter)
       if (rafIdRef.current !== null) {
         cancelAnimationFrame(rafIdRef.current)
         rafIdRef.current = null
@@ -68,17 +64,11 @@ export function DashboardSpotlightWrapper({ children, className = '' }: Dashboar
   }, [])
 
   return (
-    <div
-      ref={containerRef}
-      className={`dashboard-spotlight-wrapper ${className}`}
-    >
-      {/* Background radial spotlight glow layer (pointer-events: none, z-index: 0) */}
-      <div
-        className="dashboard-spotlight-glow"
-        aria-hidden="true"
-      />
-      {/* Interactive dashboard content layer (relative, z-index: 1) */}
-      <div className="dashboard-spotlight-content">
+    <div ref={containerRef} className={`spotlight-wrapper ${className}`}>
+      {/* Background radial spotlight glow layer (fixed, pointer-events: none, z-index: 0) */}
+      <div className="spotlight-glow" aria-hidden="true" />
+      {/* Interactive content layer (relative, z-index: 1) */}
+      <div className="spotlight-content">
         {children}
       </div>
     </div>

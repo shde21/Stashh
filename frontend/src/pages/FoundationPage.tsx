@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { fetchPlatformStatus, type PlatformStatus } from '../lib/api'
 import { Badge, Button, Card, ProgressBar, Stat, StatusPill, ThemeToggle } from '../design-system'
 import { ArrowRight, ShieldCheck, TrendingUp } from 'lucide-react'
+import { SpotlightWrapper } from '../components/layout/SpotlightWrapper'
 
 type ViewState =
   | { kind: 'loading' }
@@ -27,7 +28,8 @@ export default function FoundationPage() {
   }, [])
 
   return (
-    <div className="shell public-shell">
+    <SpotlightWrapper>
+      <div className="shell public-shell">
       {/* Top Navigation */}
       <nav className="topbar" aria-label="Primary navigation">
         <Link className="brand" to="/" aria-label="Stashh home">
@@ -227,5 +229,6 @@ export default function FoundationPage() {
         <span>Simulation platform · Designed for clarity and trust.</span>
       </footer>
     </div>
+    </SpotlightWrapper>
   )
 }
