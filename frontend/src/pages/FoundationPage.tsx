@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchPlatformStatus, type PlatformStatus } from '../lib/api'
 import { Badge, Button, ProgressBar, Stat, StatusPill, ThemeToggle } from '../design-system'
-import { ArrowRight, ShieldCheck, TrendingUp } from 'lucide-react'
-import { LandingTorchReveal } from '../components/layout/LandingTorchReveal'
+import { ArrowRight, ShieldCheck, TrendingUp, Sparkles, CheckCircle2 } from 'lucide-react'
+import { LandingTorchReveal, InteractiveStartupTorchGrid } from '../components/layout/LandingTorchReveal'
 import { GrowwInteractiveCard } from '../components/layout/GrowwInteractiveCard'
 
 type ViewState =
@@ -48,14 +48,28 @@ export default function FoundationPage() {
 
       <main>
         {/* Section 1: Hero */}
-        <section className="hero" aria-labelledby="hero-title" style={{ padding: 'var(--space-8) 0' }}>
+        <section className="hero" aria-labelledby="hero-title" style={{ padding: 'var(--space-8) 0 var(--space-12) 0' }}>
           <div className="hero-copy">
-            <p className="eyebrow">Simulated Capital Marketplace</p>
-            <h1 id="hero-title">Invest and raise with precision.</h1>
-            <p className="hero-summary">
+            {/* Groww-style live badge */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)', padding: '4px 12px', borderRadius: '999px', backgroundColor: 'rgba(0, 208, 156, 0.08)', border: '1px solid rgba(0, 208, 156, 0.25)', marginBottom: 'var(--space-4)', width: 'fit-content' }}>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent)', boxShadow: '0 0 8px var(--accent)' }} />
+              <span style={{ fontSize: '12px', fontWeight: 'var(--weight-semibold)', color: 'var(--accent)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                Live Simulated Marketplace · Verified Equity
+              </span>
+            </div>
+
+            <h1 id="hero-title" style={{ fontSize: 'clamp(2.4rem, 4.8vw, 3.6rem)', lineHeight: 1.15, fontWeight: 'var(--weight-bold)', letterSpacing: '-0.03em', margin: '0 0 var(--space-4) 0' }}>
+              Invest and raise with{' '}
+              <span style={{ background: 'linear-gradient(135deg, #00D09C 0%, #00B588 50%, #059669 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                algorithmic precision.
+              </span>
+            </h1>
+
+            <p className="hero-summary" style={{ fontSize: 'var(--font-h3)', lineHeight: 'var(--lh-h3)', color: 'var(--text-secondary)', margin: '0 0 var(--space-6) 0' }}>
               A calm, trustworthy investment environment where startups publish verified metrics and investors evaluate company-specific equity shares.
             </p>
-            <div className="hero-actions" aria-label="Get started">
+
+            <div className="hero-actions" aria-label="Get started" style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', marginBottom: 'var(--space-8)' }}>
               <Link to="/register?role=STARTUP">
                 <Button variant="primary" size="lg" rightIcon={<ArrowRight size={16} strokeWidth={1.75} />}>
                   Raise capital
@@ -67,12 +81,28 @@ export default function FoundationPage() {
                 </Button>
               </Link>
             </div>
+
+            {/* Quick trust metrics row */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-4)', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--border)' }}>
+              <div>
+                <strong style={{ fontSize: 'var(--font-h3)', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>₹25+ Cr</strong>
+                <p style={{ fontSize: 'var(--font-caption)', color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>Simulated pipeline</p>
+              </div>
+              <div>
+                <strong style={{ fontSize: 'var(--font-h3)', color: 'var(--accent)', fontVariantNumeric: 'tabular-nums' }}>0%</strong>
+                <p style={{ fontSize: 'var(--font-caption)', color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>Capital risk</p>
+              </div>
+              <div>
+                <strong style={{ fontSize: 'var(--font-h3)', color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>100%</strong>
+                <p style={{ fontSize: 'var(--font-caption)', color: 'var(--text-secondary)', margin: '2px 0 0 0' }}>Deterministic cap math</p>
+              </div>
+            </div>
           </div>
 
           {/* Connected Core Platform Status */}
           <GrowwInteractiveCard
             className="status-card"
-            enableTilt={false}
+            enableTilt={true}
             enableGlare={true}
             style={{ borderRadius: 'var(--radius-lg)' }}
             contentStyle={{ padding: 0 }}
@@ -122,7 +152,21 @@ export default function FoundationPage() {
           </GrowwInteractiveCard>
         </section>
 
-        {/* Section 2: Real UI Product Preview */}
+        {/* Section 2: Interactive Startup Torch Showcase */}
+        <section aria-labelledby="startups-title" style={{ marginBottom: 'var(--space-16)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+            <div>
+              <p className="eyebrow" id="startups-title">Platform Ecosystem · Torch Reveal</p>
+              <h2 style={{ fontSize: 'var(--font-h2)', margin: 'var(--space-1) 0 0 0' }}>Verified platform startups</h2>
+            </div>
+            <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-secondary)' }}>
+              Hover over cards to illuminate geometric insignias and cap terms
+            </span>
+          </div>
+          <InteractiveStartupTorchGrid />
+        </section>
+
+        {/* Section 3: Real UI Product Preview */}
         <section aria-labelledby="preview-title" style={{ marginBottom: 'var(--space-16)' }}>
           <p className="eyebrow" id="preview-title">Product preview</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'var(--space-6)', marginTop: 'var(--space-4)' }}>
@@ -189,7 +233,7 @@ export default function FoundationPage() {
           </div>
         </section>
 
-        {/* Section 3: How it Works (3 clean rows with subtle 3D tilt) */}
+        {/* Section 4: How it Works (3 clean rows with subtle 3D tilt) */}
         <section aria-labelledby="how-it-works-title" style={{ marginBottom: 'var(--space-16)' }}>
           <p className="eyebrow" id="how-it-works-title">Operating Model</p>
           <h2 style={{ marginBottom: 'var(--space-8)' }}>How Stashh works</h2>
@@ -236,7 +280,7 @@ export default function FoundationPage() {
           </div>
         </section>
 
-        {/* Section 4: Simulation Disclaimer & Footer */}
+        {/* Section 5: Simulation Disclaimer & Footer */}
         <section aria-label="Simulation compliance notice" style={{ textAlign: 'center', padding: 'var(--space-8) var(--space-4)', backgroundColor: 'var(--bg-subtle)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', marginBottom: 'var(--space-12)' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
             <ShieldCheck size={18} strokeWidth={1.75} style={{ color: 'var(--text-secondary)' }} />

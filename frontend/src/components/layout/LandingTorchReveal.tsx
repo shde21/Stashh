@@ -113,11 +113,26 @@ function getInsigniaIndex(str: string): number {
   return Math.abs(hash) % INSIGNIA_COMPONENTS.length
 }
 
-interface RegisteredCompanyItem {
+export interface RegisteredCompanyItem {
   id: number
   companyName: string
   sector?: string | null
+  stage?: string | null
+  target?: string | null
 }
+
+export const DEFAULT_PLATFORM_STARTUPS: RegisteredCompanyItem[] = [
+  { id: 1, companyName: 'Apex Solar', sector: 'CleanTech', stage: 'Pre-Revenue', target: '₹1.5 Cr' },
+  { id: 2, companyName: 'CarbonGrid Technologies', sector: 'Climate Software', stage: 'Seed', target: '₹2.5 Cr' },
+  { id: 3, companyName: 'NeuroPulse Bio', sector: 'DeepTech AI', stage: 'Early Stage', target: '₹4.0 Cr' },
+  { id: 4, companyName: 'AeroDynamics AI', sector: 'Robotics', stage: 'Seed', target: '₹3.2 Cr' },
+  { id: 5, companyName: 'QuantumPay Network', sector: 'Fintech', stage: 'Series A', target: '₹8.0 Cr' },
+  { id: 6, companyName: 'BioGenetics Health', sector: 'HealthTech', stage: 'Seed', target: '₹2.8 Cr' },
+  { id: 7, companyName: 'Krypton Logistics', sector: 'Supply Chain', stage: 'Series A', target: '₹6.5 Cr' },
+  { id: 8, companyName: 'Nexus Cloud Grid', sector: 'Enterprise SaaS', stage: 'Seed', target: '₹3.5 Cr' },
+]
+
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080').replace(/\/$/, '')
 
 export function LandingTorchReveal({
   children,
@@ -127,7 +142,9 @@ export function LandingTorchReveal({
   const containerRef = useRef<HTMLDivElement>(null)
   const rafIdRef = useRef<number | null>(null)
   const latestMouseRef = useRef<{ x: number; y: number } | null>(null)
-  const [companies, setCompanies] = useState<RegisteredCompanyItem[]>(initialStartups || [])
+  const [companies, setCompanies] = useState<RegisteredCompanyItem[]>(
+    initialStartups && initialStartups.length > 0 ? initialStartups : DEFAULT_PLATFORM_STARTUPS,
+  )
 
   useEffect(() => {
     if (initialStartups && initialStartups.length > 0) {
@@ -141,11 +158,17 @@ export function LandingTorchReveal({
 
     let active = true
 
-    fetch('/api/v1/platform/startups')
+    fetch(`${API_BASE}/api/v1/platform/startups`)
       .then((res) => (res.ok ? res.json() : []))
       .then((list: RegisteredCompanyItem[]) => {
         if (active && Array.isArray(list) && list.length > 0) {
-          setCompanies(list)
+          // Merge API approved startups with default showcase items so grid is rich
+          const existingNames = new Set(list.map((s) => s.companyName.toLowerCase()))
+          const merged = [
+            ...list,
+            ...DEFAULT_PLATFORM_STARTUPS.filter((d) => !existingNames.has(d.companyName.toLowerCase())),
+          ]
+          setCompanies(merged)
         }
       })
       .catch(() => {})
@@ -242,6 +265,103 @@ export function LandingTorchReveal({
       <div className="landing-torch-content">
         {children}
       </div>
+    </div>
+  )
+}
+
+export function InteractiveStartupTorchGrid({
+  startups,
+}: {
+  startups?: RegisteredCompanyItem[]
+}) {
+  const items = startups && startups.length > 0 ? startups : DEFAULT_PLATFORM_STARTUPS
+
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+        gap: 'var(--space-4)',
+        marginTop: 'var(--space-6)',
+      }}
+    >
+      {items.map((company, index) => {
+        const Insignia = INSIGNIA_COMPONENTS[getInsigniaIndex(`${company.companyName}-${company.id}-${index}`)]
+        return (
+          <div
+            key={`${company.id}-${index}`}
+            className="groww-tilt-card groww-clip-reveal"
+            style={{
+              padding: 'var(--space-5)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 'var(--space-3)',
+              cursor: 'pointer',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-lg)',
+              backgroundColor: 'var(--surface)',
+              transition: 'border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease',
+            }}
+          >
+            <div className="groww-clip-overlay" aria-hidden="true" />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
+              <div
+                style={{
+                  width: '44px',
+                  height: '44px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: 'rgba(0, 208, 156, 0.08)',
+                  border: '1px solid rgba(0, 208, 156, 0.25)',
+                }}
+              >
+                <Insignia />
+              </div>
+              <span
+                style={{
+                  fontSize: 'var(--font-caption)',
+                  fontWeight: 'var(--weight-semibold)',
+                  color: 'var(--accent)',
+                  backgroundColor: 'rgba(0, 208, 156, 0.08)',
+                  padding: '2px 8px',
+                  borderRadius: '999px',
+                  border: '1px solid rgba(0, 208, 156, 0.2)',
+                }}
+              >
+                {company.stage || 'Verified'}
+              </span>
+            </div>
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <h4 style={{ margin: '0 0 2px 0', fontSize: 'var(--font-body)', fontWeight: 'var(--weight-semibold)', color: 'var(--text)' }}>
+                {company.companyName}
+              </h4>
+              <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-secondary)' }}>
+                {company.sector || 'Fintech'}
+              </span>
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingTop: 'var(--space-2)',
+                borderTop: '1px solid var(--border)',
+                fontSize: 'var(--font-caption)',
+                color: 'var(--text-tertiary)',
+                position: 'relative',
+                zIndex: 1,
+              }}
+            >
+              <span>Target Round</span>
+              <strong style={{ color: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}>
+                {company.target || '₹2.5 Cr'}
+              </strong>
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }
