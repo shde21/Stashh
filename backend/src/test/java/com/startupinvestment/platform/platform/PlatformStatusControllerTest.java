@@ -36,4 +36,11 @@ class PlatformStatusControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("UP"));
     }
+
+    @Test
+    void exposesPublicStartups() throws Exception {
+        mockMvc.perform(get("/api/v1/platform/startups"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+    }
 }

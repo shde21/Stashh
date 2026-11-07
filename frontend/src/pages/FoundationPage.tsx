@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchPlatformStatus, type PlatformStatus } from '../lib/api'
-import { Badge, Button, Card, ProgressBar, Stat, StatusPill, ThemeToggle } from '../design-system'
+import { Badge, Button, ProgressBar, Stat, StatusPill, ThemeToggle } from '../design-system'
 import { ArrowRight, ShieldCheck, TrendingUp } from 'lucide-react'
-import { SpotlightWrapper } from '../components/layout/SpotlightWrapper'
+import { LandingTorchReveal } from '../components/layout/LandingTorchReveal'
+import { GrowwInteractiveCard } from '../components/layout/GrowwInteractiveCard'
 
 type ViewState =
   | { kind: 'loading' }
@@ -28,7 +29,7 @@ export default function FoundationPage() {
   }, [])
 
   return (
-    <SpotlightWrapper>
+    <LandingTorchReveal>
       <div className="shell public-shell">
       {/* Top Navigation */}
       <nav className="topbar" aria-label="Primary navigation">
@@ -69,7 +70,14 @@ export default function FoundationPage() {
           </div>
 
           {/* Connected Core Platform Status */}
-          <aside className="status-card" aria-labelledby="status-title">
+          <GrowwInteractiveCard
+            className="status-card"
+            enableTilt={false}
+            enableGlare={true}
+            style={{ borderRadius: 'var(--radius-lg)' }}
+            contentStyle={{ padding: 0 }}
+            aria-labelledby="status-title"
+          >
             <div className="status-card-header">
               <div>
                 <p className="eyebrow">Live platform status</p>
@@ -111,14 +119,19 @@ export default function FoundationPage() {
                 </div>
               </dl>
             )}
-          </aside>
+          </GrowwInteractiveCard>
         </section>
 
         {/* Section 2: Real UI Product Preview */}
         <section aria-labelledby="preview-title" style={{ marginBottom: 'var(--space-16)' }}>
           <p className="eyebrow" id="preview-title">Product preview</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'var(--space-6)', marginTop: 'var(--space-4)' }}>
-            <Card>
+            {/* Candidate A & C: Groww 3D Tilt Card with Sliding Clip Reveal */}
+            <GrowwInteractiveCard
+              className="vl-card groww-clip-reveal"
+              contentStyle={{ padding: 'var(--space-6)' }}
+            >
+              <div className="groww-clip-overlay" aria-hidden="true" />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
                 <span className="eyebrow" style={{ margin: 0 }}>Climate software · Seed</span>
                 <StatusPill status="OPEN" />
@@ -143,9 +156,14 @@ export default function FoundationPage() {
                 <Badge variant="neutral">Equity Shares</Badge>
                 <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)' }}>Simulated allocation</span>
               </div>
-            </Card>
+            </GrowwInteractiveCard>
 
-            <Card>
+            {/* Candidate A & C: Groww 3D Tilt Card with Sliding Clip Reveal */}
+            <GrowwInteractiveCard
+              className="vl-card groww-clip-reveal"
+              contentStyle={{ padding: 'var(--space-6)' }}
+            >
+              <div className="groww-clip-overlay" aria-hidden="true" />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
                 <span className="eyebrow" style={{ margin: 0 }}>Simulated Portfolio</span>
                 <Badge variant="positive">Active</Badge>
@@ -167,17 +185,20 @@ export default function FoundationPage() {
                   Gains reflect updated valuation snapshots and valuation caps.
                 </p>
               </div>
-            </Card>
+            </GrowwInteractiveCard>
           </div>
         </section>
 
-        {/* Section 3: How it Works (3 clean rows) */}
+        {/* Section 3: How it Works (3 clean rows with subtle 3D tilt) */}
         <section aria-labelledby="how-it-works-title" style={{ marginBottom: 'var(--space-16)' }}>
           <p className="eyebrow" id="how-it-works-title">Operating Model</p>
           <h2 style={{ marginBottom: 'var(--space-8)' }}>How Stashh works</h2>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-            <Card style={{ display: 'grid', gridTemplateColumns: '80px 1fr', alignItems: 'center', gap: 'var(--space-4)' }}>
+            <GrowwInteractiveCard
+              className="vl-card"
+              contentStyle={{ display: 'grid', gridTemplateColumns: '80px 1fr', alignItems: 'center', gap: 'var(--space-4)', padding: 'var(--space-6)' }}
+            >
               <span style={{ fontSize: 'var(--font-h2)', fontWeight: 'var(--weight-bold)', color: 'var(--text-tertiary)' }}>01</span>
               <div>
                 <h3 style={{ margin: '0 0 var(--space-1) 0', fontSize: 'var(--font-body)', fontWeight: 'var(--weight-semibold)' }}>For Startups</h3>
@@ -185,9 +206,12 @@ export default function FoundationPage() {
                   Publish stage-aware metrics, set transparent round terms, and manage simulated investor commitments in an auditable workspace.
                 </p>
               </div>
-            </Card>
+            </GrowwInteractiveCard>
 
-            <Card style={{ display: 'grid', gridTemplateColumns: '80px 1fr', alignItems: 'center', gap: 'var(--space-4)' }}>
+            <GrowwInteractiveCard
+              className="vl-card"
+              contentStyle={{ display: 'grid', gridTemplateColumns: '80px 1fr', alignItems: 'center', gap: 'var(--space-4)', padding: 'var(--space-6)' }}
+            >
               <span style={{ fontSize: 'var(--font-h2)', fontWeight: 'var(--weight-bold)', color: 'var(--text-tertiary)' }}>02</span>
               <div>
                 <h3 style={{ margin: '0 0 var(--space-1) 0', fontSize: 'var(--font-body)', fontWeight: 'var(--weight-semibold)' }}>For Investors</h3>
@@ -195,9 +219,12 @@ export default function FoundationPage() {
                   Filter approved opportunities by sector and stage, maintain private thesis notes, and simulate equity investments without real capital transfers.
                 </p>
               </div>
-            </Card>
+            </GrowwInteractiveCard>
 
-            <Card style={{ display: 'grid', gridTemplateColumns: '80px 1fr', alignItems: 'center', gap: 'var(--space-4)' }}>
+            <GrowwInteractiveCard
+              className="vl-card"
+              contentStyle={{ display: 'grid', gridTemplateColumns: '80px 1fr', alignItems: 'center', gap: 'var(--space-4)', padding: 'var(--space-6)' }}
+            >
               <span style={{ fontSize: 'var(--font-h2)', fontWeight: 'var(--weight-bold)', color: 'var(--text-tertiary)' }}>03</span>
               <div>
                 <h3 style={{ margin: '0 0 var(--space-1) 0', fontSize: 'var(--font-body)', fontWeight: 'var(--weight-semibold)' }}>For Administrators</h3>
@@ -205,7 +232,7 @@ export default function FoundationPage() {
                   Review submissions with required structured feedback, govern platform visibility, and record reference valuation snapshots.
                 </p>
               </div>
-            </Card>
+            </GrowwInteractiveCard>
           </div>
         </section>
 
@@ -229,6 +256,6 @@ export default function FoundationPage() {
         <span>Simulation platform · Designed for clarity and trust.</span>
       </footer>
     </div>
-    </SpotlightWrapper>
+    </LandingTorchReveal>
   )
 }

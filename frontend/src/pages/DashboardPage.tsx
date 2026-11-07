@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, Navigate, useLocation } from 'react-router-dom'
 import { EmptyState } from '../components/feedback/States'
-import { DashboardTorchReveal } from '../components/dashboard/DashboardTorchReveal'
 import { roleLabel, type UserRole } from '../auth/auth.types'
 import { useAuth } from '../auth/useAuth'
 import { fetchStartupProfile } from '../startup/startup.api'
@@ -311,8 +310,7 @@ export default function DashboardPage({ role, section }: { role: UserRole; secti
   }
 
   return (
-    <DashboardTorchReveal>
-      <div className="dashboard-page">
+    <div className="dashboard-page">
       {/* Page Heading */}
       <div className="page-heading">
         <div>
@@ -544,7 +542,6 @@ export default function DashboardPage({ role, section }: { role: UserRole; secti
           />
         </Card>
       )}
-      </div>
-    </DashboardTorchReveal>
+    </div>
   )
 }
