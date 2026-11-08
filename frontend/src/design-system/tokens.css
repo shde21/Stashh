@@ -21,25 +21,25 @@
   /* Subtle Borders & Dividers */
   --border: #EAECF0;
   --border-strong: #D0D5DD;
-  --border-focus: #00D09C;
+  --border-focus: #18392B;
 
-  /* Brand Primary / Positive Indicators (+) */
-  --accent: #00D09C;
-  --accent-hover: #00B588;
-  --accent-subtle: #E6FBF5;
-  --accent-border: #99ECCF;
+  /* Brand Primary / Positive Indicators (+) - Dark Forest Green */
+  --accent: #18392B;
+  --accent-hover: #132D22;
+  --accent-subtle: #E8EFEA;
+  --accent-border: #A3C4B3;
 
   /* Primary Ink (CTA buttons / Brand) */
-  --ink: #00D09C;
-  --ink-hover: #00B588;
-  --ink-secondary: #00A37A;
+  --ink: #18392B;
+  --ink-hover: #132D22;
+  --ink-secondary: #0E2219;
 
   /* Semantic Colors */
-  --positive: #00D09C;
-  --positive-hover: #00B588;
-  --positive-text: #008765;
-  --positive-subtle: #E6FBF5;
-  --positive-border: #99ECCF;
+  --positive: #18392B;
+  --positive-hover: #132D22;
+  --positive-text: #18392B;
+  --positive-subtle: #E8EFEA;
+  --positive-border: #A3C4B3;
 
   /* Negative / Sell / Destructive Indicators (-) */
   --negative: #EB5B3C;
@@ -151,24 +151,24 @@
 
   --border: #3D3D3D;
   --border-strong: #4D4D4D;
-  --border-focus: #00D09C;
+  --border-focus: #18392B;
 
-  /* Brand Primary / Positive Indicators (+) */
-  --accent: #00D09C;
-  --accent-hover: #00B588;
-  --accent-subtle: rgba(0, 208, 156, 0.15);
-  --accent-border: rgba(0, 208, 156, 0.35);
+  /* Brand Primary / Positive Indicators (+) - Dark Forest Green */
+  --accent: #18392B;
+  --accent-hover: #1F4A38;
+  --accent-subtle: rgba(24, 57, 43, 0.4);
+  --accent-border: rgba(24, 57, 43, 0.8);
 
-  --ink: #00D09C;
-  --ink-hover: #00B588;
-  --ink-secondary: #00A37A;
+  --ink: #18392B;
+  --ink-hover: #1F4A38;
+  --ink-secondary: #132D22;
 
   /* Semantic Colors for Dark Mode */
-  --positive: #00D09C;
-  --positive-hover: #00B588;
-  --positive-text: #34D399;
-  --positive-subtle: rgba(0, 208, 156, 0.15);
-  --positive-border: rgba(0, 208, 156, 0.35);
+  --positive: #18392B;
+  --positive-hover: #1F4A38;
+  --positive-text: #4ADE80;
+  --positive-subtle: rgba(24, 57, 43, 0.4);
+  --positive-border: rgba(24, 57, 43, 0.8);
 
   --negative: #EB5B3C;
   --negative-hover: #D64F32;

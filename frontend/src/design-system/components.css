@@ -727,7 +727,7 @@ input[placeholder*="search"]:focus {
 
 .vl-toast-success {
   background-color: #064E3B;
-  border: 1px solid #00D09C;
+  border: 1px solid var(--accent);
   color: #E6FBF5;
 }
 
