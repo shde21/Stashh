@@ -135,22 +135,22 @@
 
 /* ==========================================================================
    DARK THEME TOKENS
-   Minimalist, high-contrast dark fintech surfaces.
+   Charcoal black (#242424) background with clean, high-contrast fintech surfaces.
    ========================================================================== */
 [data-theme="dark"] {
-  --bg: #0F1115;
-  --bg-subtle: #171A21;
-  --surface: #171A21;
-  --surface-raised: #1E222B;
-  --surface-muted: #13151A;
+  --bg: #242424;
+  --bg-subtle: #2C2C2C;
+  --surface: #2D2D2D;
+  --surface-raised: #363636;
+  --surface-muted: #1E1E1E;
 
   --text: #F7F8FA;
-  --text-secondary: #BDC1CB;
-  --text-tertiary: #7E8494;
-  --text-inverse: #0F1115;
+  --text-secondary: #B8B8B8;
+  --text-tertiary: #808080;
+  --text-inverse: #242424;
 
-  --border: #292E3B;
-  --border-strong: #383E4F;
+  --border: #3D3D3D;
+  --border-strong: #4D4D4D;
   --border-focus: #00D09C;
 
   /* Brand Primary / Positive Indicators (+) */

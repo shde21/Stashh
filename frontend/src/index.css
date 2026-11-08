@@ -145,7 +145,7 @@ p {
 }
 
 [data-theme="dark"] .topbar {
-  background-color: rgba(13, 13, 14, 0.85);
+  background-color: rgba(36, 36, 36, 0.88);
 }
 
 .brand {
@@ -273,7 +273,7 @@ p {
 }
 
 [data-theme="dark"] .app-header {
-  background-color: rgba(13, 13, 14, 0.88);
+  background-color: rgba(36, 36, 36, 0.88);
 }
 
 .user-menu {
@@ -465,121 +465,6 @@ p {
   position: relative;
   width: 100%;
   min-height: 100%;
-}
-
-/* Layer 0 (Bottom): Masked Logo Grid */
-.dashboard-torch-logos {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: var(--torch-opacity, 1);
-  transition: opacity 0.4s ease-out;
-  -webkit-mask-image: radial-gradient(
-    380px circle at var(--mouse-x, 50%) var(--mouse-y, 180px),
-    rgba(0, 0, 0, 1) 0%,
-    rgba(0, 0, 0, 0.5) 45%,
-    transparent 80%
-  );
-  mask-image: radial-gradient(
-    380px circle at var(--mouse-x, 50%) var(--mouse-y, 180px),
-    rgba(0, 0, 0, 1) 0%,
-    rgba(0, 0, 0, 0.5) 45%,
-    transparent 80%
-  );
-}
-
-.dashboard-torch-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: var(--space-4);
-  padding: var(--space-6);
-  max-width: var(--max-content);
-  margin: 0 auto;
-}
-
-.dashboard-torch-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-3) var(--space-2);
-  border-radius: var(--radius-lg);
-  background-color: rgba(0, 208, 156, 0.04);
-  border: 1px solid rgba(0, 208, 156, 0.22);
-  box-shadow: 0 0 20px rgba(0, 208, 156, 0.06);
-  transition: transform var(--transition-fast), border-color var(--transition-fast);
-}
-
-[data-theme="dark"] .dashboard-torch-item {
-  background-color: rgba(0, 208, 156, 0.05);
-  border-color: rgba(0, 208, 156, 0.3);
-  box-shadow: 0 0 24px rgba(0, 208, 156, 0.1);
-}
-
-.dashboard-torch-insignia {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-md);
-  background-color: rgba(0, 208, 156, 0.06);
-  border: 1px solid rgba(0, 208, 156, 0.2);
-  margin-bottom: var(--space-2);
-}
-
-.dashboard-torch-name {
-  font-size: 11px;
-  font-weight: var(--weight-semibold);
-  letter-spacing: 0.04em;
-  color: var(--text);
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-}
-
-.dashboard-torch-sector {
-  font-size: 9px;
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-top: 2px;
-}
-
-/* Layer 1 (Middle): Ambient Emerald Torch Glow */
-.dashboard-torch-glow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: var(--torch-opacity, 1);
-  transition: opacity 0.4s ease-out;
-  background: radial-gradient(
-    650px circle at var(--mouse-x, 50%) var(--mouse-y, 180px),
-    rgba(0, 208, 156, 0.11),
-    rgba(0, 208, 156, 0.03) 40%,
-    transparent 80%
-  );
-}
-
-[data-theme="dark"] .dashboard-torch-glow {
-  background: radial-gradient(
-    650px circle at var(--mouse-x, 50%) var(--mouse-y, 180px),
-    rgba(0, 208, 156, 0.16),
-    rgba(0, 208, 156, 0.04) 40%,
-    transparent 80%
-  );
-}
-
-/* Layer 2 (Top, z-index: 10): 100% interactive dashboard content */
-.dashboard-torch-content {
-  position: relative;
-  z-index: 10;
-  width: 100%;
 }
 
 /* ==========================================================================
