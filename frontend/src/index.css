@@ -414,58 +414,7 @@ p {
   min-width: 0;
 }
 
-/* ==========================================================================
-   INTERACTIVE CURSOR SPOTLIGHT GLOW
-   Ambient radial cursor glow with zero re-render overhead.
-   ========================================================================== */
-.spotlight-wrapper {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-}
 
-.spotlight-glow {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: var(--spotlight-opacity, 0);
-  transition: opacity 0.4s ease-out;
-  background: radial-gradient(
-    700px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(24, 57, 43, 0.10),
-    rgba(24, 57, 43, 0.03) 40%,
-    transparent 80%
-  );
-}
-
-[data-theme="dark"] .spotlight-glow {
-  background: radial-gradient(
-    700px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(24, 57, 43, 0.16),
-    rgba(24, 57, 43, 0.04) 40%,
-    transparent 80%
-  );
-}
-
-.spotlight-content {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-}
-
-/* ==========================================================================
-   DASHBOARD HIDDEN COMPANY LOGOS TORCH REVEAL
-   Multi-layer sandwich:
-   - Layer 0: Masked registered company logo grid (dynamic radial mask)
-   - Layer 1: Ambient emerald torch glow
-   - Layer 2: Dashboard interactive content (z-index: 10)
-   ========================================================================== */
-.dashboard-torch-wrapper {
-  position: relative;
-  width: 100%;
-  min-height: 100%;
-}
 
 /* ==========================================================================
    PAGE HEADINGS & COMMON SURFACES
