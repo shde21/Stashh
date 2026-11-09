@@ -1,24 +1,75 @@
 import { Link } from 'react-router-dom'
 import { Button, ThemeToggle } from '../design-system'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, ChevronDown } from 'lucide-react'
 
 export default function FoundationPage() {
   return (
     <div className="shell public-shell">
       {/* Top Navigation */}
-      <nav className="topbar" aria-label="Primary navigation">
-        <Link className="brand" to="/" aria-label="Stashh home">
-          <span className="brand-mark" aria-hidden="true">S</span>
-          <span>Stashh</span>
-        </Link>
-        <div className="public-actions">
-          <ThemeToggle />
-          <Link className="quiet-link" to="/login">Sign in</Link>
-          <Link to="/register">
-            <Button variant="primary" size="sm">Get started</Button>
+      <header className="landing-header">
+        <nav className="topbar" aria-label="Primary navigation">
+          <Link className="brand" to="/" aria-label="Stashh home">
+            <span className="brand-mark" aria-hidden="true">S</span>
+            <span>Stashh</span>
           </Link>
+          <div className="public-actions">
+            <ThemeToggle />
+            <Link className="quiet-link" to="/login">Sign in</Link>
+            <Link to="/register">
+              <Button variant="primary" size="sm">Get started</Button>
+            </Link>
+          </div>
+        </nav>
+
+        {/* Sub-navigation bar with 4 hover dropdown blocks */}
+        <div className="subbar" aria-label="Secondary navigation">
+          <div className="subbar-items">
+            {/* 1. Investor */}
+            <div className="subbar-item">
+              <button type="button" className="subbar-trigger" aria-haspopup="true">
+                <span>Investor</span>
+                <ChevronDown size={14} className="subbar-arrow" aria-hidden="true" />
+              </button>
+              <div className="subbar-dropdown" role="region" aria-label="Investor options">
+                <div className="subbar-dropdown-empty" />
+              </div>
+            </div>
+
+            {/* 2. Startup */}
+            <div className="subbar-item">
+              <button type="button" className="subbar-trigger" aria-haspopup="true">
+                <span>Startup</span>
+                <ChevronDown size={14} className="subbar-arrow" aria-hidden="true" />
+              </button>
+              <div className="subbar-dropdown" role="region" aria-label="Startup options">
+                <div className="subbar-dropdown-empty" />
+              </div>
+            </div>
+
+            {/* 3. Explore */}
+            <div className="subbar-item">
+              <button type="button" className="subbar-trigger" aria-haspopup="true">
+                <span>Explore</span>
+                <ChevronDown size={14} className="subbar-arrow" aria-hidden="true" />
+              </button>
+              <div className="subbar-dropdown" role="region" aria-label="Explore options">
+                <div className="subbar-dropdown-empty" />
+              </div>
+            </div>
+
+            {/* 4. Help */}
+            <div className="subbar-item">
+              <button type="button" className="subbar-trigger" aria-haspopup="true">
+                <span>Help</span>
+                <ChevronDown size={14} className="subbar-arrow" aria-hidden="true" />
+              </button>
+              <div className="subbar-dropdown" role="region" aria-label="Help options">
+                <div className="subbar-dropdown-empty" />
+              </div>
+            </div>
+          </div>
         </div>
-      </nav>
+      </header>
 
       <main>
         {/* Section 1: Hero */}

@@ -127,7 +127,21 @@ p {
   padding-bottom: var(--space-16);
 }
 
-/* Topbar for public / landing */
+/* Header & Topbar for public / landing */
+.landing-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-8);
+}
+
+[data-theme="dark"] .landing-header {
+  background-color: rgba(36, 36, 36, 0.92);
+}
+
 .topbar {
   display: flex;
   align-items: center;
@@ -144,8 +158,122 @@ p {
   padding-right: var(--space-6);
 }
 
+.landing-header .topbar {
+  position: static;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  backdrop-filter: none;
+}
+
 [data-theme="dark"] .topbar {
   background-color: rgba(36, 36, 36, 0.88);
+}
+
+/* Secondary Sub-navigation Bar */
+.subbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: var(--space-1) var(--space-6);
+  min-height: 42px;
+}
+
+.subbar-items {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.subbar-item {
+  position: relative;
+}
+
+.subbar-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  font-family: inherit;
+  font-size: var(--font-small);
+  font-weight: var(--weight-medium);
+  color: var(--text-secondary);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.subbar-trigger:hover,
+.subbar-item:hover .subbar-trigger,
+.subbar-item:focus-within .subbar-trigger {
+  color: var(--text);
+  background-color: var(--bg-subtle);
+  border-color: var(--border);
+}
+
+.subbar-arrow {
+  transition: transform var(--transition-fast);
+  color: var(--text-tertiary);
+}
+
+.subbar-item:hover .subbar-arrow,
+.subbar-item:focus-within .subbar-arrow {
+  transform: rotate(180deg);
+  color: var(--text);
+}
+
+.subbar-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 240px;
+  min-height: 80px;
+  padding: var(--space-3);
+  background-color: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-popover);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: opacity 160ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 160ms;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+/* Align the last item dropdown to the right edge so it doesn't overflow viewport */
+.subbar-item:last-child .subbar-dropdown {
+  left: auto;
+  right: 0;
+}
+
+/* Hover bridge: keeps dropdown open when cursor moves from button into dropdown */
+.subbar-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 0;
+  right: 0;
+  height: 8px;
+}
+
+.subbar-item:hover .subbar-dropdown,
+.subbar-item:focus-within .subbar-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.subbar-dropdown-empty {
+  min-height: 60px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-subtle);
 }
 
 .brand {
