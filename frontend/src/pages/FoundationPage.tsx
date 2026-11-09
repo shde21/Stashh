@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Button, ThemeToggle } from '../design-system'
-import { ArrowRight, ChevronDown } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 
 export default function FoundationPage() {
   return (
@@ -28,10 +28,26 @@ export default function FoundationPage() {
             <div className="subbar-item">
               <button type="button" className="subbar-trigger" aria-haspopup="true">
                 <span>Investor</span>
-                <ChevronDown size={14} className="subbar-arrow" aria-hidden="true" />
               </button>
               <div className="subbar-dropdown" role="region" aria-label="Investor options">
-                <div className="subbar-dropdown-empty" />
+                <div className="subbar-dropdown-list">
+                  <div className="subbar-dropdown-item">
+                    <span className="subbar-dropdown-title">Discover Startups</span>
+                    <span className="subbar-dropdown-desc">Browse vetted deals</span>
+                  </div>
+                  <div className="subbar-dropdown-item">
+                    <span className="subbar-dropdown-title">Watchlist</span>
+                    <span className="subbar-dropdown-desc">Track target companies</span>
+                  </div>
+                  <div className="subbar-dropdown-item">
+                    <span className="subbar-dropdown-title">Portfolio</span>
+                    <span className="subbar-dropdown-desc">Holdings & returns</span>
+                  </div>
+                  <div className="subbar-dropdown-item">
+                    <span className="subbar-dropdown-title">Syndicate Rounds</span>
+                    <span className="subbar-dropdown-desc">Co-invest with peers</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -39,10 +55,26 @@ export default function FoundationPage() {
             <div className="subbar-item">
               <button type="button" className="subbar-trigger" aria-haspopup="true">
                 <span>Startup</span>
-                <ChevronDown size={14} className="subbar-arrow" aria-hidden="true" />
               </button>
               <div className="subbar-dropdown" role="region" aria-label="Startup options">
-                <div className="subbar-dropdown-empty" />
+                <div className="subbar-dropdown-list">
+                  <div className="subbar-dropdown-item">
+                    <span className="subbar-dropdown-title">Company Profile</span>
+                    <span className="subbar-dropdown-desc">Pitch & metrics</span>
+                  </div>
+                  <div className="subbar-dropdown-item">
+                    <span className="subbar-dropdown-title">Fundraising Round</span>
+                    <span className="subbar-dropdown-desc">Manage live raise</span>
+                  </div>
+                  <div className="subbar-dropdown-item">
+                    <span className="subbar-dropdown-title">Investor Pipeline</span>
+                    <span className="subbar-dropdown-desc">Track inbound interest</span>
+                  </div>
+                  <div className="subbar-dropdown-item">
+                    <span className="subbar-dropdown-title">Valuation Model</span>
+                    <span className="subbar-dropdown-desc">Simulated equity terms</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -50,10 +82,26 @@ export default function FoundationPage() {
             <div className="subbar-item">
               <button type="button" className="subbar-trigger" aria-haspopup="true">
                 <span>Explore</span>
-                <ChevronDown size={14} className="subbar-arrow" aria-hidden="true" />
               </button>
               <div className="subbar-dropdown" role="region" aria-label="Explore options">
-                <div className="subbar-dropdown-empty" />
+                <div className="subbar-dropdown-list">
+                  <div className="subbar-dropdown-item">
+                    <span className="subbar-dropdown-title">Market Directory</span>
+                    <span className="subbar-dropdown-desc">Browse all sectors</span>
+                  </div>
+                  <div className="subbar-dropdown-item">
+                    <span className="subbar-dropdown-title">Trending Deals</span>
+                    <span className="subbar-dropdown-desc">Fast-filling rounds</span>
+                  </div>
+                  <div className="subbar-dropdown-item">
+                    <span className="subbar-dropdown-title">Valuation Benchmarks</span>
+                    <span className="subbar-dropdown-desc">Industry multiples</span>
+                  </div>
+                  <div className="subbar-dropdown-item">
+                    <span className="subbar-dropdown-title">Platform Ecosystem</span>
+                    <span className="subbar-dropdown-desc">How Stashh works</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -61,10 +109,15 @@ export default function FoundationPage() {
             <div className="subbar-item">
               <button type="button" className="subbar-trigger" aria-haspopup="true">
                 <span>Help</span>
-                <ChevronDown size={14} className="subbar-arrow" aria-hidden="true" />
               </button>
               <div className="subbar-dropdown" role="region" aria-label="Help options">
-                <div className="subbar-dropdown-empty" />
+                <div className="subbar-dropdown-list">
+                  <div className="subbar-dropdown-simple-item">Raise Query</div>
+                  <div className="subbar-dropdown-simple-item">My Queries</div>
+                  <div className="subbar-dropdown-simple-item">FAQs</div>
+                  <div className="subbar-dropdown-simple-item">Report an Issue</div>
+                  <div className="subbar-dropdown-simple-item">Platform Guidelines</div>
+                </div>
               </div>
             </div>
           </div>
