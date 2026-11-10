@@ -5,6 +5,26 @@
 /* ==========================================================================
    RESET & FOUNDATIONS
    ========================================================================== */
+/* Custom engineered high-fidelity dark scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-raised);
+  border-radius: var(--radius-full);
+  border: 2px solid var(--bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -139,7 +159,7 @@ p {
 }
 
 [data-theme="dark"] .landing-header {
-  background-color: rgba(36, 36, 36, 0.92);
+  background-color: rgba(14, 29, 22, 0.92);
 }
 
 .topbar {
@@ -167,7 +187,7 @@ p {
 }
 
 [data-theme="dark"] .topbar {
-  background-color: rgba(36, 36, 36, 0.88);
+  background-color: rgba(14, 29, 22, 0.88);
 }
 
 /* Secondary Sub-navigation Bar */
@@ -236,8 +256,8 @@ p {
 }
 
 [data-theme="dark"] .subbar-dropdown {
-  background-color: rgba(45, 45, 45, 0.96);
-  box-shadow: 0 14px 36px -4px rgba(0, 0, 0, 0.45);
+  background-color: rgba(14, 29, 22, 0.96);
+  box-shadow: 0 14px 36px -4px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 /* Align the last item dropdown to the right edge so it doesn't overflow viewport */
@@ -341,9 +361,10 @@ p {
   height: 28px;
   border-radius: var(--radius-sm);
   background-color: var(--accent);
-  color: #FFFFFF;
+  color: var(--accent-contrast, #070908);
   font-weight: var(--weight-bold);
   font-size: var(--font-small);
+  box-shadow: 0 0 10px rgba(255, 106, 0, 0.35);
 }
 
 .public-actions {
@@ -448,7 +469,7 @@ p {
 }
 
 [data-theme="dark"] .app-header {
-  background-color: rgba(36, 36, 36, 0.88);
+  background-color: rgba(14, 29, 22, 0.88);
 }
 
 .user-menu {
@@ -557,7 +578,7 @@ p {
 }
 
 .nav-item-active span {
-  color: var(--accent-hover);
+  color: var(--accent);
   font-weight: var(--weight-semibold);
 }
 
@@ -696,6 +717,12 @@ p {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   gap: var(--space-1);
+  transition: all var(--transition-fast);
+}
+
+.metric-card:hover {
+  border-color: var(--border-strong);
+  background-color: var(--surface-raised);
 }
 
 .metric-card span {
@@ -834,7 +861,7 @@ input[placeholder*="Search" i]:focus,
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   padding: var(--space-8);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 20px rgba(74, 222, 128, 0.08);
 }
 
 .auth-panel-inner {
@@ -957,12 +984,13 @@ input[placeholder*="Search" i]:focus,
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .startup-card:hover {
   border-color: var(--border-strong);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45), 0 0 14px rgba(74, 222, 128, 0.12);
+  transform: translateY(-2px);
 }
 
 .startup-card-top {
@@ -1270,8 +1298,9 @@ input[placeholder*="Search" i]:focus,
 }
 
 [data-theme="dark"] .stage-sticky-bar {
-  background-color: rgba(24, 24, 28, 0.92);
-  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.4);
+  background-color: rgba(14, 29, 22, 0.92);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.45);
+  border-top: 1px solid var(--border);
 }
 
 .stage3-actions {

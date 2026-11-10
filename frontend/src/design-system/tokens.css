@@ -21,18 +21,24 @@
   /* Subtle Borders & Dividers */
   --border: #EAECF0;
   --border-strong: #D0D5DD;
-  --border-focus: #18392B;
+  --border-focus: #FF6A00;
 
-  /* Brand Primary / Positive Indicators (+) - Dark Forest Green */
-  --accent: #18392B;
-  --accent-hover: #132D22;
-  --accent-subtle: #E8EFEA;
-  --accent-border: #A3C4B3;
+  /* Brand Primary / Accent - High-contrast Neon Orange */
+  --accent: #FF6A00;
+  --accent-hover: #E65A00;
+  --accent-subtle: rgba(255, 106, 0, 0.1);
+  --accent-border: rgba(255, 106, 0, 0.35);
+  --accent-contrast: #070908;
+  --accent-glow: 0 0 16px rgba(255, 106, 0, 0.35);
 
   /* Primary Ink (CTA buttons / Brand) */
-  --ink: #18392B;
-  --ink-hover: #132D22;
-  --ink-secondary: #0E2219;
+  --ink: #FF6A00;
+  --ink-hover: #E65A00;
+  --ink-secondary: #CC5200;
+
+  /* Forest surface identity token */
+  --forest-surface: #0E1D16;
+  --forest-surface-raised: #142A20;
 
   /* Semantic Colors */
   --positive: #18392B;
@@ -134,59 +140,72 @@
 }
 
 /* ==========================================================================
-   DARK THEME TOKENS
-   Charcoal black (#242424) background with clean, high-contrast fintech surfaces.
+   DARK THEME TOKENS (60-30-10 ARCHITECTURE)
+   60% Base Canvas: Deep Charcoal (#0D0F12 / #13161C)
+   30% Elevated Surfaces: Dark Forest Green (#0E1D16 / #142A20 / #08140F)
+   10% High-Contrast Accent: Vibrant Neon Orange (#FF6A00 / #FF7D1A)
    ========================================================================== */
 [data-theme="dark"] {
-  --bg: #242424;
-  --bg-subtle: #2C2C2C;
-  --surface: #2D2D2D;
-  --surface-raised: #363636;
-  --surface-muted: #1E1E1E;
+  /* 60% Base Canvas: Deep Charcoal Black */
+  --bg: #0A0A0C;
+  --bg-subtle: #121418;
 
-  --text: #F7F8FA;
-  --text-secondary: #B8B8B8;
-  --text-tertiary: #808080;
-  --text-inverse: #242424;
+  /* 30% Elevated Surfaces: Dark Forest Green */
+  --surface: #0E1D16;
+  --surface-raised: #142A20;
+  --surface-muted: #0A1711;
+  --forest-surface: #0E1D16;
+  --forest-surface-raised: #142A20;
 
-  --border: #3D3D3D;
-  --border-strong: #4D4D4D;
-  --border-focus: #18392B;
+  /* Typography Colors */
+  --text: #F3F5F7;
+  --text-secondary: #9AA4B2;
+  --text-tertiary: #657080;
+  --text-inverse: #070908;
 
-  /* Brand Primary / Positive Indicators (+) - Dark Forest Green */
-  --accent: #18392B;
-  --accent-hover: #1F4A38;
-  --accent-subtle: rgba(24, 57, 43, 0.4);
-  --accent-border: rgba(24, 57, 43, 0.8);
+  /* Border Illumination */
+  --border: rgba(74, 222, 128, 0.12);
+  --border-strong: rgba(74, 222, 128, 0.25);
+  --border-focus: #FF6A00;
 
-  --ink: #18392B;
-  --ink-hover: #1F4A38;
-  --ink-secondary: #132D22;
+  /* 10% High-Contrast Accent: Neon Orange */
+  --accent: #FF6A00;
+  --accent-hover: #FF7D1A;
+  --accent-active: #E65C00;
+  --accent-subtle: rgba(255, 106, 0, 0.14);
+  --accent-border: rgba(255, 106, 0, 0.42);
+  --accent-contrast: #070908;
+  --accent-glow: 0 0 16px rgba(255, 106, 0, 0.35);
+
+  --ink: #FF6A00;
+  --ink-hover: #FF7D1A;
+  --ink-secondary: #E65C00;
 
   /* Semantic Colors for Dark Mode */
-  --positive: #18392B;
-  --positive-hover: #1F4A38;
-  --positive-text: #4ADE80;
-  --positive-subtle: rgba(24, 57, 43, 0.4);
-  --positive-border: rgba(24, 57, 43, 0.8);
+  --positive: #10B981;
+  --positive-hover: #059669;
+  --positive-text: #34D399;
+  --positive-subtle: rgba(16, 185, 129, 0.14);
+  --positive-border: rgba(16, 185, 129, 0.35);
 
-  --negative: #EB5B3C;
-  --negative-hover: #D64F32;
-  --negative-text: #FCA5A5;
-  --negative-subtle: rgba(235, 91, 60, 0.15);
-  --negative-border: rgba(235, 91, 60, 0.35);
+  --negative: #EF4444;
+  --negative-hover: #DC2626;
+  --negative-text: #F87171;
+  --negative-subtle: rgba(239, 68, 68, 0.14);
+  --negative-border: rgba(239, 68, 68, 0.35);
 
-  --warning: #FBBF24;
-  --warning-text: #FDE68A;
-  --warning-subtle: rgba(251, 191, 36, 0.15);
-  --warning-border: rgba(251, 191, 36, 0.35);
+  --warning: #F59E0B;
+  --warning-hover: #D97706;
+  --warning-text: #FBBF24;
+  --warning-subtle: rgba(245, 158, 11, 0.14);
+  --warning-border: rgba(245, 158, 11, 0.35);
 
-  --neutral-pill-bg: #222631;
-  --neutral-pill-text: #BDC1CB;
+  --neutral-pill-bg: rgba(255, 255, 255, 0.06);
+  --neutral-pill-text: #CBD5E1;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-  --shadow-popover: 0 4px 20px rgba(0, 0, 0, 0.25);
-  --shadow-modal: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.45);
+  --shadow-popover: 0 8px 28px rgba(0, 0, 0, 0.5);
+  --shadow-modal: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -59,56 +59,84 @@
   border-radius: var(--radius-md);
 }
 
-/* Primary Button: Solid #00D09C background with bold white text */
+/* Primary Button: High-contrast Neon Orange CTA with dark crisp text (#070908) */
 .vl-btn-primary {
   background-color: var(--accent);
-  color: #FFFFFF;
+  color: var(--accent-contrast, #070908);
   border-color: var(--accent);
   font-weight: var(--weight-semibold);
+  transition: all var(--transition-fast);
 }
 
 .vl-btn-primary:hover:not(:disabled) {
   background-color: var(--accent-hover);
   border-color: var(--accent-hover);
-  color: #FFFFFF;
+  color: var(--accent-contrast, #070908);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(255, 106, 0, 0.35);
 }
 
-/* Secondary Button: Light neutral border (#EAECF0) with subtle hover fill (#F8F9FA) */
+.vl-btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Secondary Button: Elevated forest surface with subtle illuminated border */
 .vl-btn-secondary {
   background-color: var(--surface);
   color: var(--text);
   border-color: var(--border);
+  transition: all var(--transition-fast);
 }
 
 .vl-btn-secondary:hover:not(:disabled) {
-  background-color: var(--bg-subtle);
+  background-color: var(--surface-raised);
   border-color: var(--border-strong);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+.vl-btn-secondary:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 /* Accent Button (Fintech CTA) */
 .vl-btn-accent {
   background-color: var(--accent);
-  color: #FFFFFF;
+  color: var(--accent-contrast, #070908);
   border-color: var(--accent);
   font-weight: var(--weight-semibold);
+  transition: all var(--transition-fast);
 }
 
 .vl-btn-accent:hover:not(:disabled) {
   background-color: var(--accent-hover);
   border-color: var(--accent-hover);
-  color: #FFFFFF;
+  color: var(--accent-contrast, #070908);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(255, 106, 0, 0.35);
 }
 
-/* Ghost Button: Light neutral with subtle hover fill */
+.vl-btn-accent:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Ghost Button: Transparent with surface-raised hover fill */
 .vl-btn-ghost {
   background-color: transparent;
   color: var(--text-secondary);
   border-color: transparent;
+  transition: all var(--transition-fast);
 }
 
 .vl-btn-ghost:hover:not(:disabled) {
-  background-color: var(--bg-subtle);
+  background-color: var(--surface-raised);
   color: var(--text);
+}
+
+.vl-btn-ghost:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 /* Destructive / Sell / Negative Indicator (-) */
@@ -117,12 +145,18 @@
   color: var(--negative-text);
   border-color: var(--negative-border);
   font-weight: var(--weight-medium);
+  transition: all var(--transition-fast);
 }
 
 .vl-btn-destructive:hover:not(:disabled) {
   background-color: var(--negative);
   color: #FFFFFF;
   border-color: var(--negative);
+  transform: translateY(-1px);
+}
+
+.vl-btn-destructive:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 /* Pill button utility */
@@ -172,7 +206,7 @@
   gap: var(--space-1);
 }
 
-/* Form Inputs: Clean 8px corner radius, crisp #EAECF0 border, #00D09C on focus */
+/* Form Inputs: Clean 8px corner radius, dark forest surface (#08140F in dark mode), crisp border, #FF6A00 on focus */
 .vl-input,
 .vl-textarea,
 .vl-select {
@@ -181,7 +215,7 @@
   font-size: var(--font-small);
   line-height: var(--lh-small);
   color: var(--text);
-  background-color: var(--surface);
+  background-color: var(--surface-muted);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   padding: var(--space-2) var(--space-3);
@@ -225,14 +259,14 @@
   cursor: not-allowed;
 }
 
-/* Pill-shaped search input styling (rounded-full, height 40px, background #F8F9FA, border #EAECF0) */
+/* Pill-shaped search input styling (rounded-full, height 40px) */
 .vl-input-search,
 input[type="search"],
 input[placeholder*="Search"],
 input[placeholder*="search"] {
   border-radius: var(--radius-full);
   height: 40px;
-  background-color: var(--bg-subtle);
+  background-color: var(--surface-muted);
   border: 1px solid var(--border);
   padding-left: var(--space-4);
   padding-right: var(--space-4);
@@ -249,7 +283,7 @@ input[placeholder*="search"]:focus {
 
 /* ==========================================================================
    CARDS & CONTAINERS
-   Flat white/dark backgrounds, 8px to 12px radius, crisp 1px borders
+   Elevated dark forest green surfaces, 8px to 12px radius, illuminated 1px borders
    ========================================================================== */
 .vl-card {
   background-color: var(--surface);
@@ -258,7 +292,7 @@ input[placeholder*="search"]:focus {
   padding: var(--space-6);
   position: relative;
   box-shadow: none;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
 .vl-card-interactive {
@@ -267,7 +301,8 @@ input[placeholder*="search"]:focus {
 
 .vl-card-interactive:hover {
   border-color: var(--border-strong);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
 }
 
 .vl-card-sm {
@@ -353,6 +388,7 @@ input[placeholder*="search"]:focus {
 }
 .vl-badge-accent .vl-badge-dot {
   background-color: var(--accent);
+  box-shadow: 0 0 6px rgba(255, 106, 0, 0.6);
 }
 
 /* ==========================================================================
@@ -362,7 +398,7 @@ input[placeholder*="search"]:focus {
 .vl-segmented {
   display: inline-flex;
   align-items: center;
-  background-color: var(--bg-subtle);
+  background-color: var(--surface-muted);
   padding: 3px;
   border-radius: var(--radius-full);
   border: 1px solid var(--border);
@@ -390,13 +426,14 @@ input[placeholder*="search"]:focus {
 }
 
 .vl-segmented-btn.vl-segmented-active {
-  background-color: var(--surface);
+  background-color: var(--surface-raised);
   color: var(--text);
   font-weight: var(--weight-semibold);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border);
 }
 
-/* Underline tabs with #00D09C active tab indicator */
+/* Underline tabs with #FF6A00 active tab indicator */
 .vl-tabs-nav {
   display: flex;
   gap: var(--space-6);
@@ -422,14 +459,14 @@ input[placeholder*="search"]:focus {
 }
 
 .vl-tab-item.vl-tab-active {
-  color: var(--text);
+  color: var(--accent);
   border-bottom-color: var(--accent);
   font-weight: var(--weight-semibold);
 }
 
 /* ==========================================================================
    TABLES & DATA GRIDS
-   Clean row spacing, subtle divider borders (#EAECF0), tabular numbers
+   Clean row spacing, subtle divider borders, tabular numbers
    ========================================================================== */
 .vl-table-wrapper {
   width: 100%;
@@ -452,7 +489,7 @@ input[placeholder*="search"]:focus {
   font-weight: var(--weight-semibold);
   font-size: var(--font-caption);
   color: var(--text-secondary);
-  background-color: var(--bg-subtle);
+  background-color: var(--surface-muted);
   border-bottom: 1px solid var(--border);
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -471,7 +508,7 @@ input[placeholder*="search"]:focus {
 }
 
 .vl-table tr:hover td {
-  background-color: var(--surface-muted);
+  background-color: var(--surface-raised);
 }
 
 .vl-table-numeric {
@@ -541,7 +578,7 @@ input[placeholder*="search"]:focus {
 .vl-progress {
   width: 100%;
   height: 6px;
-  background-color: var(--bg-subtle);
+  background-color: var(--surface-muted);
   border-radius: var(--radius-full);
   overflow: hidden;
   position: relative;
@@ -550,20 +587,21 @@ input[placeholder*="search"]:focus {
 
 .vl-progress-fill {
   height: 100%;
-  background-color: var(--accent);
+  background: linear-gradient(90deg, #FF6A00 0%, #FF8533 100%);
+  box-shadow: 0 0 8px rgba(255, 106, 0, 0.45);
   border-radius: var(--radius-full);
   transition: width var(--transition-base);
 }
 
 /* ==========================================================================
    MODAL / SHEET
-   Elevations: box-shadow: 0 4px 20px rgba(0,0,0,0.06), crisp 1px borders
+   Elevations: box-shadow: 0 16px 40px rgba(0,0,0,0.65), crisp 1px borders
    ========================================================================== */
 .vl-modal-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 17, 21, 0.45);
-  backdrop-filter: blur(4px);
+  background-color: rgba(9, 11, 14, 0.72);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -645,7 +683,7 @@ input[placeholder*="search"]:focus {
 }
 
 [data-theme="dark"] .vl-skeleton {
-  background: linear-gradient(90deg, #1d212b 25%, #262b38 37%, #1d212b 63%);
+  background: linear-gradient(90deg, #0E1D16 25%, #183327 37%, #0E1D16 63%);
   background-size: 400% 100%;
 }
 
