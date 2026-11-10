@@ -6,21 +6,21 @@
 
 :root {
   /* Colors - Light Theme Surfaces */
-  --bg: #FFFFFF;
-  --bg-subtle: #F8F9FA;
+  --bg: #F8FAF9;
+  --bg-subtle: #F0F3F1;
   --surface: #FFFFFF;
   --surface-raised: #FFFFFF;
-  --surface-muted: #F8F9FA;
+  --surface-muted: #F0F3F1;
 
   /* Typography Colors */
-  --text: #222222;
-  --text-secondary: #44475B;
-  --text-tertiary: #7C7E8C;
+  --text: #161C20;
+  --text-secondary: #475467;
+  --text-tertiary: #667085;
   --text-inverse: #FFFFFF;
 
   /* Subtle Borders & Dividers */
-  --border: #EAECF0;
-  --border-strong: #D0D5DD;
+  --border: #DDE4E0;
+  --border-strong: #C2CEC6;
   --border-focus: #FF6A00;
 
   /* Brand Primary / Accent - High-contrast Neon Orange */
@@ -36,9 +36,15 @@
   --ink-hover: #E65A00;
   --ink-secondary: #CC5200;
 
-  /* Forest surface identity token */
-  --forest-surface: #0E1D16;
-  --forest-surface-raised: #142A20;
+  /* Forest surface identity tokens (Light Mode) */
+  --forest-bg: #EBF4EE;
+  --forest-surface: #F0F7F2;
+  --forest-surface-raised: #E1ECE4;
+  --forest-border: #BFD7C7;
+  --forest-border-strong: #96BCA2;
+  --forest-glow: rgba(14, 42, 30, 0.08);
+  --forest-text: #0E3520;
+  --forest-pill-bg: #E1ECE4;
 
   /* Semantic Colors */
   --positive: #18392B;
@@ -140,22 +146,30 @@
 }
 
 /* ==========================================================================
-   DARK THEME TOKENS (60-30-10 ARCHITECTURE)
-   60% Base Canvas: Deep Charcoal (#0D0F12 / #13161C)
-   30% Elevated Surfaces: Dark Forest Green (#0E1D16 / #142A20 / #08140F)
-   10% High-Contrast Accent: Vibrant Neon Orange (#FF6A00 / #FF7D1A)
+   DARK THEME TOKENS (TRUE 60-30-10 ARCHITECTURE)
+   60% Viewport Area: True Rich Charcoal Canvas & Neutral Containers
+   30% Viewport Area: Intentional Forest Green Highlights & Atmospheric Transitions
+   10% Viewport Area: High-Contrast Neon Orange CTAs & Active Triggers
    ========================================================================== */
 [data-theme="dark"] {
-  /* 60% Base Canvas: Deep Charcoal Black */
-  --bg: #0A0A0C;
-  --bg-subtle: #121418;
+  /* 60% Base Canvas & Neutral Surfaces: Luxury Charcoal Palette */
+  --bg: #0D0F14;
+  --bg-subtle: #121620;
 
-  /* 30% Elevated Surfaces: Dark Forest Green */
-  --surface: #0E1D16;
-  --surface-raised: #142A20;
-  --surface-muted: #0A1711;
-  --forest-surface: #0E1D16;
-  --forest-surface-raised: #142A20;
+  /* Standard surfaces - Neutral charcoal so cards don't wash the screen in green */
+  --surface: #161B26;
+  --surface-raised: #1D2331;
+  --surface-muted: #11141D;
+
+  /* 30% Intentional True Dark Forest Green Allocation */
+  --forest-bg: #07150E;
+  --forest-surface: #0E2218;
+  --forest-surface-raised: #143022;
+  --forest-border: #1E4230;
+  --forest-border-strong: #2A5C43;
+  --forest-glow: rgba(0, 0, 0, 0.45);
+  --forest-text: #78B291;
+  --forest-pill-bg: rgba(20, 48, 34, 0.55);
 
   /* Typography Colors */
   --text: #F3F5F7;
@@ -164,18 +178,19 @@
   --text-inverse: #070908;
 
   /* Border Illumination */
-  --border: rgba(74, 222, 128, 0.12);
-  --border-strong: rgba(74, 222, 128, 0.25);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
   --border-focus: #FF6A00;
 
-  /* 10% High-Contrast Accent: Neon Orange */
+  /* 10% High-Contrast Accent: Neon Orange & Amber */
   --accent: #FF6A00;
   --accent-hover: #FF7D1A;
   --accent-active: #E65C00;
+  --accent-light: #FF964A;
   --accent-subtle: rgba(255, 106, 0, 0.14);
-  --accent-border: rgba(255, 106, 0, 0.42);
+  --accent-border: rgba(255, 106, 0, 0.40);
   --accent-contrast: #070908;
-  --accent-glow: 0 0 16px rgba(255, 106, 0, 0.35);
+  --accent-glow: 0 0 20px rgba(255, 106, 0, 0.35);
 
   --ink: #FF6A00;
   --ink-hover: #FF7D1A;

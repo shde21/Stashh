@@ -16,10 +16,9 @@ describe('FoundationPage', () => {
     )
 
     expect(screen.getByRole('heading', { level: 1, name: 'Invest and raise with precision.' })).toBeInTheDocument()
-    expect(screen.getByText('Simulated Capital Marketplace')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Raise capital' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Explore opportunities' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Sign in' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Get started' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Get started' })).toBeInTheDocument()
   })
 })

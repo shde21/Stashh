@@ -48,6 +48,7 @@ Recent decisions affecting current work:
 
 - [Init]: Chose Spring Session JDBC for session persistence to leverage existing PostgreSQL infrastructure.
 - [Init]: Adopted Vertical MVP slicing across 5 focused hardening phases.
+- [Frontend]: Refactored landing page (`FoundationPage.tsx`, `index.css`, `tokens.css`) to enforce strict 60-30-10 per scroll viewport (60% Charcoal Black, 30% Dark Forest Green, 10% Neon Orange), removed header border for seamless canvas merging, eliminated dropdown instant-close with a 250ms debounced leave bridge, adopted Indian startup venture denomination (₹ Lakhs/Crores), and ensured clean light theme fidelity.
 
 ### Pending Todos
 
@@ -68,6 +69,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-11-10 20:25
-Stopped at: Initialized project, requirements, and roadmap. Ready to plan Phase 1.
+Last session: 2026-11-10 20:43
+Stopped at: Session resumed, ready to discuss or plan Phase 1 (Session Persistence & Client Hardening)
 Resume file: None
