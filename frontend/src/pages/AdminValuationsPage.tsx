@@ -338,6 +338,18 @@ export default function AdminValuationsPage() {
               <EmptyState
                 title="No valuation snapshots yet"
                 description="Recorded snapshots establish verifiable reference marks for investor portfolio tracking."
+                action={
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      const el = document.getElementById('valuation-company-select')
+                      el?.focus()
+                    }}
+                  >
+                    Select company to record
+                  </Button>
+                }
               />
             ) : (
               <TableWrapper>

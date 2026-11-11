@@ -400,7 +400,7 @@ export default function StartupFundraisingPage() {
             </div>
 
             {days != null && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)', marginTop: 'var(--space-2)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)', marginTop: 'var(--space-2)' }}>
                 <Calendar size={12} strokeWidth={1.75} />
                 <span>Closing {formatDate(form.endsAt)} ({days} days left)</span>
               </div>

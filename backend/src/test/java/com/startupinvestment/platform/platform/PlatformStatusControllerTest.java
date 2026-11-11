@@ -31,6 +31,16 @@ class PlatformStatusControllerTest {
     }
 
     @Test
+    void exposesPublicPlatformMetrics() throws Exception {
+        mockMvc.perform(get("/api/v1/platform/metrics"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalCapitalCommitted").isNumber())
+                .andExpect(jsonPath("$.activeStartupsCount").isNumber())
+                .andExpect(jsonPath("$.activeRoundsCount").isNumber())
+                .andExpect(jsonPath("$.activeCommitmentsCount").isNumber());
+    }
+
+    @Test
     void exposesActuatorHealth() throws Exception {
         mockMvc.perform(get("/actuator/health"))
                 .andExpect(status().isOk())

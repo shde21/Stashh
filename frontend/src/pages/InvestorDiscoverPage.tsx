@@ -84,6 +84,9 @@ export default function InvestorDiscoverPage() {
   const [notePool, setNotePool] = useState<FundraisingPool | null>(null)
   const [thesisNote, setThesisNote] = useState('')
 
+  const [withdrawPool, setWithdrawPool] = useState<FundraisingPool | null>(null)
+  const [withdrawSubmitting, setWithdrawSubmitting] = useState(false)
+
   useEffect(() => {
     Promise.all([fetchInvestorPools(), fetchWatchlist(), fetchInvestorInterests()])
       .then(([nextPools, nextWatchlist, nextInterests]) => {
@@ -179,23 +182,28 @@ export default function InvestorDiscoverPage() {
   }
 
   // Interest actions
-  async function handleInterestClick(pool: FundraisingPool) {
+  function handleInterestClick(pool: FundraisingPool) {
     const existing = interests.find((item) => item.profileId === pool.profileId && item.status === 'PENDING')
     if (existing) {
-      if (!window.confirm(`Withdraw your pending introduction to ${pool.companyName}?`)) return
-      setWorkingId(pool.profileId)
-      try {
-        const updated = await withCsrf((token) => withdrawInterest(pool.profileId, token))
-        setInterests((current) => current.map((item) => (item.profileId === pool.profileId ? updated : item)))
-        showToast(`Introduction to ${pool.companyName} withdrawn.`, 'info')
-      } catch (err: unknown) {
-        showToast(err instanceof Error ? err.message : 'Failed to withdraw interest', 'error')
-      } finally {
-        setWorkingId(null)
-      }
+      setWithdrawPool(pool)
     } else {
       setInterestPool(pool)
       setInterestMessage('I would like to learn more about the company and round terms.')
+    }
+  }
+
+  async function handleConfirmWithdraw() {
+    if (!withdrawPool) return
+    setWithdrawSubmitting(true)
+    try {
+      const updated = await withCsrf((token) => withdrawInterest(withdrawPool.profileId, token))
+      setInterests((current) => current.map((item) => (item.profileId === withdrawPool.profileId ? updated : item)))
+      showToast(`Introduction to ${withdrawPool.companyName} withdrawn.`, 'info')
+      setWithdrawPool(null)
+    } catch (err: unknown) {
+      showToast(err instanceof Error ? err.message : 'Failed to withdraw interest', 'error')
+    } finally {
+      setWithdrawSubmitting(false)
     }
   }
 
@@ -323,7 +331,7 @@ export default function InvestorDiscoverPage() {
 
       {/* Filter and Search Bar */}
       <form onSubmit={handleSearch} className="vl-card vl-card-sm" style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', alignItems: 'flex-end' }}>
-        <div style={{ flex: 2, minWidth: '220px' }}>
+        <div style={{ flex: '1 1 240px', minWidth: '200px' }}>
           <Field label="Search" htmlFor="search-input">
             {(fieldProps) => (
               <Input
@@ -336,7 +344,7 @@ export default function InvestorDiscoverPage() {
           </Field>
         </div>
 
-        <div style={{ flex: 1, minWidth: '150px' }}>
+        <div style={{ flex: '1 1 160px', minWidth: '140px' }}>
           <Field label="Sector" htmlFor="sector-filter">
             {(fieldProps) => (
               <Input
@@ -349,7 +357,7 @@ export default function InvestorDiscoverPage() {
           </Field>
         </div>
 
-        <div style={{ flex: 1, minWidth: '150px' }}>
+        <div style={{ flex: '1 1 160px', minWidth: '140px' }}>
           <Field label="Stage" htmlFor="stage-filter">
             {(fieldProps) => (
               <Select
@@ -366,7 +374,7 @@ export default function InvestorDiscoverPage() {
           </Field>
         </div>
 
-        <div style={{ flex: 1, minWidth: '160px' }}>
+        <div style={{ flex: '1 1 160px', minWidth: '140px' }}>
           <Field label="Sort by" htmlFor="sort-select">
             {(fieldProps) => (
               <Select
@@ -383,7 +391,7 @@ export default function InvestorDiscoverPage() {
           </Field>
         </div>
 
-        <div style={{ marginBottom: 'var(--space-1)' }}>
+        <div style={{ flex: '0 0 auto', marginBottom: 'var(--space-1)' }}>
           <Button type="submit" variant="secondary" size="md" loading={searching} leftIcon={<Search size={14} strokeWidth={1.75} />}>
             Filter
           </Button>
@@ -429,7 +437,7 @@ export default function InvestorDiscoverPage() {
                     <Badge variant="neutral">{pool.stage.replace('_', ' ')}</Badge>
                   </div>
                   {daysRemaining != null && (
-                    <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-1)' }}>
                       <Calendar size={12} strokeWidth={1.75} />
                       {daysRemaining > 0 ? `${daysRemaining}d left` : 'Ending today'}
                     </span>
@@ -902,6 +910,28 @@ export default function InvestorDiscoverPage() {
             />
           )}
         </Field>
+      </Modal>
+
+      {/* WITHDRAW INTRODUCTION CONFIRMATION MODAL */}
+      <Modal
+        isOpen={Boolean(withdrawPool)}
+        onClose={() => setWithdrawPool(null)}
+        title="Withdraw introduction"
+        description={`Are you sure you want to withdraw your formal expression of interest in ${withdrawPool?.companyName}? The founder will no longer see your pending introduction.`}
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setWithdrawPool(null)} disabled={withdrawSubmitting}>
+              Keep active
+            </Button>
+            <Button variant="destructive" loading={withdrawSubmitting} onClick={() => void handleConfirmWithdraw()}>
+              Withdraw introduction
+            </Button>
+          </>
+        }
+      >
+        <p style={{ margin: 0, fontSize: 'var(--font-small)', color: 'var(--text-secondary)' }}>
+          You can re-express interest at any time while the fundraising round remains open.
+        </p>
       </Modal>
     </div>
   )

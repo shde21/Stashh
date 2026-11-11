@@ -310,7 +310,7 @@ export default function AdminReviewsPage() {
                     <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-secondary)' }}>Website</span>
                     <p style={{ fontSize: 'var(--font-small)' }}>
                       {selectedProfile.website ? (
-                        <a href={selectedProfile.website} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <a href={selectedProfile.website} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-1)' }}>
                           <span>{selectedProfile.website}</span>
                           <ExternalLink size={12} />
                         </a>
@@ -383,7 +383,7 @@ export default function AdminReviewsPage() {
                             </Badge>
                             <strong>{doc.title}</strong>
                           </div>
-                          <a href={doc.resourceUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <a href={doc.resourceUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-1)' }}>
                             <span>Open</span>
                             <ExternalLink size={12} />
                           </a>

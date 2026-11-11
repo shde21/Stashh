@@ -37,4 +37,30 @@ public class PlatformStatusService {
                 Instant.now(clock)
         );
     }
+
+    public PlatformPublicMetrics getMetrics() {
+        Number totalCommitted = jdbcTemplate.queryForObject(
+                "SELECT COALESCE(SUM(amount), 0) FROM fundraising_commitments WHERE status = 'ACTIVE'",
+                Number.class
+        );
+        Long activeStartups = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM startup_profiles WHERE review_status = 'APPROVED' AND visibility = 'PUBLIC'",
+                Long.class
+        );
+        Long activeRounds = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM fundraising_pools WHERE status = 'OPEN'",
+                Long.class
+        );
+        Long activeCommitments = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM fundraising_commitments WHERE status = 'ACTIVE'",
+                Long.class
+        );
+
+        return new PlatformPublicMetrics(
+                totalCommitted != null ? totalCommitted.longValue() : 0L,
+                activeStartups != null ? activeStartups : 0L,
+                activeRounds != null ? activeRounds : 0L,
+                activeCommitments != null ? activeCommitments : 0L
+        );
+    }
 }

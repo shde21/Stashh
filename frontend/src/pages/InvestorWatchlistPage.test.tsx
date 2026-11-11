@@ -139,6 +139,9 @@ describe('InvestorWatchlistPage', () => {
     const withdrawBtn = await screen.findByRole('button', { name: /withdraw introduction/i })
     await user.click(withdrawBtn)
 
+    const confirmButtons = screen.getAllByRole('button', { name: /withdraw introduction/i })
+    await user.click(confirmButtons[confirmButtons.length - 1])
+
     expect(await screen.findByText('Interest request withdrawn.')).toBeInTheDocument()
     const deleteCall = fetchMock.mock.calls.find((call) => call[0].includes('/api/v1/investor/marketplace/startups/101/interest'))
     expect(deleteCall).toBeDefined()

@@ -38,8 +38,8 @@ export function SegmentedControl<T extends string>({
             {option.count != null && (
               <span
                 style={{
-                  marginLeft: '6px',
-                  fontSize: '0.75rem',
+                  marginLeft: 'var(--space-1)',
+                  fontSize: 'var(--font-caption)',
                   opacity: 0.75,
                   fontVariantNumeric: 'tabular-nums',
                 }}

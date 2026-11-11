@@ -24,7 +24,7 @@ export function Stat({
       <span className="vl-stat-label">{label}</span>
       <span className="vl-stat-value">{value}</span>
       {(delta || subtext) && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
           {delta && (
             <span className={`vl-stat-delta ${delta.type}`}>
               {delta.type === 'positive' && <TrendingUp size={14} strokeWidth={1.75} aria-hidden="true" />}

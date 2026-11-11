@@ -15,6 +15,7 @@ import {
   Button,
   Card,
   Field,
+  Modal,
   StatusPill,
   Table,
   TableWrapper,
@@ -36,6 +37,8 @@ export default function InvestorWatchlistPage() {
   const [editingNotes, setEditingNotes] = useState<Record<number, string>>({})
   const [loading, setLoading] = useState(true)
   const [workingId, setWorkingId] = useState<number | null>(null)
+  const [removingItem, setRemovingItem] = useState<MarketplaceStartup | null>(null)
+  const [withdrawingItem, setWithdrawingItem] = useState<InterestResponse | null>(null)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
@@ -76,7 +79,9 @@ export default function InvestorWatchlistPage() {
     }
   }
 
-  async function handleRemove(profileId: number) {
+  async function handleConfirmRemove() {
+    if (!removingItem) return
+    const profileId = removingItem.profileId
     setWorkingId(profileId)
     setError('')
     setSuccess('')
@@ -85,6 +90,7 @@ export default function InvestorWatchlistPage() {
       setWatchlist((current) => current.filter((item) => item.profileId !== profileId))
       setSuccess('Startup removed from watchlist.')
       showToast('Startup removed from watchlist.', 'info')
+      setRemovingItem(null)
     } catch (nextError: unknown) {
       if (nextError instanceof ApiError) setError(nextError.message)
       else setError(nextError instanceof Error ? nextError.message : 'Failed to remove from watchlist.')
@@ -93,7 +99,9 @@ export default function InvestorWatchlistPage() {
     }
   }
 
-  async function handleWithdrawInterest(profileId: number) {
+  async function handleConfirmWithdraw() {
+    if (!withdrawingItem) return
+    const profileId = withdrawingItem.profileId
     setWorkingId(profileId)
     setError('')
     setSuccess('')
@@ -104,6 +112,7 @@ export default function InvestorWatchlistPage() {
       )
       setSuccess('Interest request withdrawn.')
       showToast('Interest request withdrawn.', 'info')
+      setWithdrawingItem(null)
     } catch (nextError: unknown) {
       if (nextError instanceof ApiError) setError(nextError.message)
       else setError(nextError instanceof Error ? nextError.message : 'Failed to withdraw interest.')
@@ -183,12 +192,13 @@ export default function InvestorWatchlistPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => void handleRemove(item.profileId)}
+                    onClick={() => setRemovingItem(item)}
                     disabled={workingId === item.profileId}
                     leftIcon={<Trash2 size={14} strokeWidth={1.75} />}
                     style={{ color: 'var(--negative-text)' }}
+                    aria-label={`Remove ${item.companyName} from watchlist`}
                   >
-                    Remove
+                    Remove from watchlist
                   </Button>
                 </div>
 
@@ -284,10 +294,10 @@ export default function InvestorWatchlistPage() {
                         <Button
                           variant="destructive"
                           size="sm"
-                          onClick={() => void handleWithdrawInterest(interest.profileId)}
+                          onClick={() => setWithdrawingItem(interest)}
                           disabled={workingId === interest.profileId}
                         >
-                          {workingId === interest.profileId ? 'Withdrawing…' : 'Withdraw introduction'}
+                          Withdraw introduction
                         </Button>
                       )}
                     </Td>
@@ -298,6 +308,58 @@ export default function InvestorWatchlistPage() {
           </TableWrapper>
         )}
       </section>
+
+      {/* REMOVE FROM WATCHLIST CONFIRMATION MODAL */}
+      <Modal
+        isOpen={Boolean(removingItem)}
+        onClose={() => setRemovingItem(null)}
+        title="Remove from watchlist"
+        description={`Remove ${removingItem?.companyName} from your private watchlist? Your saved thesis notes will be deleted.`}
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setRemovingItem(null)} disabled={workingId === removingItem?.profileId}>
+              Keep on watchlist
+            </Button>
+            <Button
+              variant="destructive"
+              loading={workingId === removingItem?.profileId}
+              onClick={() => void handleConfirmRemove()}
+            >
+              Remove company
+            </Button>
+          </>
+        }
+      >
+        <p style={{ margin: 0, fontSize: 'var(--font-small)', color: 'var(--text-secondary)' }}>
+          You can re-add this company to your watchlist anytime from the Discover Startups directory.
+        </p>
+      </Modal>
+
+      {/* WITHDRAW INTRODUCTION CONFIRMATION MODAL */}
+      <Modal
+        isOpen={Boolean(withdrawingItem)}
+        onClose={() => setWithdrawingItem(null)}
+        title="Withdraw introduction"
+        description={`Are you sure you want to withdraw your formal expression of interest in ${withdrawingItem?.companyName}?`}
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setWithdrawingItem(null)} disabled={workingId === withdrawingItem?.profileId}>
+              Keep active
+            </Button>
+            <Button
+              variant="destructive"
+              loading={workingId === withdrawingItem?.profileId}
+              onClick={() => void handleConfirmWithdraw()}
+            >
+              Withdraw introduction
+            </Button>
+          </>
+        }
+      >
+        <p style={{ margin: 0, fontSize: 'var(--font-small)', color: 'var(--text-secondary)' }}>
+          The founder will no longer see your pending interest. You can reach out again from the Discover page.
+        </p>
+      </Modal>
     </div>
   )
 }

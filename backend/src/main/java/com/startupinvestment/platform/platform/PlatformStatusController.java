@@ -18,4 +18,9 @@ public class PlatformStatusController {
     public PlatformStatus getPlatformStatus() {
         return platformStatusService.getStatus();
     }
+
+    @GetMapping("/metrics")
+    public PlatformPublicMetrics getPlatformMetrics() {
+        return platformStatusService.getMetrics();
+    }
 }

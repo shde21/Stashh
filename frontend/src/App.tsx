@@ -4,6 +4,7 @@ import { AuthProvider } from './auth/AuthProvider'
 import { PublicOnly, RequireAuth, RequireRole } from './auth/guards'
 import { AppShell } from './components/layout/AppShell'
 import { FullPageLoading } from './components/feedback/States'
+import { ErrorBoundary } from './design-system'
 import { DashboardRedirectPage } from './pages/DashboardRedirectPage'
 
 const FoundationPage = lazy(() => import('./pages/FoundationPage'))
@@ -69,7 +70,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <ErrorBoundary>
+          <AppRoutes />
+        </ErrorBoundary>
       </AuthProvider>
     </BrowserRouter>
   )

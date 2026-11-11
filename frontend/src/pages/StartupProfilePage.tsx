@@ -603,7 +603,7 @@ export default function StartupProfilePage() {
                             href={doc.resourceUrl}
                             target="_blank"
                             rel="noreferrer"
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', color: 'var(--accent)', fontSize: 'var(--font-small)' }}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--space-1)', color: 'var(--accent)', fontSize: 'var(--font-small)' }}
                           >
                             <span>Open document</span>
                             <ExternalLink size={12} strokeWidth={1.75} />

@@ -373,7 +373,7 @@ export default function DashboardPage({ role, section }: { role: UserRole; secti
                 }
 
                 return (
-                  <div key={step.key} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div key={step.key} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
                     <div
                       style={{
                         height: '4px',
@@ -388,7 +388,7 @@ export default function DashboardPage({ role, section }: { role: UserRole; secti
                                 : 'var(--border)',
                       }}
                     />
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
                       <span
                         style={{
                           width: '18px',
@@ -397,7 +397,7 @@ export default function DashboardPage({ role, section }: { role: UserRole; secti
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          fontSize: '10px',
+                          fontSize: 'var(--font-caption)',
                           fontWeight: 'var(--weight-bold)',
                           backgroundColor: bgColor,
                           color: iconColor,
@@ -466,7 +466,7 @@ export default function DashboardPage({ role, section }: { role: UserRole; secti
           >
             <div>
               <p className="eyebrow" style={{ margin: 0 }}>Recommended next step</p>
-              <h3 style={{ fontSize: 'var(--font-body)', fontWeight: 'var(--weight-semibold)', margin: '4px 0' }}>
+              <h3 style={{ fontSize: 'var(--font-body)', fontWeight: 'var(--weight-semibold)', margin: 'var(--space-1) 0' }}>
                 {!startupProfile
                   ? 'Build your company profile'
                   : reviewStatus === 'DRAFT'

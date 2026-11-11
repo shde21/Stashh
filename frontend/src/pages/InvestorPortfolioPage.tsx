@@ -24,7 +24,7 @@ import {
 import { AlertCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-const ALLOCATION_COLORS = ['#0A5FFF', '#00B386', '#86868B', '#B7791F', '#6E6E73', '#D2D2D7']
+const ALLOCATION_COLORS = ['#FF6A00', '#2A5C43', '#10B981', '#F59E0B', '#1E4230', '#657080']
 
 export default function InvestorPortfolioPage() {
   const { withCsrf } = useAuth()
@@ -155,7 +155,7 @@ export default function InvestorPortfolioPage() {
                   style={{
                     width: `${pct}%`,
                     backgroundColor: color,
-                    borderRight: idx < activePositions.length - 1 ? '1px solid #ffffff' : 'none',
+                    borderRight: idx < activePositions.length - 1 ? '1px solid var(--border)' : 'none',
                   }}
                   title={`${pos.companyName}: ${pct.toFixed(1)}%`}
                 />
@@ -169,7 +169,7 @@ export default function InvestorPortfolioPage() {
               const pct = totalCommitted > 0 ? (pos.amount / totalCommitted) * 100 : 0
               const color = ALLOCATION_COLORS[idx % ALLOCATION_COLORS.length]
               return (
-                <div key={pos.commitmentId} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div key={pos.commitmentId} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
                   <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: color }} aria-hidden="true" />
                   <strong>{pos.companyName}</strong>
                   <span style={{ color: 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums' }}>

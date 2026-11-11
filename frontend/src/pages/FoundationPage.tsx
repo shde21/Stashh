@@ -1,15 +1,24 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, ThemeToggle } from '../design-system'
+import { Button, ThemeToggle, formatCompactINR } from '../design-system'
+import { apiRequest } from '../lib/api'
 import { 
   ArrowRight, 
   ChevronDown, 
   ShieldCheck, 
-  BarChart3, 
   Layers, 
+  Lock,
+  FileText,
   CheckCircle2,
   Activity
 } from 'lucide-react'
+
+type PlatformPublicMetrics = {
+  totalCapitalCommitted: number
+  activeStartupsCount: number
+  activeRoundsCount: number
+  activeCommitmentsCount: number
+}
 
 export default function FoundationPage() {
   // Mega menu state with leave delay so moving cursor to menu never collapses
@@ -33,45 +42,86 @@ export default function FoundationPage() {
     }, 250)
   }
 
-  // Interactive trajectory milestone state
-  const [activeStage, setActiveStage] = useState<number>(2)
+  // Live dynamic platform metrics from backend
+  const [metrics, setMetrics] = useState<PlatformPublicMetrics>({
+    totalCapitalCommitted: 0,
+    activeStartupsCount: 0,
+    activeRoundsCount: 0,
+    activeCommitmentsCount: 0,
+  })
+
+  useEffect(() => {
+    let isMounted = true
+    apiRequest<PlatformPublicMetrics>('/api/v1/platform/metrics')
+      .then((data) => {
+        if (isMounted && data) {
+          setMetrics({
+            totalCapitalCommitted: Number(data.totalCapitalCommitted) || 0,
+            activeStartupsCount: Number(data.activeStartupsCount) || 0,
+            activeRoundsCount: Number(data.activeRoundsCount) || 0,
+            activeCommitmentsCount: Number(data.activeCommitmentsCount) || 0,
+          })
+        }
+      })
+      .catch((err) => {
+        console.warn('Live platform metrics unavailable, using baseline data:', err)
+      })
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  // Interactive lifecycle execution flow state
+  const [activeStage, setActiveStage] = useState<number>(0)
 
   // Interactive FAQ accordion state
   const [openFaq, setOpenFaq] = useState<number | null>(0)
 
-  // India-first startup compounding stages (₹ Lakhs & Crores)
-  const trajectoryStages = [
+  // Structured Platform Execution Lifecycle (Onboarding -> Authentication -> Discovery -> Investment)
+  const lifecycleSteps = [
     {
-      stage: 'Stage 01',
-      title: 'Incorporation & Cap Table Setup',
-      valuation: '₹50 Lakh – ₹2 Crore',
+      step: '01',
+      name: 'Onboarding',
+      badge: 'Step 01 • Incorporation & Setup',
+      title: 'Corporate Incorporation & Cap Table Architecture',
+      description: 'Founders submit legal incorporation filings, define authorized share capital, and establish mathematical equity reserves with database-enforced integrity.',
       focus: 'Foundational Equity Architecture',
-      description: 'Authorized, issued, outstanding, and reserved share pools are established with database-enforced mathematical balance.',
-      metric: '100% Invariant Balance',
+      deliverable: '100% Invariant Cap Table',
+      coordX: 80,
+      coordY: 180,
     },
     {
-      stage: 'Stage 02',
-      title: 'Verified Legal Due Diligence',
-      valuation: '₹2 Crore – ₹10 Crore',
+      step: '02',
+      name: 'Authentication',
+      badge: 'Step 02 • Legal Due Diligence',
+      title: 'Administrative Verification & Platform Authorization',
+      description: 'Corporate filings, certified capitalization ledgers, and financial projections are scrutinized and verified by platform administration before any raise opens.',
       focus: 'Administrative Review & Validation',
-      description: 'Corporate filings, certified capitalization ledgers, and financial projections are scrutinized and verified by platform administration.',
-      metric: 'Admin Verified Status',
+      deliverable: 'Admin-Verified Corporate Status',
+      coordX: 320,
+      coordY: 135,
     },
     {
-      stage: 'Stage 03',
-      title: 'Direct Syndicate Round Allocation',
-      valuation: '₹10 Crore – ₹25 Crore',
-      focus: 'Precision Equity Distribution',
-      description: 'Qualified investors review validated diligence packages and commit capital directly into discrete, whole company shares.',
-      metric: 'Direct Share Ledgers',
+      step: '03',
+      name: 'Discovery',
+      badge: 'Step 03 • Market Diligence',
+      title: 'Direct Marketplace Diligence & Investor Pipelines',
+      description: 'Qualified investors discover verified companies, inspect validated legal documents, record private investment theses, and submit formal expressions of interest.',
+      focus: 'Transparent Discovery & Diligence',
+      deliverable: 'Unmediated Venture Pipelines',
+      coordX: 560,
+      coordY: 85,
     },
     {
-      stage: 'Stage 04',
-      title: 'Institutional Valuation Compounding',
-      valuation: '₹25 Crore – ₹100 Crore+',
-      focus: 'Audited Position Performance',
-      description: 'Subsequent funding milestones generate immutable valuation snapshots, recording realized capital growth and transparent returns.',
-      metric: 'Snapshot History',
+      step: '04',
+      name: 'Investment',
+      badge: 'Step 04 • Capital Allocation',
+      title: 'Direct Share Allocation & Transparent Compounding',
+      description: 'Investors allocate capital into whole, discrete company shares. Every commitment directly updates capitalization pools and feeds immutable valuation history.',
+      focus: 'Precision Equity Allocation',
+      deliverable: 'Direct Share Ledgers & Returns',
+      coordX: 820,
+      coordY: 30,
     },
   ]
 
@@ -96,19 +146,19 @@ export default function FoundationPage() {
 
   return (
     <div className="landing-page-root">
-      {/* Full-Width Seamless Top Navigation - Zero separating line, smoothly merged into canvas */}
+      {/* Full-Width Seamless Pinned Top Navigation - Zero separating line, smoothly merged into canvas */}
       <header className="landing-header">
         <nav className="topbar" aria-label="Primary navigation">
           {/* Left: Brand Identity */}
           <Link className="brand" to="/" aria-label="Stashh home">
             <span className="brand-mark" aria-hidden="true">S</span>
-            <span style={{ fontSize: '1.25rem', fontWeight: 600, letterSpacing: '-0.02em' }}>Stashh</span>
+            <span style={{ fontSize: 'var(--font-h3)', fontWeight: 'var(--weight-semibold)', letterSpacing: 'var(--tracking-tight)' }}>Stashh</span>
           </Link>
 
-          {/* Right: Nav items (with stable hover state), ThemeToggle, and Matching Sized Action Buttons */}
+          {/* Right: Nav items with spacious gaps, ThemeToggle, and Symmetrical Action Buttons */}
           <div className="landing-topbar-right">
             <div className="nav-links-cluster" aria-label="Secondary navigation">
-              {/* 1. Investor Mega Menu (Form of lines with Black-to-Green gradient) */}
+              {/* 1. Investor Mega Menu */}
               <div 
                 className="subbar-item"
                 onMouseEnter={() => handleMouseEnter('investor')}
@@ -248,7 +298,7 @@ export default function FoundationPage() {
                       <div className="megamenu-line-left">
                         <span className="megamenu-line-title">Market Directory</span>
                       </div>
-                      <span className="megamenu-line-desc">Explore Indian enterprise tech, AI, infrastructure, health, and consumer companies.</span>
+                      <span className="megamenu-line-desc">Explore vetted enterprise tech, AI, infrastructure, health, and consumer companies.</span>
                       <ArrowRight size={15} className="megamenu-line-arrow" />
                     </Link>
 
@@ -354,21 +404,21 @@ export default function FoundationPage() {
 
       {/* Main Content Wrap */}
       <main className="landing-content-wrap">
-        {/* Section 1: Hero Viewport (60% Charcoal Black Canvas, 10% Neon Orange CTAs) */}
+        {/* Section 1: Hero Viewport with Increased Spacing and Symmetrical CTA Buttons */}
         <section className="hero" aria-labelledby="hero-title">
           <div className="hero-copy">
             <h1 id="hero-title">Invest and raise with precision.</h1>
             <p className="hero-summary">
-              A calm, trustworthy investment environment where Indian startups publish verified metrics and investors evaluate company-specific equity shares.
+              A calm, trustworthy investment environment where startups publish verified metrics and investors evaluate company-specific equity shares.
             </p>
             <div className="hero-actions" aria-label="Get started">
               <Link to="/register?role=STARTUP">
-                <Button variant="primary" size="lg" rightIcon={<ArrowRight size={16} strokeWidth={2} />}>
+                <Button className="btn-cta-action btn-cta-secondary" size="lg" rightIcon={<ArrowRight size={16} strokeWidth={2} />}>
                   Raise capital
                 </Button>
               </Link>
               <Link to="/register?role=INVESTOR">
-                <Button variant="secondary" size="lg" rightIcon={<ArrowRight size={16} strokeWidth={2} />}>
+                <Button className="btn-cta-action btn-cta-primary" size="lg" rightIcon={<ArrowRight size={16} strokeWidth={2} />}>
                   Explore opportunities
                 </Button>
               </Link>
@@ -376,27 +426,27 @@ export default function FoundationPage() {
           </div>
         </section>
 
-        {/* Viewport 1's 30% Dark Forest Green: Real Platform Statistics Initialized at ₹0 Cr / 0 */}
+        {/* Live Dynamic Platform Metrics Initialized from Real Database Data */}
         <section className="hero-stats-grid" aria-label="Platform metrics">
           <div className="hero-stat-card">
-            <span className="stat-num">₹0 Cr</span>
+            <span className="stat-num">{formatCompactINR(metrics.totalCapitalCommitted)}</span>
             <span className="stat-label">Capital Committed</span>
           </div>
           <div className="hero-stat-card">
-            <span className="stat-num">0</span>
-            <span className="stat-label">Registered Startups</span>
+            <span className="stat-num">{metrics.activeStartupsCount.toLocaleString('en-IN')}</span>
+            <span className="stat-label">Approved Startups</span>
           </div>
           <div className="hero-stat-card">
-            <span className="stat-num">0</span>
-            <span className="stat-label">Verified Investors</span>
+            <span className="stat-num">{metrics.activeCommitmentsCount.toLocaleString('en-IN')}</span>
+            <span className="stat-label">Active Commitments</span>
           </div>
           <div className="hero-stat-card">
-            <span className="stat-num">0</span>
-            <span className="stat-label">Active Rounds</span>
+            <span className="stat-num">{metrics.activeRoundsCount.toLocaleString('en-IN')}</span>
+            <span className="stat-label">Open Rounds</span>
           </div>
         </section>
 
-        {/* Section 2: Viewport 2 (Conviction & Venture Compounding Trajectory - 30% Dark Forest Green) */}
+        {/* Section 2: Core Conviction with 2 Balanced Cards (No 3-Box Triad) */}
         <section className="conviction-section" aria-labelledby="conviction-title">
           <div className="section-header">
             <span className="section-tag">Core Conviction</span>
@@ -406,47 +456,45 @@ export default function FoundationPage() {
             </p>
           </div>
 
-          {/* Three Aura Words Cards */}
-          <div className="aura-words-row">
+          {/* Two Prominent Institutional Cards Side-by-Side */}
+          <div className="conviction-grid">
             <div className="aura-word-card">
-              <span className="aura-word-tag">DISCOVER</span>
-              <h3>Uncompromised Signal</h3>
-              <p>Where exceptional ventures meet disciplined capital. No vanity pitch decks or inflated projections—only verified corporate substance.</p>
+              <span className="aura-word-tag">DISCOVER &amp; SIGNAL</span>
+              <h3>Verifiable Corporate Truth</h3>
+              <p>
+                Where exceptional ventures meet disciplined capital. No vanity pitch decks or inflated projections—only verified corporate substance, administrative diligence packages, and validated financial fundamentals.
+              </p>
             </div>
 
             <div className="aura-word-card">
-              <span className="aura-word-tag">BUILD</span>
-              <h3>Mathematical Integrity</h3>
-              <p>Capitalization tables engineered with exact precision. Every share authorized, issued, and accounted for from day zero.</p>
-            </div>
-
-            <div className="aura-word-card">
-              <span className="aura-word-tag">SCALE</span>
-              <h3>Long-Term Alignment</h3>
-              <p>Structured round governance that protects founder equity and compounds investor returns across every milestone.</p>
+              <span className="aura-word-tag">CAP TABLE RIGOR</span>
+              <h3>Mathematical Equity Integrity</h3>
+              <p>
+                Capitalization tables engineered with exact relational precision. Every share authorized, issued, outstanding, and reserved is maintained with strict database balance constraints from day zero.
+              </p>
             </div>
           </div>
 
-          {/* Indian Venture Compounding & Growth Trajectory Chart */}
+          {/* Platform Execution Lifecycle with Straight Mathematical Coordinates */}
           <div className="growth-trajectory-card">
             <div className="growth-trajectory-header">
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: '4px' }}>
-                  <Activity size={18} style={{ color: 'var(--forest-text)' }} />
-                  <h3 style={{ margin: 0 }}>Venture Capital Compounding Trajectory</h3>
+                  <Activity size={18} style={{ color: 'var(--accent)' }} />
+                  <h3 style={{ margin: 0 }}>Platform Execution Lifecycle</h3>
                 </div>
-                <p>Interactive lifecycle model tracking valuation expansion through verified Indian governance gates.</p>
+                <p>Four-phase structured workflow from legal incorporation to whole-share equity allocation.</p>
               </div>
 
-              <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
-                {trajectoryStages.map((st, i) => (
+              <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+                {lifecycleSteps.map((st, i) => (
                   <button
-                    key={st.stage}
+                    key={st.step}
                     type="button"
                     onClick={() => setActiveStage(i)}
                     style={{
-                      padding: '8px 14px',
-                      fontSize: '0.8125rem',
+                      padding: 'var(--space-2) var(--space-4)',
+                      fontSize: 'var(--font-caption)',
                       fontWeight: 600,
                       borderRadius: 'var(--radius-sm)',
                       border: '1px solid',
@@ -457,94 +505,125 @@ export default function FoundationPage() {
                       transition: 'all 150ms ease',
                     }}
                   >
-                    {st.stage}
+                    {st.step}. {st.name}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Custom SVG Growth Curve with Highlight Markers */}
+            {/* Straight Mathematical Vector Coordinate Graph (No Curved Splines) */}
             <div style={{ width: '100%', height: '220px', position: 'relative', marginTop: 'var(--space-6)' }}>
               <svg width="100%" height="100%" viewBox="0 0 900 220" preserveAspectRatio="none" style={{ overflow: 'visible' }}>
                 <defs>
-                  <linearGradient id="curveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#1E4230" />
-                    <stop offset="60%" stopColor="#2A5C43" />
-                    <stop offset="100%" stopColor="#FF6A00" />
-                  </linearGradient>
-                  <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#1E4230" stopOpacity="0.45" />
-                    <stop offset="100%" stopColor="#0B1C13" stopOpacity="0.0" />
+                  <linearGradient id="mathAreaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.22" />
+                    <stop offset="100%" stopColor="var(--bg)" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
 
-                {/* Grid Lines */}
-                <line x1="50" y1="30" x2="880" y2="30" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
-                <line x1="50" y1="85" x2="880" y2="85" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
-                <line x1="50" y1="140" x2="880" y2="140" stroke="rgba(255,255,255,0.06)" strokeDasharray="4 4" />
-                <line x1="50" y1="195" x2="880" y2="195" stroke="rgba(255,255,255,0.08)" />
+                {/* Mathematical Grid Lines */}
+                <line x1="50" y1="30" x2="880" y2="30" stroke="rgba(255,255,255,0.06)" strokeDasharray="3 3" />
+                <line x1="50" y1="85" x2="880" y2="85" stroke="rgba(255,255,255,0.06)" strokeDasharray="3 3" />
+                <line x1="50" y1="135" x2="880" y2="135" stroke="rgba(255,255,255,0.06)" strokeDasharray="3 3" />
+                <line x1="50" y1="180" x2="880" y2="180" stroke="rgba(255,255,255,0.06)" strokeDasharray="3 3" />
+                <line x1="50" y1="205" x2="880" y2="205" stroke="rgba(255,255,255,0.12)" />
 
-                {/* Shaded Area Under Curve */}
-                <path
-                  d="M 60 195 C 240 190, 400 150, 540 110 C 680 70, 760 40, 880 25 L 880 195 L 60 195 Z"
-                  fill="url(#areaGradient)"
+                {/* Vertical Step Guideline Markers */}
+                <line x1="80" y1="30" x2="80" y2="205" stroke="rgba(255,255,255,0.04)" strokeDasharray="2 2" />
+                <line x1="320" y1="30" x2="320" y2="205" stroke="rgba(255,255,255,0.04)" strokeDasharray="2 2" />
+                <line x1="560" y1="30" x2="560" y2="205" stroke="rgba(255,255,255,0.04)" strokeDasharray="2 2" />
+                <line x1="820" y1="30" x2="820" y2="205" stroke="rgba(255,255,255,0.04)" strokeDasharray="2 2" />
+
+                {/* Shaded Area Under Straight Line Trajectory */}
+                <polygon
+                  points="80,180 320,135 560,85 820,30 820,205 80,205"
+                  fill="url(#mathAreaGradient)"
                 />
 
-                {/* Smooth Compounding Growth Curve */}
-                <path
-                  d="M 60 195 C 240 190, 400 150, 540 110 C 680 70, 760 40, 880 25"
+                {/* Mathematical Straight Coordinate Line Segments */}
+                <polyline
+                  points="80,180 320,135 560,85 820,30"
                   fill="none"
-                  stroke="url(#curveGradient)"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
+                  stroke="var(--accent)"
+                  strokeWidth="3"
+                  strokeLinejoin="miter"
                 />
 
-                {/* Stage 1 Marker */}
-                <circle cx="160" cy="188" r={activeStage === 0 ? "7" : "5"} fill={activeStage === 0 ? "#FF6A00" : "#2A5C43"} stroke="#0D0F14" strokeWidth="2" />
-                <text x="160" y="214" textAnchor="middle" fill="var(--text-tertiary)" fontSize="11" fontFamily="sans-serif">Incorporation</text>
-
-                {/* Stage 2 Marker */}
-                <circle cx="380" cy="152" r={activeStage === 1 ? "7" : "5"} fill={activeStage === 1 ? "#FF6A00" : "#2A5C43"} stroke="#0D0F14" strokeWidth="2" />
-                <text x="380" y="176" textAnchor="middle" fill="var(--text-tertiary)" fontSize="11" fontFamily="sans-serif">Due Diligence</text>
-
-                {/* Stage 3 Marker */}
-                <circle cx="610" cy="95" r={activeStage === 2 ? "7" : "5"} fill={activeStage === 2 ? "#FF6A00" : "#2A5C43"} stroke="#0D0F14" strokeWidth="2" />
-                <text x="610" y="120" textAnchor="middle" fill="var(--text-tertiary)" fontSize="11" fontFamily="sans-serif">Round Close</text>
-
-                {/* Stage 4 Marker */}
-                <circle cx="840" cy="32" r={activeStage === 3 ? "7" : "5"} fill={activeStage === 3 ? "#FF6A00" : "#2A5C43"} stroke="#0D0F14" strokeWidth="2" />
-                <text x="840" y="57" textAnchor="middle" fill="var(--text-tertiary)" fontSize="11" fontFamily="sans-serif">Compounding</text>
+                {/* Node Markers & Coordinate Labels */}
+                {lifecycleSteps.map((st, i) => {
+                  const isActive = activeStage === i
+                  return (
+                    <g key={st.step}>
+                      {isActive && (
+                        <circle
+                          cx={st.coordX}
+                          cy={st.coordY}
+                          r="14"
+                          fill="var(--accent)"
+                          fillOpacity="0.25"
+                        />
+                      )}
+                      <circle
+                        cx={st.coordX}
+                        cy={st.coordY}
+                        r={isActive ? "7" : "5"}
+                        fill={isActive ? "var(--accent)" : "var(--surface)"}
+                        stroke={isActive ? "#FFFFFF" : "var(--forest-border-strong)"}
+                        strokeWidth={isActive ? "2.5" : "2"}
+                      />
+                      <text
+                        x={st.coordX}
+                        y={218}
+                        textAnchor="middle"
+                        fill={isActive ? "var(--accent)" : "var(--text-tertiary)"}
+                        fontSize="11"
+                        fontFamily="var(--font-mono)"
+                        fontWeight={isActive ? "700" : "500"}
+                      >
+                        {st.name}
+                      </text>
+                    </g>
+                  )
+                })}
               </svg>
             </div>
 
-            {/* Dynamic Stage Details Callout */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--space-6)', padding: 'var(--space-5) var(--space-6)', borderRadius: 'var(--radius-md)', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--forest-border)', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+            {/* Dynamic Step Details Panel */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--space-6)', padding: 'var(--space-5) var(--space-6)', borderRadius: 'var(--radius-md)', background: 'var(--surface-sunken)', border: '1px solid var(--forest-border)', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
               <div>
-                <span style={{ fontSize: '0.6875rem', fontWeight: 700, color: 'var(--forest-text)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                  {trajectoryStages[activeStage].stage} • {trajectoryStages[activeStage].focus}
+                <span style={{ fontSize: 'var(--font-caption)', fontWeight: 'var(--weight-bold)', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  {lifecycleSteps[activeStage].badge}
                 </span>
-                <h4 style={{ margin: '4px 0 6px', fontSize: '1.125rem', fontWeight: 600 }}>{trajectoryStages[activeStage].title}</h4>
-                <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--text-secondary)', maxWidth: '640px' }}>{trajectoryStages[activeStage].description}</p>
+                <h4 style={{ margin: 'var(--space-1) 0 var(--space-2)', fontSize: 'var(--font-h3)', fontWeight: 'var(--weight-semibold)' }}>
+                  {lifecycleSteps[activeStage].title}
+                </h4>
+                <p style={{ margin: 0, fontSize: 'var(--font-small)', color: 'var(--text-secondary)', maxWidth: '640px' }}>
+                  {lifecycleSteps[activeStage].description}
+                </p>
               </div>
 
               <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '0.6875rem', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Valuation Milestone</span>
-                <div style={{ fontSize: '1.375rem', fontWeight: 700, color: 'var(--forest-text)' }}>{trajectoryStages[activeStage].valuation}</div>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{trajectoryStages[activeStage].metric}</span>
+                <span style={{ fontSize: 'var(--font-caption)', color: 'var(--text-tertiary)', textTransform: 'uppercase' }}>Workflow Invariant</span>
+                <div style={{ fontSize: 'var(--font-h3)', fontWeight: 'var(--weight-bold)', color: 'var(--text)' }}>
+                  {lifecycleSteps[activeStage].deliverable}
+                </div>
+                <span style={{ fontSize: 'var(--font-caption)', color: 'var(--forest-text)' }}>
+                  {lifecycleSteps[activeStage].focus}
+                </span>
               </div>
             </div>
 
-            {/* Four Stages Grid */}
+            {/* Four Step Navigation Bar */}
             <div className="growth-stages-grid">
-              {trajectoryStages.map((st, i) => (
+              {lifecycleSteps.map((st, i) => (
                 <div
-                  key={st.stage}
+                  key={st.step}
                   className="growth-stage-item"
                   style={{ opacity: activeStage === i ? 1 : 0.65, cursor: 'pointer' }}
                   onClick={() => setActiveStage(i)}
                 >
-                  <span className="growth-stage-num">{st.stage}</span>
-                  <span className="growth-stage-name">{st.title}</span>
+                  <span className="growth-stage-num">{st.step}</span>
+                  <span className="growth-stage-name">{st.name}</span>
                   <span className="growth-stage-desc">{st.focus}</span>
                 </div>
               ))}
@@ -552,7 +631,7 @@ export default function FoundationPage() {
           </div>
         </section>
 
-        {/* Section 3: Viewport 3 (Dual Value Track - 30% Dark Forest Green) */}
+        {/* Section 3: Dual Value Track with Symmetrical CTA Buttons */}
         <section className="dual-track-section" aria-labelledby="dual-title">
           <div className="section-header">
             <span className="section-tag">Role-Governed Infrastructure</span>
@@ -591,7 +670,7 @@ export default function FoundationPage() {
               </ul>
 
               <Link to="/register?role=STARTUP">
-                <Button variant="secondary" rightIcon={<ArrowRight size={15} />}>
+                <Button className="btn-cta-action btn-cta-secondary" style={{ width: '100%' }} rightIcon={<ArrowRight size={15} />}>
                   Register as Startup Founder
                 </Button>
               </Link>
@@ -602,7 +681,7 @@ export default function FoundationPage() {
               <div>
                 <span className="dual-card-badge">For Qualified Investors</span>
                 <h3>Evaluate deals with unvarnished clarity.</h3>
-                <p>Discover verified opportunities across Indian sectors, review legal documentation and capitalization tables, and manage private watchlists.</p>
+                <p>Discover verified opportunities across high-growth sectors, review legal documentation and capitalization tables, and manage private watchlists.</p>
               </div>
 
               <ul className="dual-feature-list">
@@ -625,7 +704,7 @@ export default function FoundationPage() {
               </ul>
 
               <Link to="/register?role=INVESTOR">
-                <Button variant="primary" rightIcon={<ArrowRight size={15} />}>
+                <Button className="btn-cta-action btn-cta-primary" style={{ width: '100%' }} rightIcon={<ArrowRight size={15} />}>
                   Register as Qualified Investor
                 </Button>
               </Link>
@@ -633,7 +712,7 @@ export default function FoundationPage() {
           </div>
         </section>
 
-        {/* Section 4: Viewport 4 (Platform Core Standards & FAQs - 30% Dark Forest Green) */}
+        {/* Section 4: Platform Core Standards - Balanced 4-Box 2x2 Grid */}
         <section className="platform-features-section" aria-labelledby="standards-title">
           <div className="section-header">
             <span className="section-tag">Institutional Integrity</span>
@@ -654,23 +733,31 @@ export default function FoundationPage() {
 
             <div className="platform-feature-card">
               <div className="platform-feature-icon"><Layers size={20} /></div>
-              <h3>Capitalization Integrity</h3>
+              <h3>Cap Table Mathematical Invariants</h3>
               <p>
-                Database-enforced constraints ensure authorized shares always balance issued and reserved pools. Every share allocation reflects real corporate equity.
+                Database-enforced constraints ensure authorized shares always balance issued and reserved pools with zero rounding errors or fractional allocations.
               </p>
             </div>
 
             <div className="platform-feature-card">
-              <div className="platform-feature-icon"><BarChart3 size={20} /></div>
-              <h3>Direct Deal Visibility</h3>
+              <div className="platform-feature-icon"><Lock size={20} /></div>
+              <h3>Session-Bound CSRF Security</h3>
               <p>
-                Investors get direct access to company documents and valuation history, while founders gain transparent visibility into inbound interest and committed capital.
+                State mutations require active authenticated sessions and cryptographic token validation, protecting transactions against cross-site exploitation.
+              </p>
+            </div>
+
+            <div className="platform-feature-card">
+              <div className="platform-feature-icon"><FileText size={20} /></div>
+              <h3>Relational Audit Trail</h3>
+              <p>
+                Every commitment, share issuance, and corporate document submission is permanently logged with tamper-evident relational audit timestamps.
               </p>
             </div>
           </div>
         </section>
 
-        {/* Section 5: Real, Actionable FAQs */}
+        {/* Section 5: Real, Actionable FAQs - Left-Aligned & Grounded Panel */}
         <section className="faq-section" aria-labelledby="faq-title">
           <div className="section-header">
             <span className="section-tag">Questions &amp; Answers</span>
@@ -678,9 +765,9 @@ export default function FoundationPage() {
             <p>Everything you need to know about the Stashh platform verification and investment process.</p>
           </div>
 
-          <div className="faq-list">
+          <div className="faq-grounded-panel">
             {faqs.map((faq, idx) => (
-              <div key={idx} className={`faq-item ${openFaq === idx ? 'faq-item-open' : ''}`}>
+              <div key={idx} className="faq-grounded-row">
                 <button
                   type="button"
                   className="faq-question"
@@ -708,20 +795,20 @@ export default function FoundationPage() {
           </div>
         </section>
 
-        {/* Section 6: Viewport 5 (Final Call To Action Banner - 30% Dark Forest Green) */}
+        {/* Section 6: Final Call To Action Banner with Symmetrical Buttons */}
         <section className="landing-cta-banner" aria-labelledby="cta-title">
           <h2 id="cta-title">Ready to participate in verified deal flows?</h2>
           <p>
-            Join Indian founders and qualified investors managing capitalization tables, legal reviews, and startup investments on Stashh.
+            Join founders and qualified investors managing capitalization tables, legal reviews, and startup investments on Stashh.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
             <Link to="/register?role=INVESTOR">
-              <Button variant="primary" size="lg" rightIcon={<ArrowRight size={16} strokeWidth={2} />}>
+              <Button className="btn-cta-action btn-cta-primary" size="lg" rightIcon={<ArrowRight size={16} strokeWidth={2} />}>
                 Get started as Investor
               </Button>
             </Link>
             <Link to="/register?role=STARTUP">
-              <Button variant="secondary" size="lg">
+              <Button className="btn-cta-action btn-cta-secondary" size="lg">
                 Register Startup
               </Button>
             </Link>
@@ -735,8 +822,8 @@ export default function FoundationPage() {
           <div className="footer-nav-grid">
             <div className="footer-brand-col">
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                <span className="brand-mark" style={{ width: '26px', height: '26px', fontSize: '11px' }}>S</span>
-                <span style={{ fontWeight: 600, fontSize: '1.125rem' }}>Stashh</span>
+                <span className="brand-mark" style={{ width: '28px', height: '28px', fontSize: 'var(--font-caption)' }}>S</span>
+                <span style={{ fontWeight: 'var(--weight-semibold)', fontSize: 'var(--font-h3)' }}>Stashh</span>
               </div>
               <p>
                 A reliable, role-governed startup investment and fundraising platform connecting verified founders and qualified investors.

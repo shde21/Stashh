@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { NavLink, Outlet, Link } from 'react-router-dom'
 import { roleLabel } from '../../auth/auth.types'
 import { useAuth } from '../../auth/useAuth'
-import { Button, ThemeToggle } from '../../design-system'
+import { Button, ThemeToggle, ErrorBoundary } from '../../design-system'
 import {
   Compass,
   FileText,
@@ -158,7 +158,9 @@ export function AppShell() {
         </aside>
 
         <main className="workspace-content">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
 
           <footer className="simulation-disclaimer" role="contentinfo">
             Stashh is an educational simulation platform. Company-specific equity share allocations and valuations are simulated for educational evaluation. No real capital or securities are transferred.

@@ -45,7 +45,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 border: 'none',
                 color: 'inherit',
                 cursor: 'pointer',
-                padding: '2px',
+                padding: 'var(--space-1)',
                 display: 'flex',
                 opacity: 0.7,
               }}
