@@ -183,7 +183,7 @@ p {
   z-index: 1000;
   width: 100%;
   border-bottom: none !important;
-  background-color: rgba(13, 15, 20, 0.88);
+  background-color: rgba(10, 10, 10, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   transition: background-color var(--transition-fast);
@@ -300,7 +300,7 @@ p {
 
 /* In dark mode: Signature Black-to-Forest-Green gradient transitioning from topbar into dark emerald depth */
 [data-theme="dark"] .megamenu-panel {
-  background: linear-gradient(180deg, #0D0F14 0%, #0A1711 40%, #0E2218 100%);
+  background: linear-gradient(180deg, #0A0A0A 0%, #0A1711 40%, #0E2218 100%);
   border-top: none;
   border-bottom: none;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 40px rgba(46, 204, 113, 0.05);
@@ -611,8 +611,8 @@ p {
 }
 
 [data-theme="dark"] .app-frame {
-  background-color: #0D0F14;
-  background-image: radial-gradient(ellipse 60% 45% at 0% 0%, rgba(14, 34, 24, 0.32) 0%, rgba(13, 15, 20, 0) 70%);
+  background-color: #0A0A0A;
+  background-image: radial-gradient(ellipse 60% 45% at 0% 0%, rgba(14, 34, 24, 0.32) 0%, rgba(10, 10, 10, 0) 70%);
 }
 
 .app-chrome-top {
@@ -624,7 +624,7 @@ p {
 }
 
 [data-theme="dark"] .app-chrome-top {
-  background: linear-gradient(180deg, rgba(13, 15, 20, 0.96) 0%, rgba(13, 15, 20, 0.82) 55%, rgba(13, 15, 20, 0) 100%);
+  background: linear-gradient(180deg, rgba(10, 10, 10, 0.96) 0%, rgba(10, 10, 10, 0.82) 55%, rgba(10, 10, 10, 0) 100%);
 }
 
 .app-header {
@@ -653,6 +653,10 @@ p {
   gap: var(--space-4);
 }
 
+.app-header-inner .brand {
+  padding-left: var(--space-3);
+}
+
 .app-subbar {
   display: flex;
   align-items: center;
@@ -665,7 +669,7 @@ p {
 
 .app-subbar-inner {
   width: 100%;
-  max-width: none;
+  max-width: var(--max-content);
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -757,10 +761,10 @@ p {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 340px;
+  width: clamp(340px, calc((100vw - var(--max-content)) / 2 + 340px), 560px);
   display: flex;
   flex-direction: column;
-  padding: calc(var(--nav-height) + 44px + var(--space-4)) var(--space-10) var(--space-6) var(--space-6);
+  padding: calc(var(--nav-height) + 44px + var(--space-4)) var(--space-10) var(--space-6) max(var(--space-6), calc((100vw - var(--max-content)) / 2));
   border: none;
   box-shadow: none;
   font-family: var(--font-sans);
@@ -769,7 +773,7 @@ p {
 }
 
 [data-theme="dark"] .workspace-menu-drawer {
-  background: linear-gradient(90deg, rgba(13, 15, 20, 0.98) 0%, rgba(10, 23, 17, 0.94) 68%, rgba(13, 15, 20, 0) 100%);
+  background: linear-gradient(90deg, rgba(10, 10, 10, 0.98) 0%, rgba(10, 23, 17, 0.94) 68%, rgba(10, 10, 10, 0) 100%);
   box-shadow: none;
 }
 
@@ -1327,7 +1331,7 @@ input[placeholder*="Search" i]:focus,
    FLOATING AUTH MODAL (Groww-inspired 60-30-10 Split Window on Landing Page)
    ========================================================================== */
 .auth-modal-backdrop {
-  background-color: rgba(9, 11, 14, 0.58);
+  background-color: rgba(8, 8, 8, 0.58);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -1369,7 +1373,7 @@ input[placeholder*="Search" i]:focus,
 
 [data-theme="dark"] .auth-modal-visual {
   background: linear-gradient(155deg, #123022 0%, #091810 100%);
-  color: #F3F5F7;
+  color: #F5F5F5;
 }
 
 [data-theme="light"] .auth-modal-visual {
@@ -1953,7 +1957,7 @@ input[placeholder*="Search" i]:focus,
 }
 
 [data-theme="dark"] .stage-sticky-bar {
-  background-color: rgba(22, 27, 38, 0.95);
+  background-color: rgba(22, 22, 22, 0.95);
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.45);
   border-top: 1px solid var(--border);
 }
@@ -2210,14 +2214,14 @@ input[placeholder*="Search" i]:focus,
 }
 
 [data-theme="dark"] .landing-page-root {
-  background-color: #0D0F14;
+  background-color: #0A0A0A;
   background-image: radial-gradient(circle at 50% 0%, rgba(14, 34, 24, 0.22) 0%, transparent 650px);
   color: var(--text);
 }
 
 [data-theme="light"] .landing-page-root {
   background-color: #F8FAF9;
-  color: #111827;
+  color: #141414;
 }
 
 .landing-aura {

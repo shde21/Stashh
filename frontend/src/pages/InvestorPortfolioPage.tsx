@@ -24,7 +24,7 @@ import {
 import { AlertCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-const ALLOCATION_COLORS = ['#FF6A00', '#2A5C43', '#10B981', '#F59E0B', '#1E4230', '#657080']
+const ALLOCATION_COLORS = ['#FF6A00', '#2A5C43', '#10B981', '#F59E0B', '#1E4230', '#737373']
 
 export default function InvestorPortfolioPage() {
   const { withCsrf } = useAuth()

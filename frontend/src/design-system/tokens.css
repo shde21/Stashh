@@ -13,9 +13,9 @@
   --surface-muted: #F0F3F1;
 
   /* Typography Colors */
-  --text: #161C20;
-  --text-secondary: #475467;
-  --text-tertiary: #667085;
+  --text: #141414;
+  --text-secondary: #4A4A4A;
+  --text-tertiary: #6B6B6B;
   --text-inverse: #FFFFFF;
 
   /* Subtle Borders & Dividers */
@@ -66,8 +66,8 @@
   --warning-subtle: #FEF3C7;
   --warning-border: #FCD34D;
 
-  --neutral-pill-bg: #F8F9FA;
-  --neutral-pill-text: #44475B;
+  --neutral-pill-bg: #F5F5F5;
+  --neutral-pill-text: #3A3A3A;
 
   /* Typography */
   --font-sans: 'Inter Variable', -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
@@ -153,14 +153,14 @@
    10% Viewport Area: High-Contrast Neon Orange CTAs & Active Triggers
    ========================================================================== */
 [data-theme="dark"] {
-  /* 60% Base Canvas & Neutral Surfaces: Luxury Charcoal Palette */
-  --bg: #0D0F14;
-  --bg-subtle: #121620;
+  /* 60% Base Canvas & Neutral Surfaces: True Shades of Black */
+  --bg: #0A0A0A;
+  --bg-subtle: #111111;
 
-  /* Standard surfaces - Neutral charcoal so cards don't wash the screen in green */
-  --surface: #161B26;
-  --surface-raised: #1D2331;
-  --surface-muted: #11141D;
+  /* Standard surfaces - Neutral charcoal black so cards don't wash green or blue */
+  --surface: #161616;
+  --surface-raised: #1F1F1F;
+  --surface-muted: #0F0F0F;
 
   /* 30% Intentional True Dark Forest Green Allocation */
   --forest-bg: #07150E;
@@ -173,9 +173,9 @@
   --forest-pill-bg: rgba(20, 48, 34, 0.55);
 
   /* Typography Colors */
-  --text: #F3F5F7;
-  --text-secondary: #9AA4B2;
-  --text-tertiary: #657080;
+  --text: #F5F5F5;
+  --text-secondary: #A3A3A3;
+  --text-tertiary: #737373;
   --text-inverse: #070908;
 
   /* Border Illumination */
@@ -217,7 +217,7 @@
   --warning-border: rgba(245, 158, 11, 0.35);
 
   --neutral-pill-bg: rgba(255, 255, 255, 0.06);
-  --neutral-pill-text: #CBD5E1;
+  --neutral-pill-text: #D4D4D4;
 
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.45);
   --shadow-popover: 0 8px 28px rgba(0, 0, 0, 0.5);

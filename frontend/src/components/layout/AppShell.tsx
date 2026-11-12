@@ -131,7 +131,7 @@ export function AppShell() {
       <div className="app-chrome-top">
         <header className="app-header">
           <div className="app-header-inner">
-            <Link className="brand" to="/app" aria-label="Stashh workspace home">
+            <Link className="brand" to="/" aria-label="Stashh home">
               <span className="brand-mark" aria-hidden="true">S</span>
               <span>Stashh</span>
             </Link>

@@ -30,6 +30,7 @@ function renderAppShell(initialEntry = '/app/investor') {
     <MemoryRouter initialEntries={[initialEntry]}>
       <AuthContext.Provider value={authValue}>
         <Routes>
+          <Route path="/" element={<p>landing-page</p>} />
           <Route path="/app" element={<AppShell />}>
             <Route path="investor" element={<p>investor-overview</p>} />
             <Route path="investor/discover" element={<p>investor-discover</p>} />
@@ -76,6 +77,15 @@ describe('AppShell', () => {
     await user.hover(menuTrigger)
 
     expect(screen.getByRole('navigation', { name: /investor navigation/i })).toBeInTheDocument()
+  })
+
+  it('navigates back to the landing page when clicking the Stashh logo from any workspace page', async () => {
+    const user = userEvent.setup()
+    renderAppShell('/app/investor/discover')
+
+    expect(screen.getByText('investor-discover')).toBeInTheDocument()
+    await user.click(screen.getByRole('link', { name: /stashh home/i }))
+    expect(screen.getByText('landing-page')).toBeInTheDocument()
   })
 })
 

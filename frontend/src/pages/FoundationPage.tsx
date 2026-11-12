@@ -895,10 +895,15 @@ export default function FoundationPage({ initialAuthMode = null }: FoundationPag
         <div className="landing-content-wrap">
           <div className="footer-nav-grid">
             <div className="footer-brand-col">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                <span className="brand-mark" style={{ width: '28px', height: '28px', fontSize: 'var(--font-caption)' }}>S</span>
+              <Link
+                className="brand"
+                to="/"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                aria-label="Stashh home"
+              >
+                <span className="brand-mark" style={{ width: '28px', height: '28px', fontSize: 'var(--font-caption)' }} aria-hidden="true">S</span>
                 <span style={{ fontWeight: 'var(--weight-semibold)', fontSize: 'var(--font-h3)' }}>Stashh</span>
-              </div>
+              </Link>
               <p>
                 A reliable, role-governed startup investment and fundraising platform connecting verified founders and qualified investors.
               </p>

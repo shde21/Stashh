@@ -128,10 +128,16 @@ export function AuthModal({
           </svg>
 
           <div className="auth-modal-visual-top">
-            <div className="auth-modal-visual-brand">
+            <button
+              type="button"
+              className="auth-modal-visual-brand"
+              onClick={onClose}
+              style={{ background: 'transparent', border: 'none', padding: 0, cursor: 'pointer' }}
+              aria-label="Back to Stashh landing page"
+            >
               <span className="brand-mark" aria-hidden="true">S</span>
               <span>Stashh</span>
-            </div>
+            </button>
             <p className="auth-modal-visual-headline">
               Invest &amp; raise with precision.
             </p>
