@@ -1,7 +1,10 @@
-import { useState, useRef, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useRef, useEffect, useContext, type MouseEvent } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Button, ThemeToggle, formatCompactINR } from '../design-system'
 import { apiRequest } from '../lib/api'
+import { AuthContext } from '../auth/auth.context'
+import type { UserRole } from '../auth/auth.types'
+import { AuthModal, type AuthModalMode } from '../components/auth/AuthModal'
 import { 
   ArrowRight, 
   ChevronDown, 
@@ -20,7 +23,32 @@ type PlatformPublicMetrics = {
   activeCommitmentsCount: number
 }
 
-export default function FoundationPage() {
+export interface FoundationPageProps {
+  initialAuthMode?: AuthModalMode | null
+}
+
+export default function FoundationPage({ initialAuthMode = null }: FoundationPageProps) {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const auth = useContext(AuthContext)
+
+  const queryRole = new URLSearchParams(location.search).get('role')
+  const [authMode, setAuthMode] = useState<AuthModalMode | null>(initialAuthMode)
+  const [authRole, setAuthRole] = useState<UserRole>(queryRole === 'INVESTOR' ? 'INVESTOR' : 'STARTUP')
+  const redirectTo = typeof location.state?.from === 'string' ? location.state.from : '/app'
+
+  useEffect(() => {
+    if (initialAuthMode) {
+      setAuthMode(initialAuthMode)
+    }
+  }, [initialAuthMode])
+
+  useEffect(() => {
+    if (queryRole === 'INVESTOR' || queryRole === 'STARTUP') {
+      setAuthRole(queryRole)
+    }
+  }, [queryRole])
+
   // Mega menu state with leave delay so moving cursor to menu never collapses
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
   const menuTimerRef = useRef<number | null>(null)
@@ -42,6 +70,41 @@ export default function FoundationPage() {
     }, 250)
   }
 
+  const openAuthFromClick = (
+    event: MouseEvent<HTMLAnchorElement>,
+    mode: AuthModalMode,
+    role: UserRole = 'STARTUP',
+  ) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
+      return
+    }
+    event.preventDefault()
+    if (auth?.isAuthenticated) {
+      navigate('/app')
+      return
+    }
+    setActiveMenu(null)
+    setAuthRole(role)
+    setAuthMode(mode)
+  }
+
+  const handleCloseAuthModal = () => {
+    setAuthMode(null)
+    if (location.pathname === '/login' || location.pathname === '/register') {
+      navigate('/', { replace: true })
+    }
+  }
+
+  const handleSwitchAuthMode = (nextMode: AuthModalMode) => {
+    setAuthMode(nextMode)
+    if (location.pathname === '/login' || location.pathname === '/register') {
+      navigate(nextMode === 'login' ? '/login' : '/register', {
+        replace: true,
+        state: location.state,
+      })
+    }
+  }
+
   // Live dynamic platform metrics from backend
   const [metrics, setMetrics] = useState<PlatformPublicMetrics>({
     totalCapitalCommitted: 0,
@@ -49,8 +112,11 @@ export default function FoundationPage() {
     activeRoundsCount: 0,
     activeCommitmentsCount: 0,
   })
+  const hasFetchedMetricsRef = useRef(false)
 
   useEffect(() => {
+    if (authMode !== null || hasFetchedMetricsRef.current) return
+    hasFetchedMetricsRef.current = true
     let isMounted = true
     apiRequest<PlatformPublicMetrics>('/api/v1/platform/metrics')
       .then((data) => {
@@ -69,7 +135,7 @@ export default function FoundationPage() {
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [authMode])
 
   // Interactive lifecycle execution flow state
   const [activeStage, setActiveStage] = useState<number>(0)
@@ -180,7 +246,7 @@ export default function FoundationPage() {
                   onMouseLeave={handleMouseLeave}
                 >
                   <div className="megamenu-list">
-                    <Link to="/register?role=INVESTOR" className="megamenu-line-row">
+                    <Link to="/register?role=INVESTOR" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')} className="megamenu-line-row">
                       <div className="megamenu-line-left">
                         <span className="megamenu-line-title">Discover Startups</span>
                       </div>
@@ -188,7 +254,7 @@ export default function FoundationPage() {
                       <ArrowRight size={15} className="megamenu-line-arrow" />
                     </Link>
 
-                    <Link to="/register?role=INVESTOR" className="megamenu-line-row">
+                    <Link to="/register?role=INVESTOR" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')} className="megamenu-line-row">
                       <div className="megamenu-line-left">
                         <span className="megamenu-line-title">Private Watchlist</span>
                       </div>
@@ -196,7 +262,7 @@ export default function FoundationPage() {
                       <ArrowRight size={15} className="megamenu-line-arrow" />
                     </Link>
 
-                    <Link to="/register?role=INVESTOR" className="megamenu-line-row">
+                    <Link to="/register?role=INVESTOR" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')} className="megamenu-line-row">
                       <div className="megamenu-line-left">
                         <span className="megamenu-line-title">Portfolio Tracking</span>
                       </div>
@@ -204,7 +270,7 @@ export default function FoundationPage() {
                       <ArrowRight size={15} className="megamenu-line-arrow" />
                     </Link>
 
-                    <Link to="/register?role=INVESTOR" className="megamenu-line-row">
+                    <Link to="/register?role=INVESTOR" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')} className="megamenu-line-row">
                       <div className="megamenu-line-left">
                         <span className="megamenu-line-title">Direct Introductions</span>
                       </div>
@@ -237,7 +303,7 @@ export default function FoundationPage() {
                   onMouseLeave={handleMouseLeave}
                 >
                   <div className="megamenu-list">
-                    <Link to="/register?role=STARTUP" className="megamenu-line-row">
+                    <Link to="/register?role=STARTUP" onClick={(e) => openAuthFromClick(e, 'register', 'STARTUP')} className="megamenu-line-row">
                       <div className="megamenu-line-left">
                         <span className="megamenu-line-title">Company Profile</span>
                       </div>
@@ -245,7 +311,7 @@ export default function FoundationPage() {
                       <ArrowRight size={15} className="megamenu-line-arrow" />
                     </Link>
 
-                    <Link to="/register?role=STARTUP" className="megamenu-line-row">
+                    <Link to="/register?role=STARTUP" onClick={(e) => openAuthFromClick(e, 'register', 'STARTUP')} className="megamenu-line-row">
                       <div className="megamenu-line-left">
                         <span className="megamenu-line-title">Fundraising Management</span>
                       </div>
@@ -253,7 +319,7 @@ export default function FoundationPage() {
                       <ArrowRight size={15} className="megamenu-line-arrow" />
                     </Link>
 
-                    <Link to="/register?role=STARTUP" className="megamenu-line-row">
+                    <Link to="/register?role=STARTUP" onClick={(e) => openAuthFromClick(e, 'register', 'STARTUP')} className="megamenu-line-row">
                       <div className="megamenu-line-left">
                         <span className="megamenu-line-title">Cap Table Governance</span>
                       </div>
@@ -261,7 +327,7 @@ export default function FoundationPage() {
                       <ArrowRight size={15} className="megamenu-line-arrow" />
                     </Link>
 
-                    <Link to="/register?role=STARTUP" className="megamenu-line-row">
+                    <Link to="/register?role=STARTUP" onClick={(e) => openAuthFromClick(e, 'register', 'STARTUP')} className="megamenu-line-row">
                       <div className="megamenu-line-left">
                         <span className="megamenu-line-title">Investor Pipeline</span>
                       </div>
@@ -294,7 +360,7 @@ export default function FoundationPage() {
                   onMouseLeave={handleMouseLeave}
                 >
                   <div className="megamenu-list">
-                    <Link to="/register" className="megamenu-line-row">
+                    <Link to="/register" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')} className="megamenu-line-row">
                       <div className="megamenu-line-left">
                         <span className="megamenu-line-title">Market Directory</span>
                       </div>
@@ -302,7 +368,7 @@ export default function FoundationPage() {
                       <ArrowRight size={15} className="megamenu-line-arrow" />
                     </Link>
 
-                    <Link to="/register" className="megamenu-line-row">
+                    <Link to="/register" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')} className="megamenu-line-row">
                       <div className="megamenu-line-left">
                         <span className="megamenu-line-title">Valuation Multiples</span>
                       </div>
@@ -310,7 +376,7 @@ export default function FoundationPage() {
                       <ArrowRight size={15} className="megamenu-line-arrow" />
                     </Link>
 
-                    <Link to="/register" className="megamenu-line-row">
+                    <Link to="/register" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')} className="megamenu-line-row">
                       <div className="megamenu-line-left">
                         <span className="megamenu-line-title">Administrative Diligence</span>
                       </div>
@@ -318,7 +384,7 @@ export default function FoundationPage() {
                       <ArrowRight size={15} className="megamenu-line-arrow" />
                     </Link>
 
-                    <Link to="/register" className="megamenu-line-row">
+                    <Link to="/register" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')} className="megamenu-line-row">
                       <div className="megamenu-line-left">
                         <span className="megamenu-line-title">Governance Standards</span>
                       </div>
@@ -391,10 +457,18 @@ export default function FoundationPage() {
 
             {/* Symmetrically Styled Action Buttons with Matching Length & Neon Orange Accents */}
             <div className="landing-actions-cluster">
-              <Link to="/login" className="btn-nav-action btn-nav-signin">
+              <Link
+                to="/login"
+                onClick={(e) => openAuthFromClick(e, 'login')}
+                className="btn-nav-action btn-nav-signin"
+              >
                 Sign in
               </Link>
-              <Link to="/register" className="btn-nav-action btn-nav-getstarted">
+              <Link
+                to="/register"
+                onClick={(e) => openAuthFromClick(e, 'register', 'STARTUP')}
+                className="btn-nav-action btn-nav-getstarted"
+              >
                 Get started
               </Link>
             </div>
@@ -412,12 +486,12 @@ export default function FoundationPage() {
               A calm, trustworthy investment environment where startups publish verified metrics and investors evaluate company-specific equity shares.
             </p>
             <div className="hero-actions" aria-label="Get started">
-              <Link to="/register?role=STARTUP">
+              <Link to="/register?role=STARTUP" onClick={(e) => openAuthFromClick(e, 'register', 'STARTUP')}>
                 <Button className="btn-cta-action btn-cta-secondary" size="lg" rightIcon={<ArrowRight size={16} strokeWidth={2} />}>
                   Raise capital
                 </Button>
               </Link>
-              <Link to="/register?role=INVESTOR">
+              <Link to="/register?role=INVESTOR" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')}>
                 <Button className="btn-cta-action btn-cta-primary" size="lg" rightIcon={<ArrowRight size={16} strokeWidth={2} />}>
                   Explore opportunities
                 </Button>
@@ -669,7 +743,7 @@ export default function FoundationPage() {
                 </li>
               </ul>
 
-              <Link to="/register?role=STARTUP">
+              <Link to="/register?role=STARTUP" onClick={(e) => openAuthFromClick(e, 'register', 'STARTUP')}>
                 <Button className="btn-cta-action btn-cta-secondary" style={{ width: '100%' }} rightIcon={<ArrowRight size={15} />}>
                   Register as Startup Founder
                 </Button>
@@ -703,7 +777,7 @@ export default function FoundationPage() {
                 </li>
               </ul>
 
-              <Link to="/register?role=INVESTOR">
+              <Link to="/register?role=INVESTOR" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')}>
                 <Button className="btn-cta-action btn-cta-primary" style={{ width: '100%' }} rightIcon={<ArrowRight size={15} />}>
                   Register as Qualified Investor
                 </Button>
@@ -802,12 +876,12 @@ export default function FoundationPage() {
             Join founders and qualified investors managing capitalization tables, legal reviews, and startup investments on Stashh.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 'var(--space-4)', flexWrap: 'wrap' }}>
-            <Link to="/register?role=INVESTOR">
+            <Link to="/register?role=INVESTOR" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')}>
               <Button className="btn-cta-action btn-cta-primary" size="lg" rightIcon={<ArrowRight size={16} strokeWidth={2} />}>
                 Get started as Investor
               </Button>
             </Link>
-            <Link to="/register?role=STARTUP">
+            <Link to="/register?role=STARTUP" onClick={(e) => openAuthFromClick(e, 'register', 'STARTUP')}>
               <Button className="btn-cta-action btn-cta-secondary" size="lg">
                 Register Startup
               </Button>
@@ -833,20 +907,20 @@ export default function FoundationPage() {
             <div className="footer-col">
               <h4>Platform</h4>
               <ul>
-                <li><Link to="/register?role=INVESTOR">Discover Deals</Link></li>
-                <li><Link to="/register?role=INVESTOR">Private Watchlist</Link></li>
-                <li><Link to="/register?role=INVESTOR">Portfolio Tracking</Link></li>
-                <li><Link to="/register?role=STARTUP">Cap Table Modeling</Link></li>
+                <li><Link to="/register?role=INVESTOR" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')}>Discover Deals</Link></li>
+                <li><Link to="/register?role=INVESTOR" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')}>Private Watchlist</Link></li>
+                <li><Link to="/register?role=INVESTOR" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')}>Portfolio Tracking</Link></li>
+                <li><Link to="/register?role=STARTUP" onClick={(e) => openAuthFromClick(e, 'register', 'STARTUP')}>Cap Table Modeling</Link></li>
               </ul>
             </div>
 
             <div className="footer-col">
               <h4>Participants</h4>
               <ul>
-                <li><Link to="/register?role=STARTUP">For Founders</Link></li>
-                <li><Link to="/register?role=INVESTOR">For Investors</Link></li>
-                <li><Link to="/login">Administrative Portal</Link></li>
-                <li><Link to="/register">Create Account</Link></li>
+                <li><Link to="/register?role=STARTUP" onClick={(e) => openAuthFromClick(e, 'register', 'STARTUP')}>For Founders</Link></li>
+                <li><Link to="/register?role=INVESTOR" onClick={(e) => openAuthFromClick(e, 'register', 'INVESTOR')}>For Investors</Link></li>
+                <li><Link to="/login" onClick={(e) => openAuthFromClick(e, 'login')}>Administrative Portal</Link></li>
+                <li><Link to="/register" onClick={(e) => openAuthFromClick(e, 'register', 'STARTUP')}>Create Account</Link></li>
               </ul>
             </div>
 
@@ -871,6 +945,16 @@ export default function FoundationPage() {
           </div>
         </div>
       </footer>
+
+      {authMode !== null && (
+        <AuthModal
+          mode={authMode}
+          initialRole={authRole}
+          redirectTo={redirectTo}
+          onClose={handleCloseAuthModal}
+          onSwitchMode={handleSwitchAuthMode}
+        />
+      )}
     </div>
   )
 }

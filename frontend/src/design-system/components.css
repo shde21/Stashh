@@ -629,7 +629,7 @@ input[placeholder*="search"]:focus {
 
 .vl-modal-content {
   background-color: var(--surface);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-modal, var(--radius-sm));
   box-shadow: var(--shadow-modal);
   width: 100%;
   max-width: 540px;
@@ -675,8 +675,8 @@ input[placeholder*="search"]:focus {
   padding: var(--space-4) var(--space-6);
   border-top: 1px solid var(--border);
   background-color: var(--surface-muted);
-  border-bottom-left-radius: var(--radius-xl);
-  border-bottom-right-radius: var(--radius-xl);
+  border-bottom-left-radius: var(--radius-modal, var(--radius-sm));
+  border-bottom-right-radius: var(--radius-modal, var(--radius-sm));
 }
 
 @keyframes vl-fade-in {

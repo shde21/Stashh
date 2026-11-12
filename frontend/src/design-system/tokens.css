@@ -117,12 +117,13 @@
   --space-24: 96px;
   --space-32: 128px;
 
-  /* Shapes & Radii: Clean modern corners (8px) and fully rounded pills */
+  /* Shapes & Radii: Clean modern corners and crisp floating windows */
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 8px;
-  --radius-xl: 12px;
+  --radius-xl: 10px;
+  --radius-modal: 6px;
   --radius-full: 9999px;
 
   /* Elevations: Minimal 1px subtle borders over heavy drop-shadows */
