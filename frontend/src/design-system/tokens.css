@@ -40,8 +40,8 @@
   --forest-bg: #EBF4EE;
   --forest-surface: #F0F7F2;
   --forest-surface-raised: #E1ECE4;
-  --forest-border: #BFD7C7;
-  --forest-border-strong: #96BCA2;
+  --forest-border: #F0F7F2;
+  --forest-border-strong: #E1ECE4;
   --forest-glow: rgba(14, 42, 30, 0.08);
   --forest-text: #0E3520;
   --forest-pill-bg: #E1ECE4;
@@ -166,8 +166,8 @@
   --forest-bg: #07150E;
   --forest-surface: #0E2218;
   --forest-surface-raised: #143022;
-  --forest-border: #1E4230;
-  --forest-border-strong: #2A5C43;
+  --forest-border: #0E2218;
+  --forest-border-strong: #143022;
   --forest-glow: rgba(0, 0, 0, 0.45);
   --forest-text: #78B291;
   --forest-pill-bg: rgba(20, 48, 34, 0.55);
@@ -221,7 +221,7 @@
 
   --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.45);
   --shadow-popover: 0 8px 28px rgba(0, 0, 0, 0.5);
-  --shadow-modal: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.65);
 }
 
 @media (prefers-reduced-motion: reduce) {

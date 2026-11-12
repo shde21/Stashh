@@ -572,7 +572,7 @@ export default function FoundationPage({ initialAuthMode = null }: FoundationPag
                       fontWeight: 600,
                       borderRadius: 'var(--radius-sm)',
                       border: '1px solid',
-                      borderColor: activeStage === i ? 'var(--accent)' : 'var(--forest-border)',
+                      borderColor: activeStage === i ? 'var(--accent)' : 'var(--border)',
                       backgroundColor: activeStage === i ? 'var(--forest-surface-raised)' : 'transparent',
                       color: activeStage === i ? 'var(--text)' : 'var(--text-secondary)',
                       cursor: 'pointer',
@@ -642,7 +642,7 @@ export default function FoundationPage({ initialAuthMode = null }: FoundationPag
                         cy={st.coordY}
                         r={isActive ? "7" : "5"}
                         fill={isActive ? "var(--accent)" : "var(--surface)"}
-                        stroke={isActive ? "#FFFFFF" : "var(--forest-border-strong)"}
+                        stroke={isActive ? "#FFFFFF" : "var(--border-strong)"}
                         strokeWidth={isActive ? "2.5" : "2"}
                       />
                       <text
@@ -663,7 +663,7 @@ export default function FoundationPage({ initialAuthMode = null }: FoundationPag
             </div>
 
             {/* Dynamic Step Details Panel */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--space-6)', padding: 'var(--space-5) var(--space-6)', borderRadius: 'var(--radius-md)', background: 'var(--surface-sunken)', border: '1px solid var(--forest-border)', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--space-6)', padding: 'var(--space-5) var(--space-6)', borderRadius: 'var(--radius-md)', background: 'var(--surface-sunken)', border: '1px solid var(--surface)', flexWrap: 'wrap', gap: 'var(--space-4)' }}>
               <div>
                 <span style={{ fontSize: 'var(--font-caption)', fontWeight: 'var(--weight-bold)', color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                   {lifecycleSteps[activeStage].badge}
