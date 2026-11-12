@@ -1,32 +1,50 @@
 import { useEffect, useState } from 'react'
-import { Link, Navigate, useLocation } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { EmptyState } from '../components/feedback/States'
-import { roleLabel, type UserRole } from '../auth/auth.types'
+import { type UserRole } from '../auth/auth.types'
 import { useAuth } from '../auth/useAuth'
 import { fetchStartupProfile } from '../startup/startup.api'
-import { fetchStartupPool } from '../fundraising/fundraising.api'
+import { fetchStartupPool, fetchInvestorPools, fetchAdminPools } from '../fundraising/fundraising.api'
+import { fetchInvestorPortfolio } from '../portfolio/portfolio.api'
 import type { StartupProfile } from '../startup/startup.types'
 import type { FundraisingPool } from '../fundraising/fundraising.types'
+import type { PortfolioSummary } from '../portfolio/portfolio.types'
 import {
-  Badge,
   Button,
   Card,
-  Stat,
+  ProgressBar,
   StatusPill,
+  formatCompactINR,
+  formatShares,
 } from '../design-system'
 import {
   AlertCircle,
   ArrowRight,
+  BarChart3,
   Check,
+  TrendingUp,
 } from 'lucide-react'
 
 type DashboardSection = 'overview' | 'profile' | 'fundraising' | 'discover' | 'portfolio' | 'reviews' | 'users'
+
+type EditorialItem = {
+  index: string
+  category: string
+  title: string
+  summary: string
+}
+
+type BarDatum = {
+  label: string
+  primaryValue: number
+  secondaryValue?: number
+}
 
 type DashboardContent = {
   eyebrow: string
   title: string
   description: string
-  cards: { label: string; value: string; note: string }[]
+  editorial: EditorialItem[]
   emptyTitle: string
   emptyDescription: string
   actionLabel?: string
@@ -37,12 +55,33 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
   STARTUP: {
     overview: {
       eyebrow: 'Startup workspace',
-      title: 'Make your next milestone easy to understand.',
-      description: 'Your company workspace is the source of truth for the story and metrics you share with investors.',
-      cards: [
-        { label: 'Profile readiness', value: 'Live', note: 'Company story and metrics are live.' },
-        { label: 'Fundraising', value: 'Live', note: 'Configure rounds when approved.' },
-        { label: 'Investor interest', value: 'Live', note: 'Incoming introductions queue.' },
+      title: 'Turn verified corporate truth into disciplined capital.',
+      description: 'Model your capitalization structure, complete administrative due diligence, and manage investor interest from one workspace.',
+      editorial: [
+        {
+          index: '01',
+          category: 'Corporate Identity',
+          title: 'Company profile & filings',
+          summary: 'Maintain your verified narrative, stage-aware traction metrics, pitch deck, and legal records required for administrative approval before any round opens.',
+        },
+        {
+          index: '02',
+          category: 'Equity Structure',
+          title: 'Cap table governance',
+          summary: 'Define authorized, issued, outstanding, treasury, and reserved share pools enforced by strict mathematical database invariants from day zero.',
+        },
+        {
+          index: '03',
+          category: 'Capital Raise',
+          title: 'Fundraising rounds',
+          summary: 'Configure target capital in Indian Rupees, ticket thresholds, valuation basis, and whole-share pricing once your profile achieves public approval.',
+        },
+        {
+          index: '04',
+          category: 'Investor Pipeline',
+          title: 'Inbound interest queue',
+          summary: 'Review formal expressions of interest submitted by qualified investors and coordinate direct conversations around your active raise.',
+        },
       ],
       emptyTitle: 'Your company story starts here',
       emptyDescription: 'Build a stage-aware profile, add the supporting context, and submit it when the story is ready for review.',
@@ -52,12 +91,8 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
     profile: {
       eyebrow: 'Company profile',
       title: 'Give the right people a clear first look.',
-      description: 'A guided profile will collect the context investors need, with draft saving and stage-aware fields.',
-      cards: [
-        { label: 'Company details', value: 'Live', note: 'Identity, product, and team.' },
-        { label: 'Metrics', value: 'Stage-aware', note: 'Use the numbers that fit your stage.' },
-        { label: 'Documents', value: 'Link support', note: 'Pitch and supporting links are available.' },
-      ],
+      description: 'A guided profile collects the context investors need, with draft saving and stage-aware fields.',
+      editorial: [],
       emptyTitle: 'Build the profile investors can understand',
       emptyDescription: 'Save your company story, add the metrics that fit your stage, and submit it for review when ready.',
     },
@@ -65,11 +100,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Fundraising',
       title: 'Turn momentum into a transparent round.',
       description: 'Fundraising pools, commitments, and review status connect here once the company profile is complete.',
-      cards: [
-        { label: 'Active round', value: 'Configure terms', note: 'Create a simulated fundraising pool.' },
-        { label: 'Progress', value: 'Live', note: 'Capacity updates from commitments.' },
-        { label: 'Pool status', value: 'Approval-gated', note: 'Only public approved profiles can open.' },
-      ],
+      editorial: [],
       emptyTitle: 'Configure a transparent fundraising pool',
       emptyDescription: 'Set the target, commitment limits, and close date. Once your profile is approved and public, you can open the round.',
       actionLabel: 'Open fundraising',
@@ -79,7 +110,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Startup workspace',
       title: 'Discover is for investors.',
       description: 'Switch to an investor account to explore startups.',
-      cards: [],
+      editorial: [],
       emptyTitle: 'This area is not part of your workspace',
       emptyDescription: 'Your startup navigation contains the tools that belong to a company account.',
     },
@@ -87,7 +118,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Startup workspace',
       title: 'Portfolio is for investors.',
       description: 'Switch to an investor account to view simulated holdings.',
-      cards: [],
+      editorial: [],
       emptyTitle: 'This area is not part of your workspace',
       emptyDescription: 'Your startup navigation contains the tools that belong to a company account.',
     },
@@ -95,7 +126,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Startup workspace',
       title: 'Review queue is for admins.',
       description: 'Switch to an admin account to review submissions.',
-      cards: [],
+      editorial: [],
       emptyTitle: 'This area is not part of your workspace',
       emptyDescription: 'This route is protected by the backend too.',
     },
@@ -103,7 +134,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Startup workspace',
       title: 'User management is for admins.',
       description: 'Switch to an admin account to view platform users.',
-      cards: [],
+      editorial: [],
       emptyTitle: 'This area is not part of your workspace',
       emptyDescription: 'This route is protected by the backend too.',
     },
@@ -112,11 +143,32 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
     overview: {
       eyebrow: 'Investor workspace',
       title: 'Find the signal before the rush.',
-      description: 'Your discovery and portfolio tools share one calm, explainable view of the opportunities you care about.',
-      cards: [
-        { label: 'Opportunities', value: 'Open rounds', note: 'Filter approved fundraising pools.' },
-        { label: 'Watchlist', value: 'Live', note: 'Track theses & introductions.' },
-        { label: 'Portfolio value', value: 'Live', note: 'Company share valuation analytics live.' },
+      description: 'Evaluate admin-verified startup rounds, capture private diligence theses, and track company-specific equity holdings in one calm view.',
+      editorial: [
+        {
+          index: '01',
+          category: 'Deal Discovery',
+          title: 'Discover vetted startups',
+          summary: 'Filter admin-approved fundraising rounds by sector and stage, inspect verified cap tables and corporate filings, and allocate into whole, non-fractional equity shares.',
+        },
+        {
+          index: '02',
+          category: 'Pipeline & Thesis',
+          title: 'Saved watchlist',
+          summary: 'Bookmark high-conviction startups during due diligence and keep private investment thesis notes organized alongside each target company.',
+        },
+        {
+          index: '03',
+          category: 'Founder Access',
+          title: 'Direct introductions',
+          summary: 'Send formal expressions of interest directly to founding teams and track or withdraw pending introduction requests at any point.',
+        },
+        {
+          index: '04',
+          category: 'Equity Ledger',
+          title: 'Portfolio & valuations',
+          summary: 'Monitor committed capital, discrete share counts, ownership percentages, and illustrative gains recalculated whenever valuation snapshots update.',
+        },
       ],
       emptyTitle: 'Your investment view starts with discovery',
       emptyDescription: 'Explore approved fundraising pools with context, then keep your simulated commitments in one place.',
@@ -127,11 +179,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Discover startups',
       title: 'Explore what is being built.',
       description: 'Filter approved fundraising pools by sector and stage, compare terms, and record simulated commitments.',
-      cards: [
-        { label: 'Public listings', value: 'Live', note: 'Only approved public pools appear.' },
-        { label: 'Saved startups', value: 'Live', note: 'Watchlist and thesis notes.' },
-        { label: 'Active pools', value: 'Live', note: 'Capacity comes from stored commitments.' },
-      ],
+      editorial: [],
       emptyTitle: 'The discovery room is quiet',
       emptyDescription: 'Open fundraising pools appear here after approved startups configure and open their terms.',
     },
@@ -139,11 +187,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Portfolio',
       title: 'Know what your position means.',
       description: 'Simulated commitments, company equity shares, valuation snapshots, and illustrative gains are calculated without real money transfers.',
-      cards: [
-        { label: 'Committed', value: 'Live', note: 'Active simulated commitments.' },
-        { label: 'Equity Shares', value: 'Live', note: 'Company-specific equity shares.' },
-        { label: 'Estimated value', value: 'Live', note: 'Updates from valuation snapshots.' },
-      ],
+      editorial: [],
       emptyTitle: 'Your portfolio is intentionally empty',
       emptyDescription: 'Once simulated commitments exist, this page will explain the original inputs and the changes over time.',
     },
@@ -151,7 +195,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Investor workspace',
       title: 'Company profiles are for startups.',
       description: 'Switch to a startup account to build a company profile.',
-      cards: [],
+      editorial: [],
       emptyTitle: 'This area is not part of your workspace',
       emptyDescription: 'Your investor navigation contains discovery and portfolio tools.',
     },
@@ -159,7 +203,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Investor workspace',
       title: 'Fundraising management is for startups.',
       description: 'Switch to a startup account to manage a round.',
-      cards: [],
+      editorial: [],
       emptyTitle: 'This area is not part of your workspace',
       emptyDescription: 'This route is protected by the backend too.',
     },
@@ -167,7 +211,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Investor workspace',
       title: 'Review queue is for admins.',
       description: 'Switch to an admin account to review submissions.',
-      cards: [],
+      editorial: [],
       emptyTitle: 'This area is not part of your workspace',
       emptyDescription: 'This route is protected by the backend too.',
     },
@@ -175,7 +219,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Investor workspace',
       title: 'User management is for admins.',
       description: 'Switch to an admin account to view platform users.',
-      cards: [],
+      editorial: [],
       emptyTitle: 'This area is not part of your workspace',
       emptyDescription: 'This route is protected by the backend too.',
     },
@@ -184,11 +228,32 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
     overview: {
       eyebrow: 'Admin workspace',
       title: 'Keep the platform worthy of trust.',
-      description: 'Review, visibility, and audit workflows gather here as the product adds real startup and investment data.',
-      cards: [
-        { label: 'Submissions', value: 'Live', note: 'Review profiles with context.' },
-        { label: 'Fundraising pools', value: 'Live', note: 'Control round access.' },
-        { label: 'Audit activity', value: 'Tracked', note: 'Review actions are recorded.' },
+      description: 'Verify corporate submissions, govern active fundraising pools, and publish dated valuation snapshots across the marketplace.',
+      editorial: [
+        {
+          index: '01',
+          category: 'Due Diligence',
+          title: 'Startup review queue',
+          summary: 'Inspect corporate filings, pitch decks, and financial metrics to approve public listings or request structured revisions from founders.',
+        },
+        {
+          index: '02',
+          category: 'Round Governance',
+          title: 'Fundraising pool controls',
+          summary: 'Monitor active startup rounds across the marketplace and open or close investor commitment access to protect platform integrity.',
+        },
+        {
+          index: '03',
+          category: 'Pricing Benchmarks',
+          title: 'Valuation snapshots',
+          summary: 'Publish dated company valuation updates that recalculate illustrative share prices and investor portfolio positions in real time.',
+        },
+        {
+          index: '04',
+          category: 'Platform Oversight',
+          title: 'Role & user directory',
+          summary: 'Review role boundaries and workspace participation across startups, qualified investors, and administrative reviewers.',
+        },
       ],
       emptyTitle: 'The review queue is ready',
       emptyDescription: 'Submitted startup profiles and fundraising pools arrive here with their terms, metrics, and review history.',
@@ -199,11 +264,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Review queue',
       title: 'Review with context, not shortcuts.',
       description: 'Startup submissions, feedback, status history, and visibility actions live in the review queue.',
-      cards: [
-        { label: 'Needs review', value: 'Live', note: 'Submitted profiles appear here.' },
-        { label: 'Changes requested', value: 'Tracked', note: 'Keep the feedback loop clear.' },
-        { label: 'Approved listings', value: 'Controlled', note: 'Visibility is approval-gated.' },
-      ],
+      editorial: [],
       emptyTitle: 'Open the live review queue',
       emptyDescription: 'The review page reads connected startup profiles and records each admin action.',
     },
@@ -211,11 +272,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Platform users',
       title: 'Understand who is in the room.',
       description: 'User search, account status, and role controls will arrive as admin workflows mature.',
-      cards: [
-        { label: 'Startups', value: '—', note: 'No summary endpoint yet.' },
-        { label: 'Investors', value: '—', note: 'No summary endpoint yet.' },
-        { label: 'Admins', value: '—', note: 'No summary endpoint yet.' },
-      ],
+      editorial: [],
       emptyTitle: 'User management is staged for a later pass',
       emptyDescription: 'The current role boundary is live and enforced; detailed admin controls arrive with the domain workflows.',
     },
@@ -223,7 +280,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Admin workspace',
       title: 'Company profiles are managed by startups.',
       description: 'Switch to a startup account to build a company profile.',
-      cards: [],
+      editorial: [],
       emptyTitle: 'This area is not part of your workspace',
       emptyDescription: 'Your admin navigation contains review and platform controls.',
     },
@@ -231,7 +288,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Admin workspace',
       title: 'Fundraising pools keep their promises.',
       description: 'Review terms, capacity, and whether a simulated round is accepting investor commitments.',
-      cards: [],
+      editorial: [],
       emptyTitle: 'Open fundraising controls',
       emptyDescription: 'Use the fundraising pools page to manage round access.',
     },
@@ -239,7 +296,7 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Admin workspace',
       title: 'Discovery is for investors.',
       description: 'Switch to an investor account to explore public startup listings.',
-      cards: [],
+      editorial: [],
       emptyTitle: 'This area is not part of your workspace',
       emptyDescription: 'This route is protected by the backend too.',
     },
@@ -247,27 +304,162 @@ const content: Record<UserRole, Record<DashboardSection, DashboardContent>> = {
       eyebrow: 'Admin workspace',
       title: 'Portfolio is for investors.',
       description: 'Switch to an investor account to view simulated holdings.',
-      cards: [],
+      editorial: [],
       emptyTitle: 'This area is not part of your workspace',
       emptyDescription: 'This route is protected by the backend too.',
     },
   },
 }
 
+function ComparisonBarChart({
+  title,
+  subtitle,
+  primaryLabel,
+  secondaryLabel,
+  data,
+  emptyMessage,
+}: {
+  title: string
+  subtitle: string
+  primaryLabel: string
+  secondaryLabel?: string
+  data: BarDatum[]
+  emptyMessage: string
+}) {
+  const maxVal = Math.max(
+    1,
+    ...data.flatMap((d) => [d.primaryValue, d.secondaryValue ?? 0]),
+  )
+
+  return (
+    <Card className="overview-chart-card">
+      <div className="overview-chart-header">
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: '4px' }}>
+            <BarChart3 size={18} style={{ color: 'var(--accent)' }} aria-hidden="true" />
+            <h3>{title}</h3>
+          </div>
+          <p>{subtitle}</p>
+        </div>
+        <div className="overview-chart-legend">
+          <span className="overview-legend-item">
+            <span className="overview-legend-dot is-primary" aria-hidden="true" />
+            {primaryLabel}
+          </span>
+          {secondaryLabel && (
+            <span className="overview-legend-item">
+              <span className="overview-legend-dot is-secondary" aria-hidden="true" />
+              {secondaryLabel}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {data.length === 0 ? (
+        <div className="overview-chart-empty">
+          <p>{emptyMessage}</p>
+        </div>
+      ) : (
+        <div className="overview-svg-wrap">
+          <svg
+            width="100%"
+            height="196"
+            viewBox="0 0 460 196"
+            role="img"
+            aria-label={title}
+            style={{ overflow: 'visible' }}
+          >
+            {[20, 65, 110, 155].map((y) => (
+              <line
+                key={y}
+                x1="8"
+                y1={y}
+                x2="452"
+                y2={y}
+                stroke="var(--border)"
+                strokeDasharray={y === 155 ? undefined : '3 3'}
+              />
+            ))}
+
+            {data.map((item, idx) => {
+              const slotWidth = 440 / data.length
+              const centerX = 10 + slotWidth * idx + slotWidth / 2
+              const hasSecondary = secondaryLabel != null && item.secondaryValue != null
+              const barWidth = hasSecondary ? Math.min(22, slotWidth * 0.28) : Math.min(34, slotWidth * 0.42)
+              const primaryH = Math.max(4, (item.primaryValue / maxVal) * 130)
+              const secondaryH = hasSecondary
+                ? Math.max(4, ((item.secondaryValue ?? 0) / maxVal) * 130)
+                : 0
+              const shortLabel = item.label.length > 12 ? `${item.label.slice(0, 11)}…` : item.label
+
+              return (
+                <g key={item.label}>
+                  <rect
+                    x={hasSecondary ? centerX - barWidth - 3 : centerX - barWidth / 2}
+                    y={155 - primaryH}
+                    width={barWidth}
+                    height={primaryH}
+                    rx="3"
+                    fill="var(--forest-text)"
+                  />
+                  {hasSecondary && (
+                    <rect
+                      x={centerX + 3}
+                      y={155 - secondaryH}
+                      width={barWidth}
+                      height={secondaryH}
+                      rx="3"
+                      fill="var(--accent)"
+                    />
+                  )}
+                  <text
+                    x={centerX}
+                    y={178}
+                    textAnchor="middle"
+                    fill="var(--text-secondary)"
+                    fontSize="12"
+                    fontFamily="var(--font-sans)"
+                  >
+                    {shortLabel}
+                  </text>
+                </g>
+              )
+            })}
+          </svg>
+        </div>
+      )}
+    </Card>
+  )
+}
+
 export { DashboardRedirectPage } from './DashboardRedirectPage'
 
 export default function DashboardPage({ role, section }: { role: UserRole; section: DashboardSection }) {
   const { user } = useAuth()
-  const location = useLocation()
   const [startupProfile, setStartupProfile] = useState<StartupProfile | null>(null)
   const [startupPool, setStartupPool] = useState<FundraisingPool | null>(null)
+  const [investorPools, setInvestorPools] = useState<FundraisingPool[]>([])
+  const [portfolio, setPortfolio] = useState<PortfolioSummary | null>(null)
+  const [adminPools, setAdminPools] = useState<FundraisingPool[]>([])
 
   useEffect(() => {
+    if (section !== 'overview' && role !== 'STARTUP') return
+    let active = true
+
     if (role === 'STARTUP') {
-      fetchStartupProfile().then((p) => p && setStartupProfile(p)).catch(() => {})
-      fetchStartupPool().then((p) => p && setStartupPool(p)).catch(() => {})
+      fetchStartupProfile().then((p) => { if (active && p) setStartupProfile(p) }).catch(() => {})
+      fetchStartupPool().then((p) => { if (active && p) setStartupPool(p) }).catch(() => {})
+    } else if (role === 'INVESTOR') {
+      fetchInvestorPools().then((list) => { if (active && list) setInvestorPools(list) }).catch(() => {})
+      fetchInvestorPortfolio().then((summary) => { if (active && summary) setPortfolio(summary) }).catch(() => {})
+    } else if (role === 'ADMIN') {
+      fetchAdminPools().then((list) => { if (active && list) setAdminPools(list) }).catch(() => {})
     }
-  }, [role])
+
+    return () => {
+      active = false
+    }
+  }, [role, section])
 
   if (!user || user.role !== role) return <Navigate to="/forbidden" replace />
   const current = content[role][section]
@@ -309,30 +501,94 @@ export default function DashboardPage({ role, section }: { role: UserRole; secti
     return 'upcoming'
   }
 
+  // Right SVG chart data per role
+  const chartConfig = (() => {
+    if (role === 'INVESTOR') {
+      const positions = portfolio?.positions ?? []
+      if (positions.length > 0) {
+        return {
+          title: 'Portfolio Allocation & Value',
+          subtitle: 'Committed principal vs. current valuation across active holdings.',
+          primaryLabel: 'Committed',
+          secondaryLabel: 'Current Value',
+          data: positions.slice(0, 5).map((pos) => ({
+            label: pos.companyName,
+            primaryValue: pos.amount,
+            secondaryValue: pos.currentValue ?? pos.amount,
+          })),
+          emptyMessage: 'Commit into an open round to visualize your company-specific equity positions.',
+        }
+      }
+      return {
+        title: 'Active Round Capitalization',
+        subtitle: 'Target raise vs. committed capital across open marketplace rounds.',
+        primaryLabel: 'Target Capital',
+        secondaryLabel: 'Committed',
+        data: investorPools.slice(0, 5).map((pool) => ({
+          label: pool.companyName,
+          primaryValue: pool.targetAmount,
+          secondaryValue: pool.totalCommitted,
+        })),
+        emptyMessage: 'No open fundraising pools are active right now.',
+      }
+    }
+
+    if (role === 'STARTUP') {
+      const cap = startupProfile?.capitalization
+      return {
+        title: 'Capitalization Share Pools',
+        subtitle: 'Distribution of authorized, issued, outstanding, and reserved shares.',
+        primaryLabel: 'Shares',
+        data: cap
+          ? [
+              { label: 'Authorized', primaryValue: cap.authorizedShares },
+              { label: 'Issued', primaryValue: cap.issuedShares },
+              { label: 'Outstanding', primaryValue: cap.outstandingShares },
+              { label: 'Reserved', primaryValue: cap.reservedShares },
+            ]
+          : [],
+        emptyMessage: 'Configure your company capitalization structure in Company profile to inspect pool distribution.',
+      }
+    }
+
+    return {
+      title: 'Marketplace Pool Volume',
+      subtitle: 'Target vs. committed capital across recent startup fundraising pools.',
+      primaryLabel: 'Target',
+      secondaryLabel: 'Committed',
+      data: adminPools.slice(0, 5).map((pool) => ({
+        label: pool.companyName,
+        primaryValue: pool.targetAmount,
+        secondaryValue: pool.totalCommitted,
+      })),
+      emptyMessage: 'No fundraising pools configured on the platform yet.',
+    }
+  })()
+
+  // Live pools automatically fetched from approved, public startups with OPEN rounds
+  const activePoolList = role === 'ADMIN' ? adminPools : investorPools
+
   return (
     <div className="dashboard-page">
-      {/* Page Heading */}
+      {/* Main 1-2 Line Heading + Single Primary CTA */}
       <div className="page-heading">
         <div>
           <p className="eyebrow">{current.eyebrow}</p>
           <h1>{current.title}</h1>
           <p>{current.description}</p>
         </div>
-        <Badge variant="neutral">{roleLabel(user.role)}</Badge>
-      </div>
-
-      <div className="welcome-strip">
-        <div>
-          <span>Signed in as</span>
-          <strong>{user.email}</strong>
-        </div>
-        <span className="welcome-location">{location.pathname}</span>
+        {section === 'overview' && current.actionLabel && current.actionTo && (
+          <Link to={current.actionTo}>
+            <Button variant="primary" size="md" rightIcon={<ArrowRight size={16} strokeWidth={2} />}>
+              {current.actionLabel}
+            </Button>
+          </Link>
+        )}
       </div>
 
       {/* STARTUP-SPECIFIC: Status Stepper & Next Best Action */}
       {role === 'STARTUP' && section === 'overview' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
-          {/* Status Stepper Card */}
           <Card>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
               <div>
@@ -342,7 +598,6 @@ export default function DashboardPage({ role, section }: { role: UserRole; secti
               <StatusPill status={reviewStatus} />
             </div>
 
-            {/* Stepper Visual */}
             <div
               style={{
                 display: 'grid',
@@ -421,7 +676,6 @@ export default function DashboardPage({ role, section }: { role: UserRole; secti
               })}
             </div>
 
-            {/* Admin Feedback Callout (if changes requested) */}
             {reviewStatus === 'CHANGES_REQUESTED' && startupProfile?.reviewNote && (
               <div
                 style={{
@@ -440,7 +694,7 @@ export default function DashboardPage({ role, section }: { role: UserRole; secti
                     Action needed: Reviewer requested revisions
                   </strong>
                   <p style={{ fontSize: 'var(--font-small)', color: 'var(--text)', marginTop: '4px' }}>
-                    "{startupProfile.reviewNote}"
+                    &ldquo;{startupProfile.reviewNote}&rdquo;
                   </p>
                   <div style={{ marginTop: 'var(--space-3)' }}>
                     <Link to="/app/startup/profile">
@@ -454,7 +708,6 @@ export default function DashboardPage({ role, section }: { role: UserRole; secti
             )}
           </Card>
 
-          {/* Next Best Action Card */}
           <Card
             style={{
               display: 'flex',
@@ -513,14 +766,110 @@ export default function DashboardPage({ role, section }: { role: UserRole; secti
         </div>
       )}
 
-      {/* Metric Grid */}
-      {current.cards.length > 0 && (
-        <section className="metric-grid" aria-label="Workspace summary">
-          {current.cards.map((card) => (
-            <Card key={card.label}>
-              <Stat label={card.label} value={card.value} subtext={card.note} />
-            </Card>
-          ))}
+      {/* Visual Analytics Section (2-Column Graphs) */}
+      {section === 'overview' && (
+        <section className="overview-analytics-grid" aria-label="Workspace analytics">
+          {/* Left Visual Card: Funding Momentum / Pipeline Progress */}
+          <Card className="overview-chart-card">
+            <div className="overview-chart-header">
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: '4px' }}>
+                  <TrendingUp size={18} style={{ color: 'var(--accent)' }} aria-hidden="true" />
+                  <h3>
+                    {role === 'STARTUP'
+                      ? 'Fundraising Pool Momentum'
+                      : role === 'ADMIN'
+                        ? 'Review & Pool Momentum'
+                        : 'Open Round Momentum'}
+                  </h3>
+                </div>
+                <p>
+                  {role === 'STARTUP'
+                    ? 'Live share commitments against your configured round target.'
+                    : 'Funding progress updated automatically as approved startups open rounds.'}
+                </p>
+              </div>
+            </div>
+
+            {role === 'STARTUP' ? (
+              startupPool ? (
+                <div className="overview-progress-list">
+                  <div className="overview-progress-item">
+                    <div className="overview-progress-meta">
+                      <strong>{startupPool.title}</strong>
+                      <span>
+                        {formatCompactINR(startupPool.totalCommitted)} / {formatCompactINR(startupPool.targetAmount)}
+                      </span>
+                    </div>
+                    <ProgressBar
+                      value={
+                        startupPool.targetAmount > 0
+                          ? (startupPool.totalCommitted / startupPool.targetAmount) * 100
+                          : 0
+                      }
+                      label={startupPool.title}
+                    />
+                    <div className="overview-progress-foot">
+                      <span>{formatShares(startupPool.sharesAllocated)} shares allocated</span>
+                      <span>{formatShares(startupPool.sharesRemaining)} remaining</span>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="overview-chart-empty">
+                  <p>Configure a fundraising round to track commitment velocity and share allocations.</p>
+                </div>
+              )
+            ) : activePoolList.length === 0 ? (
+              <div className="overview-chart-empty">
+                <p>No active fundraising pools available yet. Approved rounds will appear here automatically.</p>
+              </div>
+            ) : (
+              <div className="overview-progress-list">
+                {activePoolList.map((pool) => {
+                  const pct = pool.targetAmount > 0 ? Math.min(100, Math.round((pool.totalCommitted / pool.targetAmount) * 100)) : 0
+                  return (
+                    <div key={pool.id} className="overview-progress-item">
+                      <div className="overview-progress-meta">
+                        <strong>{pool.companyName}</strong>
+                        <span>
+                          {formatCompactINR(pool.totalCommitted)} / {formatCompactINR(pool.targetAmount)} ({pct}%)
+                        </span>
+                      </div>
+                      <ProgressBar value={pct} label={`${pool.companyName} funding progress`} />
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </Card>
+
+          {/* Right Visual Card: SVG Bar Comparison Chart */}
+          <ComparisonBarChart
+            title={chartConfig.title}
+            subtitle={chartConfig.subtitle}
+            primaryLabel={chartConfig.primaryLabel}
+            secondaryLabel={chartConfig.secondaryLabel}
+            data={chartConfig.data}
+            emptyMessage={chartConfig.emptyMessage}
+          />
+        </section>
+      )}
+
+      {/* Editorial Feature Explanations (Pure Clean Prose Directly on Canvas, No Extra Navigation Links) */}
+      {current.editorial.length > 0 && (
+        <section className="overview-editorial-section" aria-label="Workspace features">
+          <div className="overview-editorial-grid">
+            {current.editorial.map((item) => (
+              <article key={item.index} className="overview-editorial-item">
+                <span className="overview-editorial-tag">
+                  {item.index} · {item.category}
+                </span>
+                <h3>{item.title}</h3>
+                <p>{item.summary}</p>
+              </article>
+            ))}
+          </div>
         </section>
       )}
 

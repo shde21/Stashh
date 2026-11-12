@@ -287,12 +287,12 @@ input[placeholder*="search"]:focus {
    ========================================================================== */
 .vl-card {
   background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--surface);
+  border-radius: var(--radius-sm);
   padding: var(--space-6);
   position: relative;
-  box-shadow: none;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), background-color var(--transition-fast);
 }
 
 .vl-card-interactive {
@@ -300,8 +300,8 @@ input[placeholder*="search"]:focus {
 }
 
 .vl-card-interactive:hover {
-  border-color: var(--border-strong);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+  border-color: var(--surface-raised);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
   transform: translateY(-1px);
 }
 
@@ -311,7 +311,7 @@ input[placeholder*="search"]:focus {
 
 .vl-card-lg {
   padding: var(--space-8);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-sm);
 }
 
 /* Forest Card: Intentional 30% visual allocation with deep emerald surface */
@@ -363,6 +363,7 @@ input[placeholder*="search"]:focus {
   color: var(--neutral-pill-text);
   border-color: var(--border);
 }
+
 .vl-badge-neutral .vl-badge-dot {
   background-color: var(--text-tertiary);
 }
@@ -373,6 +374,7 @@ input[placeholder*="search"]:focus {
   color: var(--positive-text);
   border-color: var(--positive-border);
 }
+
 .vl-badge-positive .vl-badge-dot {
   background-color: var(--positive);
 }
@@ -383,6 +385,7 @@ input[placeholder*="search"]:focus {
   color: var(--negative-text);
   border-color: var(--negative-border);
 }
+
 .vl-badge-negative .vl-badge-dot {
   background-color: var(--negative);
 }
@@ -393,6 +396,7 @@ input[placeholder*="search"]:focus {
   color: var(--warning-text);
   border-color: var(--warning-border);
 }
+
 .vl-badge-warning .vl-badge-dot {
   background-color: var(--warning);
 }
@@ -403,6 +407,7 @@ input[placeholder*="search"]:focus {
   color: var(--accent);
   border-color: var(--accent-border);
 }
+
 .vl-badge-accent .vl-badge-dot {
   background-color: var(--accent);
   box-shadow: 0 0 6px rgba(255, 106, 0, 0.6);
@@ -680,13 +685,25 @@ input[placeholder*="search"]:focus {
 }
 
 @keyframes vl-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes vl-scale-in {
-  from { opacity: 0; transform: scale(0.97) translateY(8px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 /* ==========================================================================
@@ -705,8 +722,13 @@ input[placeholder*="search"]:focus {
 }
 
 @keyframes vl-skeleton-pulse {
-  0% { background-position: 100% 50%; }
-  100% { background-position: 0 50%; }
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0 50%;
+  }
 }
 
 /* ==========================================================================

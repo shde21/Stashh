@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, Link } from 'react-router-dom'
 import { roleLabel } from '../../auth/auth.types'
 import { useAuth } from '../../auth/useAuth'
@@ -15,7 +15,6 @@ import {
   PieChart,
   ShieldAlert,
   Users,
-  X,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -50,8 +49,68 @@ const navigation: Record<'STARTUP' | 'INVESTOR' | 'ADMIN', NavItem[]> = {
 
 export function AppShell() {
   const { user, logout } = useAuth()
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const leaveTimerRef = useRef<number | null>(null)
+  const hoverOpenedAtRef = useRef<number>(0)
+
+  function clearLeaveTimer() {
+    if (leaveTimerRef.current !== null) {
+      window.clearTimeout(leaveTimerRef.current)
+      leaveTimerRef.current = null
+    }
+  }
+
+  function handleMenuEnter() {
+    clearLeaveTimer()
+    if (!menuOpen) {
+      hoverOpenedAtRef.current = Date.now()
+      setMenuOpen(true)
+    }
+  }
+
+  function handleMenuLeave() {
+    clearLeaveTimer()
+    leaveTimerRef.current = window.setTimeout(() => {
+      setMenuOpen(false)
+    }, 250)
+  }
+
+  function handleTriggerClick() {
+    clearLeaveTimer()
+    if (menuOpen && Date.now() - hoverOpenedAtRef.current < 150) {
+      return
+    }
+    setMenuOpen((open) => !open)
+  }
+
+  useEffect(() => {
+    return () => clearLeaveTimer()
+  }, [])
+
+  useEffect(() => {
+    if (!menuOpen) return
+
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [menuOpen])
 
   if (!user) return null
 
@@ -69,94 +128,106 @@ export function AppShell() {
 
   return (
     <div className="app-frame">
-      <header className="app-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
-          <Link className="brand" to="/app" aria-label="Stashh workspace home">
-            <span className="brand-mark" aria-hidden="true">S</span>
-            <span>Stashh</span>
-          </Link>
-          <span
-            style={{
-              fontSize: 'var(--font-caption)',
-              fontWeight: 'var(--weight-medium)',
-              padding: '3px 10px',
-              backgroundColor: 'var(--bg-subtle)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-full)',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            {roleLabel(user.role)}
-          </span>
-        </div>
+      <div className="app-chrome-top">
+        <header className="app-header">
+          <div className="app-header-inner">
+            <Link className="brand" to="/app" aria-label="Stashh workspace home">
+              <span className="brand-mark" aria-hidden="true">S</span>
+              <span>Stashh</span>
+            </Link>
 
-        <button
-          className="mobile-menu-button"
-          type="button"
-          aria-expanded={mobileOpen}
-          aria-controls="workspace-navigation"
-          onClick={() => setMobileOpen((open) => !open)}
-          style={{ minHeight: '44px', minWidth: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          {mobileOpen ? <X size={20} strokeWidth={1.75} /> : <Menu size={20} strokeWidth={1.75} />}
-          <span style={{ marginLeft: '4px' }}>{mobileOpen ? 'Close' : 'Menu'}</span>
-        </button>
-
-        <div className="user-menu">
-          <ThemeToggle />
-          <div className="user-avatar" aria-hidden="true">{initials}</div>
-          <div className="user-meta">
-            <strong>{user.email}</strong>
-            <span>{roleLabel(user.role)} account</span>
+            <div className="user-menu">
+              <span className="footer-status-pill">
+                {roleLabel(user.role)}
+              </span>
+              <ThemeToggle />
+              <div className="user-avatar" aria-hidden="true">{initials}</div>
+              <div className="user-meta">
+                <strong>{user.email}</strong>
+                <span>{roleLabel(user.role)} account</span>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => void handleLogout()}
+                disabled={loggingOut}
+                leftIcon={<LogOut size={14} strokeWidth={1.75} />}
+                style={{ minHeight: '44px' }}
+              >
+                {loggingOut ? 'Leaving…' : 'Log out'}
+              </Button>
+            </div>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => void handleLogout()}
-            disabled={loggingOut}
-            leftIcon={<LogOut size={14} strokeWidth={1.75} />}
-            style={{ minHeight: '44px' }}
-          >
-            {loggingOut ? 'Leaving…' : 'Log out'}
-          </Button>
+        </header>
+
+        <div className="app-subbar">
+          <div className="app-subbar-inner">
+            <div
+              className="workspace-menu-wrap"
+              ref={menuRef}
+              onMouseEnter={handleMenuEnter}
+              onMouseLeave={handleMenuLeave}
+            >
+              <button
+                className={`workspace-menu-trigger ${menuOpen ? 'is-open' : ''}`}
+                type="button"
+                aria-expanded={menuOpen}
+                aria-controls="workspace-navigation"
+                onClick={handleTriggerClick}
+              >
+                <Menu size={16} strokeWidth={2} className="workspace-menu-trigger-icon" aria-hidden="true" />
+                <span>Menu</span>
+              </button>
+
+              {menuOpen && (
+                <aside
+                  id="workspace-navigation"
+                  className="workspace-menu-drawer"
+                  aria-label={`${roleLabel(user.role)} menu`}
+                  onMouseEnter={handleMenuEnter}
+                  onMouseLeave={handleMenuLeave}
+                >
+                  <div className="workspace-menu-header">
+                    <h2 className="workspace-menu-title">{roleLabel(user.role)} workspace</h2>
+                    <p>One focused place to take the next right step.</p>
+                  </div>
+
+                  <nav className="workspace-menu-nav" aria-label={`${roleLabel(user.role)} navigation`}>
+                    {items.map((item) => {
+                      const Icon = item.icon
+                      return (
+                        <NavLink
+                          key={item.to}
+                          to={item.to}
+                          end={item.to === `/app/${user.role.toLowerCase()}`}
+                          className={({ isActive }) => `nav-item ${isActive ? 'nav-item-active' : ''}`}
+                          onClick={() => {
+                            clearLeaveTimer()
+                            setMenuOpen(false)
+                          }}
+                        >
+                          <Icon size={18} strokeWidth={1.75} style={{ flexShrink: 0 }} aria-hidden="true" />
+                          <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <span>{item.label}</span>
+                            <small>{item.detail}</small>
+                          </div>
+                        </NavLink>
+                      )
+                    })}
+                  </nav>
+
+                  <div className="workspace-menu-footer">
+                    <span className="status-dot" aria-hidden="true" />
+                    <span>Secure session active</span>
+                  </div>
+                </aside>
+              )}
+            </div>
+          </div>
         </div>
-      </header>
+      </div>
 
       <div className="app-body">
-        <aside id="workspace-navigation" className={`side-nav ${mobileOpen ? 'side-nav-open' : ''}`}>
-          <div className="side-nav-intro">
-            <span className="eyebrow">{roleLabel(user.role)} workspace</span>
-            <p>One focused place to take the next right step.</p>
-          </div>
-
-          <nav aria-label={`${roleLabel(user.role)} navigation`}>
-            {items.map((item) => {
-              const Icon = item.icon
-              return (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  end={item.to === `/app/${user.role.toLowerCase()}`}
-                  className={({ isActive }) => `nav-item ${isActive ? 'nav-item-active' : ''}`}
-                  onClick={() => setMobileOpen(false)}
-                  style={{ minHeight: '44px', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 'var(--space-3)' }}
-                >
-                  <Icon size={18} strokeWidth={1.75} style={{ flexShrink: 0 }} aria-hidden="true" />
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span>{item.label}</span>
-                    <small>{item.detail}</small>
-                  </div>
-                </NavLink>
-              )
-            })}
-          </nav>
-
-          <div className="side-nav-footer">
-            <span className="status-dot" aria-hidden="true" />
-            <span>Secure session active</span>
-          </div>
-        </aside>
-
         <main className="workspace-content">
           <ErrorBoundary>
             <Outlet />
